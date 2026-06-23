@@ -77,6 +77,18 @@ export interface Audit {
   workspaceId: string;
 }
 
+export interface AuditLogs {
+  action: string;
+  createdAt: Generated<Timestamp>;
+  id: Generated<string>;
+  ipAddress: string | null;
+  metadata: Json | null;
+  resourceId: string | null;
+  resourceType: string | null;
+  userId: string | null;
+  workspaceId: string;
+}
+
 export interface AuthAccounts {
   authProviderId: string | null;
   createdAt: Generated<Timestamp>;
@@ -642,6 +654,7 @@ export interface DB {
   apiKeys: ApiKeys;
   attachments: Attachments;
   audit: Audit;
+  auditLogs: AuditLogs;
   authAccounts: AuthAccounts;
   authProviders: AuthProviders;
   backlinks: Backlinks;

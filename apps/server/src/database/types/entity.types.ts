@@ -39,6 +39,7 @@ import {
   ScimTokens,
   Watchers,
   Audit as _Audit,
+  AuditLogs,
   Templates,
 } from './db';
 import { PageEmbeddings } from '@docmost/db/types/embeddings.types';
@@ -236,6 +237,11 @@ export type UpdatableUserSession = Updateable<Omit<UserSessions, 'id'>>;
 export type Audit = Selectable<_Audit>;
 export type InsertableAudit = Insertable<_Audit>;
 export type UpdatableAudit = Updateable<Omit<_Audit, 'id'>>;
+
+// AuditLogs
+export type AuditLog = Selectable<AuditLogs>;
+export type InsertableAuditLog = Insertable<AuditLogs>;
+export type UpdatableAuditLog = Updateable<Omit<AuditLogs, 'id'>>;
 
 // Template
 export type Template = Selectable<Templates>;

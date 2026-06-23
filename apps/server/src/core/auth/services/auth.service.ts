@@ -40,6 +40,7 @@ import {
   IAuditService,
 } from '../../../integrations/audit/audit.service';
 import { EnvironmentService } from '../../../integrations/environment/environment.service';
+import { AuditService as CoreAuditService } from '../../audit/audit.service';
 
 @Injectable()
 export class AuthService {
@@ -55,6 +56,7 @@ export class AuthService {
     private environmentService: EnvironmentService,
     @InjectKysely() private readonly db: KyselyDB,
     @Inject(AUDIT_SERVICE) private readonly auditService: IAuditService,
+    private readonly coreAuditService: CoreAuditService,
   ) {}
 
   async login(loginDto: LoginDto, workspaceId: string) {
@@ -94,7 +96,11 @@ export class AuthService {
       metadata: { source: 'password' },
     });
 
-    return this.sessionService.createSessionAndToken(user);
+    const token = await this.sessionService.createSessionAndToken(user);
+
+    await this.coreAuditService.logLogin(user.id, workspaceId);
+
+    return token;
   }
 
   async register(createUserDto: CreateUserDto, workspaceId: string) {
