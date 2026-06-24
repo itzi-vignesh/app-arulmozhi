@@ -13,6 +13,7 @@ const APP_ROUTE = {
     SELECT_WORKSPACE: "/select",
     MFA_CHALLENGE: "/login/mfa",
     MFA_SETUP_REQUIRED: "/login/mfa/setup",
+    TWO_FACTOR_CHALLENGE: "/login/2fa",
     VERIFY_EMAIL: "/verify-email",
   },
   SETTINGS: {

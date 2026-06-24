@@ -32,7 +32,7 @@ export class TrashCleanupService {
 
       for (const workspace of workspaces) {
         const retentionDays =
-          workspace.trashRetentionDays ?? DEFAULT_RETENTION_DAYS;
+          Number(workspace.trashRetentionDays ?? DEFAULT_RETENTION_DAYS);
 
         const retentionDate = new Date();
         retentionDate.setDate(retentionDate.getDate() - retentionDays);

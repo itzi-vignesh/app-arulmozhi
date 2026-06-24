@@ -28,6 +28,9 @@ export const auditEventLabels: Record<string, string> = {
   "user.mfa_enabled": "Enabled MFA",
   "user.mfa_disabled": "Disabled MFA",
   "user.mfa_backup_code_generated": "Generated MFA backup codes",
+  "2FA_ENABLED": "Enabled 2FA",
+  "2FA_DISABLED": "Disabled 2FA",
+  "2FA_LOGIN_SUCCESS": "2FA Login Success",
 
   "api_key.created": "Created API key",
   "api_key.updated": "Updated API key",

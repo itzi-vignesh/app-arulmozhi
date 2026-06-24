@@ -44,4 +44,6 @@ export interface ILoginResponse {
   requiresMfaSetup?: boolean;
   mfaToken?: string;
   isMfaEnforced?: boolean;
+  requires2FA?: boolean;
+  userId?: string;
 }

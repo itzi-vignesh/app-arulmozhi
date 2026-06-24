@@ -25,6 +25,7 @@ export interface IPage {
   deletedBy: IDeletedBy;
   contributors?: IContributor[];
   space: Partial<ISpace>;
+  status?: "DRAFT" | "PENDING_REVIEW" | "APPROVED" | "REJECTED";
   permissions?: {
     canEdit: boolean;
     hasRestriction: boolean;

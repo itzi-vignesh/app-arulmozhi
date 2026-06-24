@@ -11,13 +11,14 @@ import { useTranslation } from "react-i18next";
 import React from "react";
 import { EmptyState } from "@/components/ui/empty-state.tsx";
 import { IconAlertTriangle, IconFileOff } from "@tabler/icons-react";
-import { Button } from "@mantine/core";
+import { Button, Alert, Group, Text } from "@mantine/core";
 import { Link } from "react-router-dom";
 import { ErrorBoundary } from "react-error-boundary";
 import { BaseView } from "@/ee/base/components/base-view";
 import { useHasFeature } from "@/ee/hooks/use-feature";
 import { Feature } from "@/ee/features";
 import { getPageTitle } from "@/features/page/page.utils";
+import { useSubmitForReviewMutation } from "@/features/page/queries/page-approval-query";
 const MemoizedFullEditor = React.memo(FullEditor);
 const MemoizedTitleEditor = React.memo(TitleEditor);
 const MemoizedPageHeader = React.memo(PageHeader);
@@ -63,6 +64,8 @@ function PageContent({ pageSlug }: { pageSlug: string | undefined }) {
   const canComment =
     canEdit ||
     (space?.settings?.comments?.allowViewerComments === true);
+
+  const submitForReviewMutation = useSubmitForReviewMutation();
 
   if (isLoading) {
     return <></>;
@@ -164,6 +167,52 @@ function PageContent({ pageSlug }: { pageSlug: string | undefined }) {
         </Helmet>
 
         <MemoizedPageHeader readOnly={!canEdit} />
+
+        {page.status === "DRAFT" && (
+          <Alert color="blue" title={t("Draft Page")} p="md" mb="md" mx={24}>
+            <Group justify="space-between">
+              <Text size="sm">
+                {t("This page is currently a draft. Submit it for review to request manager approval.")}
+              </Text>
+              {canEdit && (
+                <Button
+                  size="xs"
+                  onClick={() => submitForReviewMutation.mutate({ pageId: page.id })}
+                  loading={submitForReviewMutation.isPending}
+                >
+                  {t("Submit for Review")}
+                </Button>
+              )}
+            </Group>
+          </Alert>
+        )}
+
+        {page.status === "PENDING_REVIEW" && (
+          <Alert color="orange" title={t("Pending Review")} p="md" mb="md" mx={24}>
+            <Text size="sm">
+              {t("This page is pending manager approval before it can be finalized.")}
+            </Text>
+          </Alert>
+        )}
+
+        {page.status === "REJECTED" && (
+          <Alert color="red" title={t("Review Rejected")} p="md" mb="md" mx={24}>
+            <Group justify="space-between">
+              <Text size="sm">
+                {t("This page was rejected during the review workflow. You can modify and resubmit it.")}
+              </Text>
+              {canEdit && (
+                <Button
+                  size="xs"
+                  onClick={() => submitForReviewMutation.mutate({ pageId: page.id })}
+                  loading={submitForReviewMutation.isPending}
+                >
+                  {t("Resubmit for Review")}
+                </Button>
+              )}
+            </Group>
+          </Alert>
+        )}
 
         <MemoizedFullEditor
           key={page.id}

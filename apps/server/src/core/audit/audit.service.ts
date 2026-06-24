@@ -7,6 +7,7 @@ import {
   AuditContext,
   AUDIT_CONTEXT_KEY,
 } from '../../common/middlewares/audit-context.middleware';
+import { PaginationOptions } from '@docmost/db/pagination/pagination-options';
 
 @Injectable()
 export class AuditService {
@@ -14,6 +15,10 @@ export class AuditService {
     private readonly auditRepository: AuditRepository,
     private readonly cls: ClsService,
   ) {}
+
+  async getAuditLogsPaginated(workspaceId: string, pagination: PaginationOptions) {
+    return this.auditRepository.findPaginated(workspaceId, pagination);
+  }
 
   async createAuditEntry(data: InsertableAuditLog): Promise<AuditLog> {
     return this.auditRepository.create(data);

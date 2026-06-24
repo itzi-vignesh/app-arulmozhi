@@ -105,6 +105,12 @@ const groupedData: DataGroup[] = [
         feature: Feature.PAGE_VERIFICATION,
       },
       {
+        label: "Page approvals",
+        icon: IconShieldCheck,
+        path: "/settings/approvals",
+        role: "admin",
+      },
+      {
         label: "API management",
         icon: IconKey,
         path: "/settings/api-keys",

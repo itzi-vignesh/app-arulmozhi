@@ -43,6 +43,7 @@ export class PageRepo {
     'updatedAt',
     'deletedAt',
     'contributorIds',
+    'status',
   ];
 
   async findById(

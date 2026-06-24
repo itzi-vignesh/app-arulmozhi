@@ -96,6 +96,10 @@ export class AuthService {
       metadata: { source: 'password' },
     });
 
+    if (user.is2faEnabled) {
+      return { requires2FA: true, userId: user.id };
+    }
+
     const token = await this.sessionService.createSessionAndToken(user);
 
     await this.coreAuditService.logLogin(user.id, workspaceId);

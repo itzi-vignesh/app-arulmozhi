@@ -40,6 +40,7 @@ import {
   Watchers,
   Audit as _Audit,
   AuditLogs,
+  PageApprovals,
   Templates,
 } from './db';
 import { PageEmbeddings } from '@docmost/db/types/embeddings.types';
@@ -223,6 +224,11 @@ export type UpdatablePagePermission = Updateable<Omit<_PagePermissions, 'id'>>;
 export type PageVerification = Selectable<_PageVerifications>;
 export type InsertablePageVerification = Insertable<_PageVerifications>;
 export type UpdatablePageVerification = Updateable<Omit<_PageVerifications, 'id'>>;
+
+// Page Approval
+export type PageApproval = Selectable<PageApprovals>;
+export type InsertablePageApproval = Insertable<PageApprovals>;
+export type UpdatablePageApproval = Updateable<Omit<PageApprovals, 'id'>>;
 
 // Page Verifier
 export type PageVerifier = Selectable<_PageVerifiers>;

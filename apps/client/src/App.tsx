@@ -47,6 +47,8 @@ import FavoritesPage from "@/pages/favorites/favorites-page";
 import AiChat from "@/ee/ai-chat/pages/ai-chat.tsx";
 import VerifyEmail from "@/ee/pages/verify-email.tsx";
 import LabelPage from "@/pages/label/label-page";
+import TwoFactorChallengePage from "@/pages/auth/two-factor-challenge";
+import PageApprovalsDashboard from "@/pages/settings/workspace/page-approvals-dashboard";
 
 export default function App() {
   const { t } = useTranslation();
@@ -63,6 +65,7 @@ export default function App() {
         <Route path={"/password-reset"} element={<PasswordReset />} />
         <Route path={"/login/mfa"} element={<MfaChallengePage />} />
         <Route path={"/login/mfa/setup"} element={<MfaSetupRequiredPage />} />
+        <Route path={"/login/2fa"} element={<TwoFactorChallengePage />} />
 
         {!isCloud() && (
           <Route path={"/setup/register"} element={<SetupWorkspace />} />
@@ -128,6 +131,7 @@ export default function App() {
             <Route path={"ai/mcp"} element={<AiSettings />} />
             <Route path={"audit"} element={<AuditLogs />} />
             <Route path={"verifications"} element={<VerifiedPages />} />
+            <Route path={"approvals"} element={<PageApprovalsDashboard />} />
             {!isCloud() && <Route path={"license"} element={<License />} />}
             {isCloud() && <Route path={"billing"} element={<Billing />} />}
           </Route>

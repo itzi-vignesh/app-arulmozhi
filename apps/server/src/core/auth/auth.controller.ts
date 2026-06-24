@@ -100,8 +100,11 @@ export class AuthController {
       }
     }
 
-    const authToken = await this.authService.login(loginInput, workspace.id);
-    this.setAuthCookie(res, authToken);
+    const loginResult = await this.authService.login(loginInput, workspace.id);
+    if (typeof loginResult === 'object' && loginResult.requires2FA) {
+      return loginResult;
+    }
+    this.setAuthCookie(res, loginResult as string);
   }
 
   @UseGuards(SetupGuard)

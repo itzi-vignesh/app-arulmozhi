@@ -36,6 +36,7 @@ export class UserRepo {
     'updatedAt',
     'deletedAt',
     'hasGeneratedPassword',
+    'is2faEnabled',
   ];
 
   async findById(

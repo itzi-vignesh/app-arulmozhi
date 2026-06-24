@@ -52,3 +52,19 @@ export async function getCollabToken(): Promise<ICollabToken> {
   return req.data;
 }
 
+export async function generate2FaSecret(): Promise<{ secret: string; otpauthUrl: string }> {
+  const req = await api.post<{ secret: string; otpauthUrl: string }>("/auth/2fa/generate");
+  return req.data;
+}
+
+export async function enable2FA(data: { token: string }): Promise<{ success: boolean }> {
+  const req = await api.post<{ success: boolean }>("/auth/2fa/enable", data);
+  return req.data;
+}
+
+export async function verify2FaLogin(data: { userId: string; token: string }): Promise<{ success: boolean }> {
+  const req = await api.post<{ success: boolean }>("/auth/2fa/verify", data);
+  return req.data;
+}
+
+

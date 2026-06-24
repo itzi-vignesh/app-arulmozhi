@@ -5,7 +5,7 @@ import { IPagination } from "@/lib/types";
 export async function getAuditLogs(
   params?: IAuditLogParams,
 ): Promise<IPagination<IAuditLog>> {
-  const req = await api.post("/audit", { ...params });
+  const req = await api.post("/audit-logs", { ...params });
   return req.data;
 }
 

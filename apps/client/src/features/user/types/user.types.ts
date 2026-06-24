@@ -27,6 +27,7 @@ export interface IUser {
   notificationCommentCreated: boolean; // used for update
   notificationCommentResolved: boolean; // used for update
   hasGeneratedPassword?: boolean;
+  is2faEnabled?: boolean;
 }
 
 export interface ICurrentUser {

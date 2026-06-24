@@ -1,7 +1,16 @@
 import { Global, Logger, Module, OnApplicationBootstrap } from '@nestjs/common';
 import { InjectKysely, KyselyModule } from 'nestjs-kysely';
 import { EnvironmentService } from '../integrations/environment/environment.service';
-import { CamelCasePlugin, LogEvent, sql } from 'kysely';
+import {
+  CamelCasePlugin,
+  LogEvent,
+  sql,
+  KyselyPlugin,
+  PluginTransformQueryArgs,
+  PluginTransformResultArgs,
+  QueryResult,
+  RootOperationNode,
+} from 'kysely';
 import { GroupRepo } from '@docmost/db/repos/group/group.repo';
 import { WorkspaceRepo } from '@docmost/db/repos/workspace/workspace.repo';
 import { UserRepo } from '@docmost/db/repos/user/user.repo';
@@ -32,6 +41,61 @@ import { PostgresJSDialect } from 'kysely-postgres-js';
 import * as postgres from 'postgres';
 import { normalizePostgresUrl } from '../common/helpers';
 
+function renameIs2faEnabled(obj: any): any {
+  if (!obj || typeof obj !== 'object') {
+    return obj;
+  }
+  if (obj instanceof Date || Buffer.isBuffer(obj)) {
+    return obj;
+  }
+  if (Array.isArray(obj)) {
+    return obj.map(renameIs2faEnabled);
+  }
+  const newObj: any = {};
+  for (const key of Object.keys(obj)) {
+    let value = obj[key];
+    if (key === 'name' && value === 'is2fa_enabled') {
+      value = 'is_2fa_enabled';
+    } else {
+      value = renameIs2faEnabled(value);
+    }
+    newObj[key] = value;
+  }
+  return newObj;
+}
+
+export class MfaCamelCasePlugin implements KyselyPlugin {
+  private readonly delegate = new CamelCasePlugin();
+
+  transformQuery(args: PluginTransformQueryArgs): RootOperationNode {
+    const node = this.delegate.transformQuery(args);
+    return renameIs2faEnabled(node);
+  }
+
+  async transformResult(
+    args: PluginTransformResultArgs,
+  ): Promise<QueryResult<any>> {
+    const rows = args.result.rows.map((row) => {
+      if (row && 'is_2fa_enabled' in row) {
+        const { is_2fa_enabled, ...rest } = row;
+        return {
+          ...rest,
+          is2fa_enabled: is_2fa_enabled,
+        };
+      }
+      return row;
+    });
+
+    return this.delegate.transformResult({
+      ...args,
+      result: {
+        ...args.result,
+        rows,
+      },
+    });
+  }
+}
+
 @Global()
 @Module({
   imports: [
@@ -56,7 +120,7 @@ import { normalizePostgresUrl } from '../common/helpers';
             },
           ),
         }),
-        plugins: [new CamelCasePlugin()],
+        plugins: [new MfaCamelCasePlugin()],
         log: (event: LogEvent) => {
           if (environmentService.getNodeEnv() !== 'development') return;
           const logger = new Logger(DatabaseModule.name);

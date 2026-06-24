@@ -43,7 +43,9 @@ export default function useAuth() {
       setIsLoading(false);
 
       // Check if MFA is required
-      if (response?.userHasMfa) {
+      if (response?.requires2FA) {
+        navigate(`${APP_ROUTE.AUTH.TWO_FACTOR_CHALLENGE}?userId=${response.userId}` + (window.location.search ? `&${window.location.search.slice(1)}` : ""));
+      } else if (response?.userHasMfa) {
         navigate(APP_ROUTE.AUTH.MFA_CHALLENGE + window.location.search);
       } else if (response?.requiresMfaSetup) {
         navigate(APP_ROUTE.AUTH.MFA_SETUP_REQUIRED + window.location.search);
