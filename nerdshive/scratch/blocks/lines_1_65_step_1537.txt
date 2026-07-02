@@ -1,0 +1,52 @@
+# Implementation Plan - NerdShive Pricing Restructure
+
+We will redesign the pricing system to dynamically load and manage pricing configurations from the backend. We will define two plan categories (`customer` and `corporate`), store features dynamically as JSON, implement role-based endpoints, and update dashboards to fetch plans from the API.
+
+## Proposed Changes
+
+### Database & Models
+
+#### [MODIFY] [backend/app/models/business.py](file:///e:/1/backend/app/models/business.py)
+* Add the new `PricingPlan` model with columns: `id`, `category`, `plan_name`, `price`, `billing_type`, `features_json`, `is_active`, `created_at`, `updated_at`.
+* Store features as a PostgreSQL native `JSON` array of strings.
+
+#### [NEW] [backend/app/schemas/pricing.py](file:///e:/1/backend/app/schemas/pricing.py)
+* Define validation schemas: `PricingPlanBase`, `PricingPlanCreate`, `PricingPlanUpdate`, and `PricingPlanResponse`.
+
+#### [NEW] [backend/app/api/v1/endpoints/pricing.py](file:///e:/1/backend/app/api/v1/endpoints/pricing.py)
+Create role-based endpoints:
+* `GET /api/v1/pricing/customer` (Public/Customer): Returns active customer plans.
+* `GET /api/v1/pricing/corporate` (Company Admin): Returns active corporate plans.
+* `GET /api/v1/admin/pricing/customer` (Admin/Superuser): Returns all customer plans.
+* `GET /api/v1/superuser/pricing` (Superuser): Returns all plans (both customer and corporate).
+* `PUT /api/v1/superuser/pricing/{id}` (Superuser): Updates any pr
+#### [MODIFY] [src/pages/SuperuserDashboard.tsx](file:///e:/1/src/pages/SuperuserDashboard.tsx)
+* Refactor the Pricing tab to show two sub-tabs: **Customer Plans** and **Corporate Plans**.
+* Superuser can edit plan name, price, billing type, features (add/remove features via list editing UI), and enable/disable states for both categories.
+* Bind actions to `PUT /superuser/pricing/{id}`.
+
+#### [MODIFY] [src/pages/AdminDashboard.tsx](file:///e:/1/src/pages/AdminDashboard.tsx)
+* Refactor Pricing section to display both Customer and Corporate Plans.
+* Allow edits ONLY to Customer Plans (routing through `PUT /admin/pricing/customer/{id}`).
+* Make Corporate Plans read-only (disable edit/delete triggers, show a badge or warning indicating read-only access).
+
+#### [MODIFY] [src/pages/CorporateDashboard.tsx](file:///e:/1/src/pages/CorporateDashboard.tsx)
+* Fetch corporate plans from `/pricing/corporate` and dynamically render the **Monthly Team Plan** in the Plans tab.
+* Remove all hardcoded pricing details.
+
+#### [MODIFY] [src/pages/Dashboard.tsx](file:///e:/1/src/pages/Dashboard.tsx) (and/or Customer Pricing component)
+* Fetch customer plans from `/pricing/customer` and dynamically render the **Hot Desk**, **Weekly Pass**, and **Monthly Single** plans.
+* Remove all hardcoded pricing card details.
+
+---
+
+## Verification Plan
+
+### Automated Tests
+1. Verify endpoint routing and auth validations using a python script.
+2. Confirm the Alembic migration ran and created `pricing_plans` table.
+
+### Manual Verification
+1. Log in as Superuser and modify pricing or features, confirm change updates immediately on Customer and Corporate screens.
+2. Log in as Admin and try editing a Corporate plan, confirm UI blocks and backend rejects with `403 Forbidden`.
+3. Check and confirm no hardcoded pricing strings exist in UI source code.

@@ -1,0 +1,60 @@
+  };
+
+  return (
+    <AuthGuard requiredRole="company_admin" requireApproval={true}>
+      <div className="min-h-screen bg-gradient-to-br from-background to-secondary">
+        {/* Header */}
+        <header className="bg-card shadow-card border-b">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex justify-between items-center py-4">
+              <div className="flex items-center space-x-4">
+                <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center shadow-card">
+                  <Building className="w-6 h-6 text-primary" />
+                </div>
+                <div>
+                  <h1 className="text-2xl font-bold text-foreground">Corporate Dashboard</h1>
+                  <p className="text-sm text-muted-foreground">Manage your organization's workspace</p>
+                </div>
+              </div>
+              <div className="flex items-center space-x-2">
+                <Button onClick={handleLogout} variant="outline" size="sm" className="text-muted-foreground">
+                 <LogOut className="w-4 h-4 mr-2" />
+                 Logout
+               </Button>
+              </div>
+            </div>
+          </div>
+        </header>
+
+        {/* Main Content */}
+        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <Tabs defaultValue="overview" className="space-y-6">
+            <TabsList className="gri
+                                   
+                                   {q.response && (
+                                     <div className="bg-card p-3 rounded border">
+                                       <p className="text-sm font-semibold mb-1">Response:</p>
+                                       <p className="text-sm">{q.response}</p>
+                                     </div>
+                                   )}
+                                 </CardContent>
+                               </Card>
+                             ))}
+                           </div>
+                         )}
+                       </div>
+
+                       <div>
+                         <h3 className="font-semibold text-lg border-b pb-2 mb-4">Notifications</h3>
+                         {notifications.length === 0 ? (
+                           <div className="text-center py-8 text-muted-foreground">
+                              <Bell className="w-8 h-8 mx-auto mb-2 opacity-50" />
+                              <p>No new notifications.</p>
+                           </div>
+                         ) : (
+                           <div className="space-y-4">
+                             {notifications.map((n: any) => (
+                               <Card key={n.id} className={n.is_read ? "bg-muted/30" : "bg-card border-primary/50"}>
+                                 <CardContent className="p-4">
+                                   <div className="flex justify-between items-start mb-1">
+                                     <p className="font-semibold text-sm">{n.title}</p>

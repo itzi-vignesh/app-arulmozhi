@@ -1,0 +1,182 @@
+components\BulkEnrollmentTab.tsx:177 - GET "/auth/session"
+components\CheckInApprovalTab.tsx:59 - POST `/rpc/${ '
+components\CheckInApprovalTab.tsx:62 - POST `/rpc/${ '
+components\CheckInApprovalTab.tsx:65 - GET "/resource"
+components\CheckInApprovalTab.tsx:77 - GET "/resource"
+components\CheckInApprovalTab.tsx:81 - GET "/resource"
+components\CheckInApprovalTab.tsx:111 - GET '/auth/session'
+components\CheckInApprovalTab.tsx:117 - PUT '/checkins'
+components\CheckInApprovalTab.tsx:154 - DELETE '/checkins'
+components\CheckInOutTab.tsx:84 - GET "/auth/session"
+components\CheckInOutTab.tsx:87 - GET "/resource"
+components\CheckInOutTab.tsx:92 - POST '/checkins'
+components\CheckInOutTab.tsx:128 - PUT '/checkins'
+components\PaymentVerificationTab.tsx:56 - GET "/resource"
+components\PaymentVerificationTab.tsx:68 - GET "/resource"
+components\PaymentVerificationTab.tsx:72 - GET "/resource"
+components\PaymentVerificationTab.tsx:106 - POST `/rpc/${ '
+components\PaymentVerificationTab.tsx:147 - PUT '/checkins/'
+components\ui\auth-guard.tsx:22 - GET "/users/me"
+components\ui\auth-guard.tsx:35 - POST `/rpc/is_superuser`
+components\ui\auth-guard.tsx:43 - POST `/rpc/is_admin`
+components\ui\auth-guard.tsx:44 - POST `/rpc/is_superuser`
+components\ui\auth-guard.tsx:58 - POST `/rpc/is_superuser`
+components\ui\auth-guard.tsx:59 - POST `/rpc/is_admin`
+components\ui\auth-guard.tsx:76 - POST "/auth/logout"
+components\ui\forgot-password-modal.tsx:33 - POST '/auth/password-recovery'
+components\ui\image-modal.tsx:33 - GET `/storage/${bucket}/${path}`
+components\ui\notification-bell.tsx:29 - GET "/auth/session"
+components\ui\notification-bell.tsx:35 - GET "/resource"
+components\ui\notification-bell.tsx:53 - PUT '/notifications'
+components\ui\notification-bell.tsx:72 - GET "/auth/session"
+components\ui\notification-bell.tsx:78 - PUT '/notifications'
+pages\AdminDashboard.tsx:194 - GET "/auth/session"
+pages\AdminDashboard.tsx:200 - POST `/rpc/${ '
+pages\AdminDashboard.tsx:205 - GET "/users/me"
+pages\AdminDashboard.tsx:208 - PUT `/admin/users/${ user.auth_id }`
+pages\AdminDashboard.tsx:813 - GET "/auth/session"
+pages\AdminDashboard.tsx:819 - GET "/resource"
+pages\AdminDashboard.tsx:837 - GET "/auth/session"
+pages\AdminDashboard.tsx:843 - GET "/resource"
+pages\AdminDashboard.tsx:852 - GET `/admin/users/${ user.auth_id }`
+pages\AdminDashboard.tsx:893 - GET "/auth/session"
+pages\AdminDashboard.tsx:899 - GET "/queries"
+pages\AdminDashboard.tsx:916 - GET "/auth/session"
+pages\AdminDashboard.tsx:922 - GET "/usage_logs"
+pages\AdminDashboard.tsx:939 - GET "/auth/session"
+pages\AdminDashboard.tsx:945 - GET "/plans"
+pages\AdminDashboard.tsx:962 - GET "/content_sections"
+pages\AdminDashboard.tsx:974 - GET "/pricing"
+pages\AdminDashboard.tsx:993 - GET "/activity_logs"
+pages\AdminDashboard.tsx:1010 - GET "/resource"
+pages\AdminDashboard.tsx:1023 - GET "/resource"
+pages\AdminDashboard.tsx:1035 - GET "/checkins"
+pages\AdminDashboard.tsx:1049 - GET "/resource"
+pages\AdminDashboard.tsx:1063 - GET "/admin/tab_views/activity"
+pages\AdminDashboard.tsx:1077 - GET "/activity_logs"
+pages\AdminDashboard.tsx:1089 - POST `/rpc/${ '
+pages\AdminDashboard.tsx:1107 - GET "/auth/session"
+pages\AdminDashboard.tsx:1113 - GET "/resource"
+pages\AdminDashboard.tsx:1119 - GET "/resource"
+pages\AdminDashboard.tsx:1125 - PUT `/users/update`
+pages\AdminDashboard.tsx:1131 - PUT `/admin/users/${ userData.auth_id }`
+pages\AdminDashboard.tsx:1166 - GET "/auth/session"
+pages\AdminDashboard.tsx:1172 - GET "/resource"
+pages\AdminDashboard.tsx:1179 - POST `/activity_logs`
+pages\AdminDashboard.tsx:1183 - POST '/rpc/delete_user_completely'
+pages\AdminDashboard.tsx:1219 - PUT `/queries/update`
+pages\AdminDashboard.tsx:1258 - POST '/content_sections'
+pages\AdminDashboard.tsx:1296 - PUT `/pricing/update`
+pages\AdminDashboard.tsx:1325 - POST "/auth/logout"
+pages\Dashboard.tsx:133 - GET "/auth/session"
+pages\Dashboard.tsx:135 - GET "/resource"
+pages\Dashboard.tsx:146 - GET "/auth/session"
+pages\Dashboard.tsx:148 - GET "/resource"
+pages\Dashboard.tsx:152 - GET "/resource"
+pages\Dashboard.tsx:166 - GET "/auth/session"
+pages\Dashboard.tsx:168 - GET "/resource"
+pages\Dashboard.tsx:172 - GET '/updates'
+pages\Dashboard.tsx:187 - GET "/auth/session"
+pages\Dashboard.tsx:189 - GET "/resource"
+pages\Dashboard.tsx:193 - GET "/resource"
+pages\Dashboard.tsx:207 - GET '/content_sections'
+pages\Dashboard.tsx:218 - GET '/pricing'
+pages\Dashboard.tsx:229 - GET "/auth/session"
+pages\Dashboard.tsx:231 - GET "/resource"
+pages\Dashboard.tsx:235 - GET "/resource"
+pages\Dashboard.tsx:252 - GET "/auth/session"
+pages\Dashboard.tsx:254 - GET "/resource"
+pages\Dashboard.tsx:258 - GET "/resource"
+pages\Dashboard.tsx:305 - GET "/auth/session"
+pages\Dashboard.tsx:308 - GET "/resource"
+pages\Dashboard.tsx:330 - POST '/plans'
+pages\Dashboard.tsx:381 - GET "/auth/session"
+pages\Dashboard.tsx:384 - GET "/resource"
+pages\Dashboard.tsx:389 - POST '/queries'
+pages\Dashboard.tsx:419 - POST "/auth/logout"
+pages\Login.tsx:35 - POST "/auth/login"
+pages\Login.tsx:61 - POST `/rpc/${ '
+pages\Login.tsx:67 - POST `/rpc/${ '
+pages\Login.tsx:74 - GET "/resource"
+pages\Login.tsx:79 - GET '/auth/session'
+pages\Login.tsx:88 - POST "/auth/logout"
+pages\Login.tsx:99 - POST "/auth/logout"
+pages\Login.tsx:111 - POST "/auth/logout"
+pages\Login.tsx:122 - POST "/auth/logout"
+pages\Register.tsx:245 - POST "/auth/register"
+pages\Register.tsx:285 - POST `/storage/id-proofs/${fileName}`
+pages\Register.tsx:303 - POST `/storage/customer-photos/${photoFileName}`
+pages\Register.tsx:325 - GET '/auth/session'
+pages\Register.tsx:336 - POST '/users'
+pages\Register.tsx:368 - PUT '/users/me'
+pages\Register.tsx:384 - POST "/auth/logout"
+pages\ResetPassword.tsx:24 - GET "/auth/session"
+pages\ResetPassword.tsx:73 - PUT '/users/me'
+pages\ResetPassword.tsx:93 - POST "/auth/logout"
+pages\Settings.tsx:121 - GET "/auth/session"
+pages\Settings.tsx:128 - POST `/rpc/${ '
+pages\Settings.tsx:132 - GET "/resource"
+pages\Settings.tsx:174 - POST `/rpc/${ '
+pages\Settings.tsx:178 - GET "/resource"
+pages\Settings.tsx:221 - GET "/resource"
+pages\Settings.tsx:301 - GET "/auth/session"
+pages\Settings.tsx:306 - POST "/auth/login"
+pages\Settings.tsx:321 - PUT '/users/me'
+pages\Settings.tsx:355 - GET "/auth/session"
+pages\Settings.tsx:386 - PUT '/users/me'
+pages\Settings.tsx:391 - GET "/resource"
+pages\Settings.tsx:395 - PUT '/admins'
+pages\Settings.tsx:408 - GET "/resource"
+pages\Settings.tsx:412 - PUT '/superuser'
+pages\Settings.tsx:476 - GET "/auth/session"
+pages\Settings.tsx:488 - POST `/storage/id-proofs/${fileName}`
+pages\Settings.tsx:502 - POST `/storage/customer-photos/${photoFileName}`
+pages\Settings.tsx:512 - PUT '/users'
+pages\Settings.tsx:544 - GET `/storage/${bucket}/${path}`
+pages\SuperuserDashboard.tsx:215 - GET "/auth/session"
+pages\SuperuserDashboard.tsx:221 - POST `/rpc/${ '
+pages\SuperuserDashboard.tsx:229 - PUT `/admin/users/${ user.auth_id }`
+pages\SuperuserDashboard.tsx:261 - DELETE `/users`
+pages\SuperuserDashboard.tsx:894 - GET "/auth/session"
+pages\SuperuserDashboard.tsx:900 - GET "/admins"
+pages\SuperuserDashboard.tsx:917 - GET "/auth/session"
+pages\SuperuserDashboard.tsx:923 - GET "/resource"
+pages\SuperuserDashboard.tsx:941 - POST `/rpc/${ '
+pages\SuperuserDashboard.tsx:942 - POST `/rpc/${ '
+pages\SuperuserDashboard.tsx:944 - GET "/resource"
+pages\SuperuserDashboard.tsx:957 - GET "/resource"
+pages\SuperuserDashboard.tsx:965 - GET "/resource"
+pages\SuperuserDashboard.tsx:984 - GET "/resource"
+pages\SuperuserDashboard.tsx:998 - GET "/admin/tab_views/activity"
+pages\SuperuserDashboard.tsx:1012 - GET "/activity_logs"
+pages\SuperuserDashboard.tsx:1024 - POST `/rpc/${ '
+pages\SuperuserDashboard.tsx:1040 - GET "/auth/session"
+pages\SuperuserDashboard.tsx:1046 - GET "/resource"
+pages\SuperuserDashboard.tsx:1055 - GET `/admin/users/${ user.auth_id }`
+pages\SuperuserDashboard.tsx:1096 - GET "/auth/session"
+pages\SuperuserDashboard.tsx:1102 - GET "/queries"
+pages\SuperuserDashboard.tsx:1119 - GET "/auth/session"
+pages\SuperuserDashboard.tsx:1125 - GET "/usage_logs"
+pages\SuperuserDashboard.tsx:1142 - GET "/auth/session"
+pages\SuperuserDashboard.tsx:1148 - GET "/plans"
+pages\SuperuserDashboard.tsx:1165 - GET "/content_sections"
+pages\SuperuserDashboard.tsx:1177 - GET "/pricing"
+pages\SuperuserDashboard.tsx:1196 - GET "/activity_logs"
+pages\SuperuserDashboard.tsx:1218 - PUT `/pricing/update`
+pages\SuperuserDashboard.tsx:1268 - POST "/auth/register"
+pages\SuperuserDashboard.tsx:1290 - GET "/auth/session"
+pages\SuperuserDashboard.tsx:1293 - POST '/admins'
+pages\SuperuserDashboard.tsx:1309 - POST '/admins/invite'
+pages\SuperuserDashboard.tsx:1337 - DELETE `/admins`
+pages\SuperuserDashboard.tsx:1364 - GET "/auth/session"
+pages\SuperuserDashboard.tsx:1370 - GET "/resource"
+pages\SuperuserDashboard.tsx:1376 - GET "/resource"
+pages\SuperuserDashboard.tsx:1382 - PUT `/users/update`
+pages\SuperuserDashboard.tsx:1388 - PUT `/admin/users/${ userData.auth_id }`
+pages\SuperuserDashboard.tsx:1421 - GET "/auth/session"
+pages\SuperuserDashboard.tsx:1427 - GET "/resource"
+pages\SuperuserDashboard.tsx:1434 - POST `/activity_logs`
+pages\SuperuserDashboard.tsx:1438 - POST '/rpc/delete_user_completely'
+pages\SuperuserDashboard.tsx:1474 - PUT `/queries/update`
+pages\SuperuserDashboard.tsx:1513 - POST '/content_sections'
+pages\SuperuserDashboard.tsx:1541 - POST "/auth/logout"

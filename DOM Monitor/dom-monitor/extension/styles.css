@@ -1,0 +1,25 @@
+/* Webpage Injection Stylesheet for DOM Monitor picker overlays */
+
+#dom-monitor-highlight-overlay {
+  border: 2px dashed #00f2fe !important;
+  background-color: rgba(0, 242, 254, 0.15) !important;
+  box-shadow: 0 0 12px rgba(0, 242, 254, 0.4) !important;
+  pointer-events: none !important;
+  border-radius: 4px !important;
+  transition: all 0.06s ease-out !important;
+}
+
+#dom-monitor-toast-message {
+  animation: domMonitorSlideDown 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes domMonitorSlideDown {
+  0% {
+    transform: translate(-50%, -60px);
+    opacity: 0;
+  }
+  100% {
+    transform: translate(-50%, 0);
+    opacity: 1;
+  }
+}

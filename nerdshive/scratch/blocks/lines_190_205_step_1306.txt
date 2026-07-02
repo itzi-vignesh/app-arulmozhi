@@ -1,0 +1,16 @@
+  const handleDownloadCSV = () => {
+    const link = document.createElement('a');
+    link.href = '/api/v1/users/download-template?filename=employee_enrollment_template.csv';
+    link.download = 'employee_enrollment_template.csv';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  const openRequestSeatsModal = () => {
+    setRequestedSeatsInput(companyInfo?.seats_requested || 0);
+    setRequestSeatsModalOpen(true);
+  };
+
+  const submitSeatsRequest = async () => {
+    if (requestedSeatsInput <= 0) {

@@ -1,0 +1,51 @@
+    setRequestedSeatsInput(companyInfo?.seats_requested || 0);
+    setRequestSeatsModalOpen(true);
+  };
+
+  const submitSeatsRequest = async () => {
+    if (requestedSeatsInput <= 0) {
+      toast({ 
+        title: "Invalid seat number", 
+        description: "Seats must be greater than zero.", 
+        variant: "destructive" 
+      });
+      return;
+    }
+    setLoading(true);
+    try {
+      await corporateService.updateCompanyInfo({
+        ...companyInfo,
+        seats_requested: requestedSeatsInput
+      });
+      toast({ title: "Seats upgrade request submitted successfully." });
+      setRequestSeatsModalOpen(false);
+      fetchDashboardData();
+    } catch (error) {
+      toast({ title: "Request Failed", variant: "destructive" });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <AuthGuard requiredRole="company_admin" requireApproval={true}>
+      <div className="min-h-screen bg-gradient-to-br from-background to-secondary">
+        {/* Header */}
+        <header className="bg-card shadow-card border-b">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex justify-between items-center py-4">
+              <div className="flex items-center space-x-4">
+                <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center shadow-card">
+                  <Building className="w-6 h-6 text-primary" />
+                </div>
+                <div>
+                  <h1 className="text-2xl font-bold text-foreground">Corporate Dashboard</h1>
+                  <p className="text-sm text-muted-foreground">Manage your organization's workspace</p>
+                </div>
+              </div>
+              <div className="flex items-center space-x-2">
+                <Button onClick={handleLogout} variant="outline" size="sm" className="text-muted-foreground">
+                 <LogOut className="w-4 h-4 mr-2" />
+                 Logout
+               </Button>
+              </div>

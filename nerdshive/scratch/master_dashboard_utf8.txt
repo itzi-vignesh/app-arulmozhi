@@ -1,0 +1,784 @@
+﻿import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { corporateService, DashboardStats } from "@/services/corporateService";
+import { authService } from "@/services/authService";
+import { AuthGuard } from "@/components/ui/auth-guard";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Button } from "@/components/ui/button";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Badge } from "@/components/ui/badge";
+import { useToast } from "@/hooks/use-toast";
+import { Bell, LogOut, Users, Clock, CreditCard, MessageSquare, Building, Shield, Activity, Download, UploadCloud, Edit2, Settings } from "lucide-react";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog";
+import { EmployeeCsvUploader } from "@/components/EmployeeCsvUploader";
+
+export default function CorporateDashboard() {
+  const [stats, setStats] = useState<DashboardStats | null>(null);
+  const [employees, setEmployees] = useState<any[]>([]);
+  const [attendance, setAttendance] = useState<any[]>([]);
+  const [companyInfo, setCompanyInfo] = useState<any>(null);
+  const [loading, setLoading] = useState(false);
+  const [editInfoModalOpen, setEditInfoModalOpen] = useState(false);
+  const [enrollModalOpen, setEnrollModalOpen] = useState(false);
+  const [editData, setEditData] = useState<any>({});
+  const [requestSeatsModalOpen, setRequestSeatsModalOpen] = useState(false);
+  const [requestedSeatsInput, setRequestedSeatsInput] = useState(0);
+  
+  // Queries State
+  const [queries, setQueries] = useState<any[]>([]);
+  const [newQueryMessage, setNewQueryMessage] = useState("");
+  const [isSubmittingQuery, setIsSubmittingQuery] = useState(false);
+  const [notifications, setNotifications] = useState<any[]>([]);
+  
+  const { toast } = useToast();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    fetchDashboardData();
+  }, []);
+
+  const fetchDashboardData = async () => {
+    try {
+      const [statsResult, empsResult, attResult, infoResult] = await Promise.allSettled([
+        corporateService.getDashboardStats(),
+        corporateService.getEmployees(),
+        corporateService.getAttendance(),
+        corporateService.getCompanyInfo()
+      ]);
+
+      if (statsResult.status === 'fulfilled') setStats(statsResult.value);
+      if (empsResult.status === 'fulfilled') setEmployees(empsResult.value);
+      if (attResult.status === 'fulfilled') setAttendance(attResult.value);
+      if (infoResult.status === 'fulfilled') setCompanyInfo(infoResult.value);
+      
+      fetchQueries();
+    } catch (error) {
+      console.error("Error fetching dashboard data:", error);
+    }
+  };
+
+  const fetchQueries = async () => {
+    try {
+      const response = await corporateService.getDashboardStats(); // just a placeholder to use apiClient
+      // Actually use apiClient directly for queries since it's not in corporateService
+      const { apiClient } = await import('@/lib/apiClient');
+      const res = await apiClient.get('/queries/my');
+      setQueries(res.data);
+      
+      const notifRes = await apiClient.get('/notifications');
+      setNotifications(notifRes.data);
+    } catch (error) {
+      console.error("Error fetching queries:", error);
+    }
+  };
+
+  const submitQuery = async () => {
+    if (!newQueryMessage.trim()) return;
+    setIsSubmittingQuery(true);
+    try {
+      const { apiClient } = await import('@/lib/apiClient');
+      await apiClient.post('/queries', { message: newQueryMessage });
+      setNewQueryMessage("");
+      toast({ title: "Query Submitted Successfully" });
+      fetchQueries();
+    } catch (error) {
+      toast({ title: "Failed to submit query", variant: "destructive" });
+    } finally {
+      setIsSubmittingQuery(false);
+    }
+  };
+
+  const handleLogout = async () => {
+    try {
+      await authService.logout();
+      navigate("/login");
+    } catch (error) {
+      console.error("Error logging out:", error);
+      navigate("/login");
+    }
+  };
+
+  const handleToggleStatus = async (id: string, currentStatus: boolean) => {
+    setLoading(true);
+    try {
+      await corporateService.toggleEmployeeStatus(id, !currentStatus);
+      toast({ title: "Status Updated" });
+      fetchDashboardData();
+    } catch (error) {
+      toast({ title: "Update Failed", variant: "destructive" });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const requestBiometricAccess = async () => {
+    if (!companyInfo?.id) return;
+    setLoading(true);
+    try {
+      const { apiClient } = await import('@/lib/apiClient');
+      await apiClient.post(`/companies/${companyInfo.id}/biometric-request`);
+      toast({ title: "Biometric request submitted successfully." });
+      fetchDashboardData();
+    } catch (error) {
+      toast({ title: "Failed to submit biometric request", variant: "destructive" });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const getSeatRemainingColor = () => {
+    if (!stats) return "text-foreground";
+    const { seats_requested, total_employees } = stats;
+    const remaining = Math.max(0, seats_requested - total_employees);
+    if (remaining === 0) return "text-red-500";
+    const percentage = remaining / seats_requested;
+    if (percentage <= 0.2) return "text-orange-500";
+    return "text-green-500";
+  };
+
+  const openEditModal = () => {
+    setEditData({
+      company_name: companyInfo?.company_name || '',
+      company_website: companyInfo?.company_website || '',
+      company_email: companyInfo?.company_email || '',
+      industry_type: companyInfo?.industry_type || '',
+      admin_full_name: companyInfo?.admin_full_name || '',
+      admin_mobile: companyInfo?.admin_mobile || '',
+      address: companyInfo?.address || '',
+      city: companyInfo?.city || '',
+      state: companyInfo?.state || '',
+      pincode: companyInfo?.pincode || '',
+      gst_number: companyInfo?.gst_number || '',
+      max_employee_capacity: companyInfo?.max_employee_capacity || 0,
+      seats_requested: companyInfo?.seats_requested || 0,
+      biometric_required: companyInfo?.biometric_required || false,
+    });
+    setEditInfoModalOpen(true);
+  };
+
+  const saveCompanyInfo = async () => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(editData.company_email)) {
+      toast({ title: "Invalid email format.", variant: "destructive" });
+      return;
+    }
+    if (!editData.admin_mobile || editData.admin_mobile.length < 10) {
+      toast({ title: "Mobile number must be at least 10 characters.", variant: "destructive" });
+      return;
+    }
+    if (!editData.company_name || !editData.admin_full_name || !editData.company_email) {
+      toast({ title: "Required fields are missing.", variant: "destructive" });
+      return;
+    }
+
+    setLoading(true);
+    try {
+      await corporateService.updateCompanyInfo(editData);
+      toast({ title: "Company information updated successfully." });
+      setEditInfoModalOpen(false);
+      fetchDashboardData();
+    } catch (error) {
+      toast({ title: "Update Failed", variant: "destructive" });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDownloadCSV = async () => {
+    try {
+      const { apiClient } = await import('@/lib/apiClient');
+      const response = await apiClient.get('/users/download-template?filename=employee_enrollment_template.csv', {
+        responseType: 'blob'
+      });
+      const blob = new Blob([response.data], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "employee_enrollment_template.csv";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      setTimeout(() => {
+        URL.revokeObjectURL(url);
+      }, 100);
+
+      toast({
+        title: "Template Downloaded",
+        description: "Standardized employee template has been downloaded.",
+      });
+    } catch (error) {
+      console.error("Error downloading template", error);
+      toast({
+        title: "Download Failed",
+        description: "Could not download the standardized CSV template.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const openRequestSeatsModal = () => {
+    setRequestedSeatsInput(companyInfo?.seats_requested || 0);
+    setRequestSeatsModalOpen(true);
+  };
+
+  const submitSeatsRequest = async () => {
+    if (requestedSeatsInput <= 0) {
+      toast({ 
+        title: "Invalid seat number", 
+        description: "Seats must be greater than zero.", 
+        variant: "destructive" 
+      });
+      return;
+    }
+    setLoading(true);
+    try {
+      await corporateService.updateCompanyInfo({
+        ...companyInfo,
+        seats_requested: requestedSeatsInput
+      });
+      toast({ title: "Seats upgrade request submitted successfully." });
+      setRequestSeatsModalOpen(false);
+      fetchDashboardData();
+    } catch (error) {
+      toast({ title: "Request Failed", variant: "destructive" });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <AuthGuard requiredRole="company_admin" requireApproval={true}>
+      <div className="min-h-screen bg-gradient-to-br from-background to-secondary">
+        {/* Header */}
+        <header className="bg-card shadow-card border-b">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex justify-between items-center py-4">
+              <div className="flex items-center space-x-4">
+                <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center shadow-card">
+                  <Building className="w-6 h-6 text-primary" />
+                </div>
+                <div>
+                  <h1 className="text-2xl font-bold text-foreground">Corporate Dashboard</h1>
+                  <p className="text-sm text-muted-foreground">Manage your organization's workspace</p>
+                </div>
+              </div>
+              <div className="flex items-center space-x-2">
+                <Button onClick={handleLogout} variant="outline" size="sm" className="text-muted-foreground">
+                 <LogOut className="w-4 h-4 mr-2" />
+                 Logout
+               </Button>
+              </div>
+            </div>
+          </div>
+        </header>
+
+        {/* Main Content */}
+        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <Tabs defaultValue="overview" className="space-y-6">
+            <TabsList className="grid w-full grid-cols-6">
+              <TabsTrigger value="overview"><Activity className="w-4 h-4 mr-2 hidden sm:block" />Overview</TabsTrigger>
+              <TabsTrigger value="employees"><Users className="w-4 h-4 mr-2 hidden sm:block" />Employees</TabsTrigger>
+              <TabsTrigger value="attendance"><Clock className="w-4 h-4 mr-2 hidden sm:block" />Attendance</TabsTrigger>
+              <TabsTrigger value="plans" className="hidden md:flex"><CreditCard className="w-4 h-4 mr-2" />Plans</TabsTrigger>
+              <TabsTrigger value="queries" className="hidden md:flex"><MessageSquare className="w-4 h-4 mr-2" />Queries</TabsTrigger>
+              <TabsTrigger value="company-info" className="hidden md:flex"><Building className="w-4 h-4 mr-2" />Company Info</TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="overview">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <Card>
+                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-medium">Total Employees</CardTitle>
+                    <Users className="h-4 w-4 text-muted-foreground" />
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-2xl font-bold">{stats?.total_employees || 0}</div>
+                    <p className="text-xs text-muted-foreground">
+                      {stats?.active_employees || 0} active
+                    </p>
+                  </CardContent>
+                </Card>
+                <Card>
+                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-medium">Checked In Today</CardTitle>
+                    <Clock className="h-4 w-4 text-muted-foreground" />
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-2xl font-bold">{stats?.checked_in_today || 0}</div>
+                    <p className="text-xs text-muted-foreground">
+                      Employees currently in workspace
+                    </p>
+                  </CardContent>
+                </Card>
+                <Card>
+                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-medium">Seats Available</CardTitle>
+                    <Shield className="h-4 w-4 text-muted-foreground" />
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-2xl font-bold">{stats?.seats_available || 0}</div>
+                    <p className="text-xs text-muted-foreground">
+                      Out of {stats?.seats_requested || 0} total requested
+                    </p>
+                  </CardContent>
+                </Card>
+              </div>
+            </TabsContent>
+
+            <TabsContent value="employees">
+              <Card className="mb-6">
+                <CardHeader>
+                  <CardTitle>Seat Usage Summary</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-3 gap-4 text-center divide-x">
+                    <div>
+                      <p className="text-sm text-muted-foreground">Seats Requested</p>
+                      <p className="text-2xl font-bold">{stats?.seats_requested || 0}</p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-muted-foreground">Employees Added</p>
+                      <p className="text-2xl font-bold">{stats?.total_employees || 0}</p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-muted-foreground">Seats Remaining</p>
+                      <p className={`text-2xl font-bold ${getSeatRemainingColor()}`}>
+                        {stats ? Math.max(0, stats.seats_requested - stats.total_employees) : 0}
+                      </p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between">
+                  <div>
+                    <CardTitle>Employee Directory</CardTitle>
+                    <CardDescription>Manage your organization's employees and their access</CardDescription>
+                  </div>
+                  <div className="flex space-x-2">
+                    <Button variant="outline" className="flex items-center" onClick={handleDownloadCSV}>
+                      <Download className="w-4 h-4 mr-2" />
+                      Download CSV Format
+                    </Button>
+                    <Button onClick={() => setEnrollModalOpen(true)} className="flex items-center">
+                      <UploadCloud className="w-4 h-4 mr-2" />
+                      Enroll Employees
+                    </Button>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Name</TableHead>
+                        <TableHead>Email</TableHead>
+                        <TableHead>Department</TableHead>
+                        <TableHead>Status</TableHead>
+                        <TableHead>Actions</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {employees.map(emp => (
+                        <TableRow key={emp.id}>
+                          <TableCell className="font-medium">{emp.full_name}</TableCell>
+                          <TableCell>{emp.email}</TableCell>
+                          <TableCell>{emp.department || '-'}</TableCell>
+                          <TableCell>
+                            <Badge variant={emp.is_active ? "default" : "secondary"}>
+                              {emp.is_active ? "Active" : "Inactive"}
+                            </Badge>
+                          </TableCell>
+                          <TableCell>
+                            <Button 
+                              size="sm" 
+                              variant={emp.is_active ? "destructive" : "default"}
+                              onClick={() => handleToggleStatus(emp.id, emp.is_active)}
+                              disabled={loading}
+                            >
+                              {emp.is_active ? "Deactivate" : "Activate"}
+                            </Button>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+
+
+            <TabsContent value="attendance">
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between">
+                  <div>
+                    <CardTitle>Attendance Report</CardTitle>
+                    <CardDescription>Recent check-in activity for your employees</CardDescription>
+                  </div>
+                  <div>
+                    {companyInfo?.biometric_required ? (
+                      <Badge className="bg-green-500 hover:bg-green-600 text-white">Biometric Requested During Registration</Badge>
+                    ) : companyInfo?.biometric_requested ? (
+                      <Badge className="bg-blue-500 hover:bg-blue-600 text-white">Biometric Request Submitted</Badge>
+                    ) : (
+                      <Button onClick={requestBiometricAccess} disabled={loading}>
+                        Request Biometric Access
+                      </Button>
+                    )}
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Employee</TableHead>
+                        <TableHead>Department</TableHead>
+                        <TableHead>Check In</TableHead>
+                        <TableHead>Check Out</TableHead>
+                        <TableHead>Status</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {attendance.map(record => (
+                        <TableRow key={record.id}>
+                          <TableCell className="font-medium">{record.employee_name}</TableCell>
+                          <TableCell>{record.department || '-'}</TableCell>
+                          <TableCell>{new Date(record.checkin_time).toLocaleString()}</TableCell>
+                          <TableCell>{record.checkout_time ? new Date(record.checkout_time).toLocaleString() : '-'}</TableCell>
+                          <TableCell>
+                            <Badge variant={record.status === 'checked_in' ? 'default' : 'secondary'}>
+                              {record.status.replace('_', ' ')}
+                            </Badge>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </CardContent>
+              </Card>
+            </TabsContent>
+            
+            <TabsContent value="plans">
+               <Card>
+                 <CardHeader>
+                   <CardTitle>Corporate Plans</CardTitle>
+                   <CardDescription>View your current seat utilization and request upgrades</CardDescription>
+                 </CardHeader>
+                 <CardContent>
+                   <div className="p-4 bg-muted rounded-lg text-center">
+                     <p className="text-muted-foreground mb-4">You have {stats?.seats_available || 0} seats available out of {stats?.seats_requested || 0} requested.</p>
+                      <Button onClick={openRequestSeatsModal}>Request More Seats</Button>
+                   </div>
+                 </CardContent>
+               </Card>
+            </TabsContent>
+            
+            <TabsContent value="queries">
+               <Card>
+                 <CardHeader>
+                   <CardTitle>Company Queries</CardTitle>
+                   <CardDescription>Submit queries to the Nerdshive administration team</CardDescription>
+                 </CardHeader>
+                 <CardContent>
+                   <div className="space-y-6">
+                     <div className="flex flex-col space-y-2">
+                       <Label>New Query</Label>
+                       <div className="flex space-x-2">
+                         <Input 
+                           value={newQueryMessage} 
+                           onChange={(e) => setNewQueryMessage(e.target.value)} 
+                           placeholder="Type your question or issue here..." 
+                           className="flex-1"
+                         />
+                         <Button onClick={submitQuery} disabled={isSubmittingQuery}>
+                           {isSubmittingQuery ? "Submitting..." : "Submit Query"}
+                         </Button>
+                       </div>
+                     </div>
+                     
+                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                       <div>
+                         <h3 className="font-semibold text-lg border-b pb-2 mb-4">Query History</h3>
+                         {queries.length === 0 ? (
+                           <div className="text-center py-8 text-muted-foreground">
+                              <MessageSquare className="w-8 h-8 mx-auto mb-2 opacity-50" />
+                              <p>No queries found.</p>
+                           </div>
+                         ) : (
+                           <div className="space-y-4">
+                             {queries.map((q: any) => (
+                               <Card key={q.id} className="bg-muted/30">
+                                 <CardContent className="p-4">
+                                   <div className="flex justify-between items-start mb-2">
+                                     <p className="font-medium">{q.message}</p>
+                                     <Badge variant={q.status === 'resolved' ? 'default' : 'secondary'}>
+                                       {q.status}
+                                     </Badge>
+                                   </div>
+                                   <p className="text-xs text-muted-foreground mb-3">Submitted on {new Date(q.created_at).toLocaleString()}</p>
+                                   
+                                   {q.response && (
+                                     <div className="bg-card p-3 rounded border">
+                                       <p className="text-sm font-semibold mb-1">Response:</p>
+                                       <p className="text-sm">{q.response}</p>
+                                     </div>
+                                   )}
+                                 </CardContent>
+                               </Card>
+                             ))}
+                           </div>
+                         )}
+                       </div>
+
+                       <div>
+                         <h3 className="font-semibold text-lg border-b pb-2 mb-4">Notifications</h3>
+                         {notifications.length === 0 ? (
+                           <div className="text-center py-8 text-muted-foreground">
+                              <Bell className="w-8 h-8 mx-auto mb-2 opacity-50" />
+                              <p>No new notifications.</p>
+                           </div>
+                         ) : (
+                           <div className="space-y-4">
+                             {notifications.map((n: any) => (
+                               <Card key={n.id} className={n.is_read ? "bg-muted/30" : "bg-card border-primary/50"}>
+                                 <CardContent className="p-4">
+                                   <div className="flex justify-between items-start mb-1">
+                                     <p className="font-semibold text-sm">{n.title}</p>
+                                     {!n.is_read && <Badge variant="default" className="text-[10px] h-4">New</Badge>}
+                                   </div>
+                                   <p className="text-sm mb-2">{n.message}</p>
+                                   <p className="text-xs text-muted-foreground">{new Date(n.created_at).toLocaleString()}</p>
+                                 </CardContent>
+                               </Card>
+                             ))}
+                           </div>
+                         )}
+                       </div>
+                     </div>
+                   </div>
+                 </CardContent>
+               </Card>
+            </TabsContent>
+            
+            <TabsContent value="company-info">
+               <Card>
+                 <CardHeader className="flex flex-row items-center justify-between">
+                   <div>
+                     <CardTitle>Company Information</CardTitle>
+                     <CardDescription>View and manage your organization profile</CardDescription>
+                   </div>
+                   <Button variant="outline" onClick={openEditModal}><Edit2 className="w-4 h-4 mr-2" /> Edit Company Info</Button>
+                 </CardHeader>
+                 <CardContent className="space-y-6">
+                   {companyInfo ? (
+                     <>
+                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                       <div>
+                         <h3 className="font-semibold text-lg border-b pb-2 mb-4">Company Details</h3>
+                         <div className="space-y-3">
+                           <div><span className="text-muted-foreground text-sm">Company Name:</span> <p className="font-medium">{companyInfo.company_name}</p></div>
+                           <div><span className="text-muted-foreground text-sm">Website:</span> <p className="font-medium">{companyInfo.company_website || '-'}</p></div>
+                           <div><span className="text-muted-foreground text-sm">Company Email:</span> <p className="font-medium">{companyInfo.company_email}</p></div>
+                           <div><span className="text-muted-foreground text-sm">Industry:</span> <p className="font-medium">{companyInfo.industry_type || '-'}</p></div>
+                           <div><span className="text-muted-foreground text-sm">GST Number:</span> <p className="font-medium">{companyInfo.gst_number || '-'}</p></div>
+                         </div>
+                       </div>
+                       
+                       <div>
+                         <h3 className="font-semibold text-lg border-b pb-2 mb-4">Primary Contact</h3>
+                         <div className="space-y-3">
+                           <div><span className="text-muted-foreground text-sm">Name:</span> <p className="font-medium">{companyInfo.admin_full_name}</p></div>
+                           <div><span className="text-muted-foreground text-sm">Email:</span> <p className="font-medium">{companyInfo.company_email}</p></div>
+                           <div><span className="text-muted-foreground text-sm">Mobile:</span> <p className="font-medium">{companyInfo.admin_mobile}</p></div>
+                         </div>
+                       </div>
+                       
+                       <div>
+                         <h3 className="font-semibold text-lg border-b pb-2 mb-4">Address</h3>
+                         <div className="space-y-3">
+                           <div><span className="text-muted-foreground text-sm">Address:</span> <p className="font-medium">{companyInfo.address || '-'}</p></div>
+                           <div><span className="text-muted-foreground text-sm">City:</span> <p className="font-medium">{companyInfo.city || '-'}</p></div>
+                           <div><span className="text-muted-foreground text-sm">State:</span> <p className="font-medium">{companyInfo.state || '-'}</p></div>
+                           <div><span className="text-muted-foreground text-sm">Pincode:</span> <p className="font-medium">{companyInfo.pincode || '-'}</p></div>
+                         </div>
+                       </div>
+                       
+                       <div>
+                         <h3 className="font-semibold text-lg border-b pb-2 mb-4">Capacity & Status</h3>
+                         <div className="space-y-3">
+                           <div><span className="text-muted-foreground text-sm">Seats Requested:</span> <p className="font-medium">{companyInfo.seats_requested || 0}</p></div>
+                           <div><span className="text-muted-foreground text-sm">Employees Added:</span> <p className="font-medium">{companyInfo.employees_added || 0}</p></div>
+                           <div><span className="text-muted-foreground text-sm block mb-1">Seats Remaining:</span> <p className={`font-bold ${getSeatRemainingColor()}`}>{Math.max(0, (companyInfo.seats_requested || 0) - (companyInfo.employees_added || 0))}</p></div>
+                           <div>
+                             <span className="text-muted-foreground text-sm block mb-1">Approval Status:</span>
+                             <Badge variant={companyInfo.status === 'approved' ? 'default' : companyInfo.status === 'rejected' ? 'destructive' : 'secondary'}>
+                                {companyInfo.status.toUpperCase()}
+                             </Badge>
+                           </div>
+                           <div><span className="text-muted-foreground text-sm block mb-1">Approved By:</span> <p className="font-medium">{companyInfo.approved_by || 'Pending'}</p></div>
+                           <div><span className="text-muted-foreground text-sm block mb-1">Approved Date:</span> <p className="font-medium">{companyInfo.status === 'approved' ? new Date(companyInfo.updated_at).toLocaleDateString() : 'Pending'}</p></div>
+                         </div>
+                       </div>
+                     </div>
+                     </>
+                   ) : (
+                     <div className="text-center py-12 bg-muted/30 rounded-lg border border-dashed">
+                       <Building className="w-12 h-12 text-muted-foreground mx-auto mb-4 opacity-50" />
+                       <h3 className="text-lg font-medium">No company information found.</h3>
+                       <p className="text-sm text-muted-foreground mt-2">
+                         Your organization profile details are currently unavailable.
+                       </p>
+                     </div>
+                   )}
+                 </CardContent>
+               </Card>
+            </TabsContent>
+          </Tabs>
+        </main>
+
+        <Dialog open={editInfoModalOpen} onOpenChange={setEditInfoModalOpen}>
+          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>Edit Company Information</DialogTitle>
+            </DialogHeader>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 py-4">
+              <div className="space-y-2">
+                <Label>Company Name *</Label>
+                <Input value={editData.company_name} onChange={e => setEditData({...editData, company_name: e.target.value})} />
+              </div>
+              <div className="space-y-2">
+                <Label>Website</Label>
+                <Input value={editData.company_website} onChange={e => setEditData({...editData, company_website: e.target.value})} />
+              </div>
+              <div className="space-y-2">
+                <Label>Company Email *</Label>
+                <Input type="email" value={editData.company_email} onChange={e => setEditData({...editData, company_email: e.target.value})} />
+              </div>
+              <div className="space-y-2">
+                <Label>Industry</Label>
+                <Input value={editData.industry_type} onChange={e => setEditData({...editData, industry_type: e.target.value})} />
+              </div>
+              <div className="space-y-2">
+                <Label>Contact Person (Admin) *</Label>
+                <Input value={editData.admin_full_name} onChange={e => setEditData({...editData, admin_full_name: e.target.value})} />
+              </div>
+              <div className="space-y-2">
+                <Label>Mobile *</Label>
+                <Input value={editData.admin_mobile} onChange={e => setEditData({...editData, admin_mobile: e.target.value})} maxLength={15} />
+              </div>
+              <div className="space-y-2 md:col-span-2">
+                <Label>Address</Label>
+                <Input value={editData.address} onChange={e => setEditData({...editData, address: e.target.value})} />
+              </div>
+              <div className="space-y-2">
+                <Label>City</Label>
+                <Input value={editData.city} onChange={e => setEditData({...editData, city: e.target.value})} />
+              </div>
+              <div className="space-y-2">
+                <Label>State</Label>
+                <Input value={editData.state} onChange={e => setEditData({...editData, state: e.target.value})} />
+              </div>
+              <div className="space-y-2">
+                <Label>Pincode</Label>
+                <Input value={editData.pincode} onChange={e => setEditData({...editData, pincode: e.target.value})} />
+              </div>
+              <div className="space-y-2">
+                <Label>GST Number</Label>
+                <Input value={editData.gst_number} onChange={e => setEditData({...editData, gst_number: e.target.value})} />
+              </div>
+              <div className="space-y-2">
+                <Label>Maximum Seats Required</Label>
+                <Input type="number" value={editData.max_employee_capacity} onChange={e => setEditData({...editData, max_employee_capacity: parseInt(e.target.value) || 0})} />
+              </div>
+              <div className="space-y-2">
+                <Label>Seats Requested</Label>
+                <Input type="number" value={editData.seats_requested} onChange={e => setEditData({...editData, seats_requested: parseInt(e.target.value) || 0})} />
+              </div>
+              <div className="space-y-2">
+                <Label>Biometric Required</Label>
+                <div className="flex items-center space-x-4 mt-2">
+                  <label className="flex items-center space-x-2 cursor-pointer">
+                    <input
+                      type="radio"
+                      name="biometric_required"
+                      checked={editData.biometric_required === true}
+                      onChange={() => setEditData({...editData, biometric_required: true})}
+                      className="w-4 h-4 text-primary"
+                    />
+                    <span>Yes</span>
+                  </label>
+                  <label className="flex items-center space-x-2 cursor-pointer">
+                    <input
+                      type="radio"
+                      name="biometric_required"
+                      checked={editData.biometric_required === false}
+                      onChange={() => setEditData({...editData, biometric_required: false})}
+                      className="w-4 h-4 text-primary"
+                    />
+                    <span>No</span>
+                  </label>
+                </div>
+              </div>
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setEditInfoModalOpen(false)}>Cancel</Button>
+              <Button onClick={saveCompanyInfo} disabled={loading}>
+                {loading ? "Saving..." : "Save Changes"}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        <Dialog open={enrollModalOpen} onOpenChange={setEnrollModalOpen}>
+          <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>Enroll Employees</DialogTitle>
+            </DialogHeader>
+            <EmployeeCsvUploader isCompanyAdmin={true} onSuccess={() => {
+              fetchDashboardData();
+              setEnrollModalOpen(false);
+            }} />
+          </DialogContent>
+        </Dialog>
+
+        <Dialog open={requestSeatsModalOpen} onOpenChange={setRequestSeatsModalOpen}>
+          <DialogContent className="max-w-md">
+            <DialogHeader>
+              <DialogTitle>Request More Seats</DialogTitle>
+              <DialogDescription>
+                Request an upgrade to your organization's seat capacity.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4 py-4">
+              <div className="space-y-2">
+                <Label>Current Seats Capacity</Label>
+                <Input value={companyInfo?.seats_requested || 0} disabled className="bg-muted" />
+              </div>
+              <div className="space-y-2">
+                <Label>New Total Seats Requested</Label>
+                <Input 
+                  type="number" 
+                  value={requestedSeatsInput || ""} 
+                  onChange={e => setRequestedSeatsInput(parseInt(e.target.value) || 0)} 
+                  placeholder="e.g. 60"
+                  min={(companyInfo?.seats_requested || 0) + 1}
+                />
+              </div>
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setRequestSeatsModalOpen(false)}>Cancel</Button>
+              <Button onClick={submitSeatsRequest} disabled={loading}>
+                {loading ? "Submitting..." : "Submit Upgrade Request"}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      </div>
+    </AuthGuard>
+  );
+}
+

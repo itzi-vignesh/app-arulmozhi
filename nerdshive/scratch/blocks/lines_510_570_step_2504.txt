@@ -1,0 +1,54 @@
+                      <CardTitle className="text-lg">Seat Capacity Status</CardTitle>
+                      <CardDescription>Real-time workspace utilization</CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      <div className="space-y-2">
+                        <div className="flex justify-between text-sm">
+                          <span className="text-muted-foreground">Current Plan:</span>
+                          <span className="font-semibold">{corporatePlans[0]?.plan_name || 'Monthly Team Plan'}</span>
+                        </div>
+                        <div className="flex justify-between text-sm">
+                          <span className="text-muted-foreground">Approved Seats:</span>
+                          <span className="font-semibold">{companyInfo?.max_employee_capacity || 0} seats</span>
+                        </div>
+                        <div className="flex justify-between text-sm">
+                          <span className="text-muted-foreground">Occupied Seats:</span>
+                          <span className="font-semibold">{companyInfo?.employees_added || 0} seats</span>
+                        </div>
+                        <div className="flex justify-between text-sm border-t pt-2 mt-2">
+                          <span className="font-medium">Available Seats:</span>
+                          <span className={`font-bold ${getSeatRemainingColor()}`}>
+                            {Math.
+                            <Clock className="w-4 h-4 mr-2 animate-pulse text-amber-500" />
+                            Pending Capacity Upgrade
+                          </div>
+                          <div className="flex justify-between">
+                            <span>Current Capacity:</span>
+                            <span className="font-semibold text-foreground">{companyInfo.max_employee_capacity} seats</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span>Requested Capacity:</span>
+                            <span className="font-semibold text-foreground">{companyInfo.seats_requested} seats</span>
+                          </div>
+                          <div className="flex justify-between pt-1 border-t mt-1">
+                            <span>Status:</span>
+                            <span className="font-bold text-amber-600">Pending Approval</span>
+                          </div>
+                        </div>
+                      ) : (
+                        <Button className="w-full" onClick={openRequestSeatsModal}>
+                          Request More Seats
+                        </Button>
+                      )}
+                    </CardContent>
+                  </Card>
+                </div>
+              </div>
+            </TabsContent>
+            
+            <TabsContent value="queries">
+               <Card>
+                 <CardHeader>
+                   <CardTitle>Company Queries</CardTitle>
+                   <CardDescription>Submit queries to the Nerdshive administration team</CardDescription>
+                 </CardHeader>

@@ -1,0 +1,16 @@
+            
+            <TabsContent value="plans">
+               <Card>
+                 <CardHeader>
+                   <CardTitle>Corporate Plans</CardTitle>
+                   <CardDescription>View your current seat utilization and request upgrades</CardDescription>
+                 </CardHeader>
+                 <CardContent>
+                   <div className="p-4 bg-muted rounded-lg text-center">
+                     <p className="text-muted-foreground mb-4">You have {stats?.seats_available || 0} seats available out of {stats?.seats_requested || 0} requested.</p>
+                     <Button>Request More Seats</Button>
+                   </div>
+                 </CardContent>
+               </Card>
+            </TabsContent>
+            

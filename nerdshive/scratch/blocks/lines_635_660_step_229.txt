@@ -1,0 +1,26 @@
+              <div className="space-y-2">
+                <Label>Mobile *</Label>
+                <Input value={editData.admin_mobile} onChange={e => setEditData({...editData, admin_mobile: e.target.value})} maxLength={15} />
+              </div>
+              <div className="space-y-2 md:col-span-2">
+                <Label>Address</Label>
+                <Input value={editData.address} onChange={e => setEditData({...editData, address: e.target.value})} />
+              </div>
+              <div className="space-y-2">
+                <Label>City</Label>
+                <Input value={editData.city} onChange={e => setEditData({...editData, city: e.target.value})} />
+              </div>
+              <div className="space-y-2">
+                <Label>State</Label>
+                <Input value={editData.state} onChange={e => setEditData({...editData, state: e.target.value})} />
+              </div>
+              <div className="space-y-2">
+                <Label>Pincode</Label>
+                <Input value={editData.pincode} onChange={e => setEditData({...editData, pincode: e.target.value})} />
+              </div>
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setEditInfoModalOpen(false)}>Cancel</Button>
+              <Button onClick={saveCompanyInfo} disabled={loading}>
+                {loading ? "Saving..." : "Save Changes"}
+              </Button>

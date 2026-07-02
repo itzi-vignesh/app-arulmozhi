@@ -1,0 +1,62 @@
+
+
+            <TabsContent value="attendance">
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between">
+                  <div>
+                    <CardTitle>Attendance Report</CardTitle>
+                    <CardDescription>Recent check-in activity for your employees</CardDescription>
+                  </div>
+                  <div>
+                    {companyInfo?.biometric_required ? (
+                      <Badge className="bg-green-500 hover:bg-green-600 text-white">Biometric Requested During Registration</Badge>
+                    ) : companyInfo?.biometric_requested ? (
+                      <Badge className="bg-blue-500 hover:bg-blue-600 text-white">Biometric Request Submitted</Badge>
+                    ) : (
+                      <Button onClick={requestBiometricAccess} disabled={loading}>
+                        Request Biometric Access
+                      </Button>
+                    )}
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Employee</TableHead>
+                        <TableHead>Department</TableHead>
+                        <TableHead>Check In</TableHead>
+                        <TableHead>Check Out</TableHead>
+                        <TableHead>Status</TableHead>
+                      </TableRow>
+
+                          <CardDescription className="text-lg font-semibold text-foreground mt-1">
+                            Starting at ₹{plan.price} <span className="text-xs text-muted-foreground font-normal">per seat + GST</span>
+                          </CardDescription>
+                        </div>
+                        <Building className="w-12 h-12 text-primary opacity-80" />
+                      </CardHeader>
+                      <CardContent>
+                        <h4 className="font-semibold text-sm text-foreground mb-3">Plan Benefits & Features</h4>
+                        <ul className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm text-muted-foreground mb-6">
+                          {plan.features_json?.map((feat: string, idx: number) => (
+                            <li key={idx} className="flex items-center space-x-2">
+                              <span className="text-primary font-bold">✓</span>
+                              <span>{feat}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </CardContent>
+                    </Card>
+                  ))}
+                  
+                  {corporatePlans.length === 0 && (
+                    <Card className="p-8 text-center bg-muted/20">
+                      <p className="text-muted-foreground">No corporate plans currently available.</p>
+                    </Card>
+                  )}
+                </div>
+                
+                <div>
+                  <Card className="shadow-card border-t-4 border-t-primary">
+                    <CardHeader>

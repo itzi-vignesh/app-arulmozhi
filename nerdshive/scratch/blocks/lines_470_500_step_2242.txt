@@ -1,0 +1,31 @@
+            
+            <TabsContent value="plans">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="md:col-span-2 space-y-6">
+                  {corporatePlans.map((plan: any) => (
+                    <Card key={plan.id} className="border-2 border-primary/20 shadow-card">
+                      <CardHeader className="flex flex-row items-center justify-between">
+                        <div>
+                          <Badge className="mb-2 uppercase" variant="secondary">{plan.category} Plan</Badge>
+                          <CardTitle className="text-2xl font-bold">{plan.plan_name}</CardTitle>
+                          <CardDescription className="text-lg font-semibold text-foreground mt-1">
+                            Starting at ₹{plan.price} <span className="text-xs text-muted-foreground font-normal">per seat + GST</span>
+                          </CardDescription>
+                        </div>
+                        <Building className="w-12 h-12 text-primary opacity-80" />
+                      </CardHeader>
+                      <CardContent>
+                        <h4 className="font-semibold text-sm text-foreground mb-3">Plan Benefits & Features</h4>
+                        <ul className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm text-muted-foreground mb-6">
+                          {plan.features_json?.map((feat: string, idx: number) => (
+                            <li key={idx} className="flex items-center space-x-2">
+                              <span className="text-primary font-bold">✓</span>
+                              <span>{feat}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </CardContent>
+                    </Card>
+                  ))}
+                  
+                  {corporatePlans.length === 0 && (

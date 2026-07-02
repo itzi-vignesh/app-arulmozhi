@@ -1,0 +1,11 @@
+                <Input value={companyInfo?.max_employee_capacity || 0} disabled className="bg-muted" />
+              </div>
+              <div className="space-y-2">
+                <Label>New Total Seats Requested</Label>
+                <Input 
+                  type="number" 
+                  value={requestedSeatsInput || ""} 
+                  onChange={e => setRequestedSeatsInput(parseInt(e.target.value) || 0)} 
+                  placeholder="e.g. 60"
+                  min={(companyInfo?.max_employee_capacity || 0) + 1}
+                />

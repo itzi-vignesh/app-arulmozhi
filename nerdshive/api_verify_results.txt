@@ -1,0 +1,6 @@
+Register: 200 - {'access_token': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3ODM0Mjk5NzksInN1YiI6ImRlN2MyNjgwLWE5NmYtNGNkZi1hMTc4LTQzMGQ1OTU3YTM3NiIsInR5cGUiOiJhY2Nlc3MifQ.Io-1M0C29Lqj6wKR1n4wMEJIvvQ7qx3j6gjOG8_pvWM', 'refresh_token': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3ODM0Mjk5NzksInN1YiI6ImRlN2MyNjgwLWE5NmYtNGNkZi1hMTc4LTQzMGQ1OTU3YTM3NiIsInR5cGUiOiJyZWZyZXNoIn0.k4CmOKqfdi-qUulMqIlrodn1HUsSfk0IiPFJ6ksqO8c', 'token_type': 'bearer', 'user': {'id': 'de7c2680-a96f-4cdf-a178-430d5957a376'}}
+Login: 200 - OK
+Session Get: 200 - User ID: de7c2680-a96f-4cdf-a178-430d5957a376
+Profile Create: 422 - {'detail': [{'type': 'value_error', 'loc': ['body', 'govt_id_type'], 'msg': 'Value error, Government ID type must be AADHAAR, PAN, or OTHER', 'input': 'passport', 'ctx': {'error': {}}, 'url': 'https://errors.pydantic.dev/2.5/v/value_error'}]}
+Settings Save (users/me): 404 - {'detail': 'Profile not found'}
+Notifications: 200 - []

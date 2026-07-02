@@ -1,0 +1,39 @@
+# Migration Walkthrough & Final Verification
+
+We have successfully completed the migration work to bring frontend API coverage to 100%. Here is a breakdown of the changes made and the verification steps taken.
+
+## Changes Made
+
+### 1. Database Schema Updates
+To support the registration flow and profile management on the frontend, the following columns were added to the `User` model ([user.py](file:///e:/1/backend/app/models/user.py)) and user schemas ([user.py](file:///e:/1/backend/app/schemas/user.py)):
+- `city` (String, optional)
+- `location` (String, optional)
+- `occupation` (String, optional)
+- `govt_id_copy_url` (String, optional)
+- `reimbursement` (Boolean, default False)
+- `gst_number` (String, optional)
+- `org_location` (String, optional)
+
+These were successfully generated and applied via Alembic migrations (`alembic upgrade head`).
+
+### 2. Missing Backend Endpoints Implemented
+We implemented all 10 missing endpoints in the backend, adding appropriate Role-Based Access Control (RBAC):
+
+#### `backend/app/api/v1/endpoints/users.py` ([users.py](file:///e:/1/backend/app/api/v1/endpoints/users.py))
+- `POST /`: Create a new user profile linked to the authenticated user.
+- `GET /{user_id}`: Retrieve a specific user profile (restricted to Owner, Admins, or Superusers).
+- `POST /delete`: Entirely delete a specific user (Superuser only).
+- `DELETE /`: Bulk delete all non-elevated user profiles (Superuser only).
+
+#### `backend/app/api/v1/endpoints/storage.py` ([storage.py](file:///e:/1/backend/app/api/v1/endpoint
+  2. **Frontend Dialog Bindings**: In [CorporateDashboard.tsx](file:///e:/1/src/pages/CorporateDashboard.tsx#L842-L856), updated the Current Seats Capacity input to display `companyInfo.max_employee_capacity` (read-only), set the minimum value of requested seats input to `companyInfo.max_employee_capacity + 1`, and updated `openRequestSeatsModal` to default the input state to `companyInfo.max_employee_capacity + 1`.
+  3. **Frontend Validation and Toast**: Added client-side validation in `submitSeatsRequest` rejecting any inputs less than or equal to current approved capacity and displaying a toast alert with the exact expected message.
+  4. **Corporate Dashboard Capacity Audit**: Audited `CorporateDashboard.tsx` to verify that approved seats, available seats, and remaining seats stats cards calculate their values strictly from `max_employee_capacity` and never use `seats_requested` before Superuser approval.
+- **Verification**:
+  - Wrote and executed [verify_all_requirements.py](file:///e:/1/scratch/verify_all_requirements.py) which verified:
+    - Initial dashboard stats with capacity 55 and 3 employees.
+    - Rejection of invalid upgrade requests (<= 55) with exact error message `"Requested capacity must be greater than current approved capacity (55)."`.
+    - Dashboard stats before approval (retains 55 seats capacity and 52 available seats).
+    - Superuser approval of the seat request to 60.
+    - Updated dashboard stats after approval (60 seats capacity, 3 employees, 57 available seats).
+  - Built images and restarted Docker containers successfully.

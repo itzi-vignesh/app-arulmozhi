@@ -1,0 +1,40 @@
+            }} />
+          </DialogContent>
+        </Dialog>
+
+        <Dialog open={requestSeatsModalOpen} onOpenChange={setRequestSeatsModalOpen}>
+          <DialogContent className="max-w-md">
+            <DialogHeader>
+              <DialogTitle>Request More Seats</DialogTitle>
+              <DialogDescription>
+                Request an upgrade to your organization's seat capacity.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4 py-4">
+              <div className="space-y-2">
+                <Label>Current Seats Capacity</Label>
+                <Input value={companyInfo?.seats_requested || 0} disabled className="bg-muted" />
+              </div>
+              <div className="space-y-2">
+                <Label>New Total Seats Requested</Label>
+                <Input 
+                  type="number" 
+                  value={requestedSeatsInput || ""} 
+                  onChange={e => setRequestedSeatsInput(parseInt(e.target.value) || 0)} 
+                  placeholder="e.g. 60"
+                  min={(companyInfo?.seats_requested || 0) + 1}
+                />
+              </div>
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setRequestSeatsModalOpen(false)}>Cancel</Button>
+              <Button onClick={submitSeatsRequest} disabled={loading}>
+                {loading ? "Submitting..." : "Submit Upgrade Request"}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      </div>
+    </AuthGuard>
+  );
+}

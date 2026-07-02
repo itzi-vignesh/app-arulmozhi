@@ -1,0 +1,1342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>DOM Monitor Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-color: #080c14;
+      --card-bg: rgba(22, 30, 49, 0.6);
+      --border-color: rgba(255, 255, 255, 0.08);
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --accent-color: #00f2fe;
+      --accent-gradient: linear-gradient(135deg, #00f2fe 0%, #4facfe 100%);
+      
+      --status-active-bg: rgba(16, 185, 129, 0.1);
+      --status-active-color: #10b981;
+      --status-paused-bg: rgba(245, 158, 11, 0.1);
+      --status-paused-color: #f59e0b;
+      --status-failed-bg: rgba(239, 68, 68, 0.1);
+      --status-failed-color: #ef4444;
+      
+      --sidebar-width: 320px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      font-family: 'Outfit', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      line-height: 1.5;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      flex-grow: 1;
+    }
+
+    /* Header styling */
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 16px;
+    }
+
+    .brand-section {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-logo {
+      width: 36px;
+      height: 36px;
+      background: var(--accent-gradient);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 14px rgba(0, 242, 254, 0.35);
+    }
+
+    .brand-logo svg {
+      width: 22px;
+      height: 22px;
+      fill: #0b0f19;
+    }
+
+    h1 {
+      font-size: 24px;
+      font-weight: 700;
+      background: var(--accent-gradient);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      letter-spacing: 0.5px;
+    }
+
+    .subtitle {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    /* Stats container in Header */
+    .header-stats {
+      display: flex;
+      gap: 16px;
+    }
+
+    .header-stat-badge {
+      background: rgba(30, 41, 59, 0.4);
+      border: 1px solid var(--border-color);
+      padding: 6px 12px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+    }
+
+    .stat-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+    }
+
+    .stat-dot.active { background-color: var(--status-active-color); box-shadow: 0 0 8px var(--status-active-color); }
+    .stat-dot.paused { background-color: var(--status-paused-color); box-shadow: 0 0 8px var(--status-paused-color); }
+    .stat-dot.failed { background-color: var(--status-failed-color); box-shadow: 0 0 8px var(--status-failed-color); }
+
+    /* Layout structure */
+    .dashboard-layout {
+      display: flex;
+      flex-grow: 1;
+      gap: 24px;
+      min-height: 0; /* Important for scroll container behavior */
+    }
+
+    /* Left Sidebar */
+    .sidebar {
+      width: var(--sidebar-width);
+      flex-shrink: 0;
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      backdrop-filter: blur(12px);
+      max-height: 75vh;
+      overflow-y: auto;
+    }
+
+    .sidebar-title {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--text-muted);
+      font-weight: 600;
+      margin-bottom: 14px;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 8px;
+    }
+
+    .monitor-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .monitor-item {
+      padding: 12px;
+      border-radius: 10px;
+      border: 1px solid var(--border-color);
+      background: rgba(15, 23, 42, 0.3);
+      cursor: pointer;
+      transition: all 0.25s ease;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .monitor-item:hover {
+      border-color: rgba(0, 242, 254, 0.25);
+      background: rgba(15, 23, 42, 0.5);
+    }
+
+    .monitor-item.selected {
+      border-color: var(--accent-color);
+      background: rgba(0, 242, 254, 0.05);
+      box-shadow: inset 0 0 8px rgba(0, 242, 254, 0.1);
+    }
+
+    .monitor-item-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .monitor-item-name {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-main);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .monitor-item-val {
+      font-size: 12px;
+      color: var(--text-muted);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      font-family: monospace;
+    }
+
+    /* Right content area */
+    .workspace {
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+      min-width: 0; /* prevent layout break */
+    }
+
+    .workspace-empty {
+      flex-grow: 1;
+      background: var(--card-bg);
+      border: 1px dashed var(--border-color);
+      border-radius: 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 48px;
+      text-align: center;
+      color: var(--text-muted);
+      backdrop-filter: blur(12px);
+    }
+
+    .workspace-empty svg {
+      width: 48px;
+      height: 48px;
+      stroke: currentColor;
+      margin-bottom: 12px;
+      opacity: 0.5;
+    }
+
+    .monitor-details-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 24px;
+      backdrop-filter: blur(12px);
+    }
+
+    .details-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 20px;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 16px;
+      gap: 16px;
+    }
+
+    .details-title-section {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      min-width: 0;
+    }
+
+    .details-name {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .details-page-title {
+      font-size: 14px;
+      color: var(--text-muted);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .details-meta-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+
+    .meta-group {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      font-size: 13px;
+    }
+
+    .meta-label {
+      color: var(--text-muted);
+      font-weight: 500;
+      text-transform: uppercase;
+      font-size: 11px;
+      letter-spacing: 0.5px;
+    }
+
+    .meta-val {
+      color: var(--text-main);
+      word-break: break-all;
+    }
+
+    .meta-val a {
+      color: var(--accent-color);
+      text-decoration: none;
+    }
+
+    .meta-val a:hover {
+      text-decoration: underline;
+    }
+
+    .details-value-box {
+      background: rgba(15, 23, 42, 0.4);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 14px;
+      font-size: 14px;
+      font-family: monospace;
+      color: #e2e8f0;
+      margin-bottom: 20px;
+      white-space: pre-wrap;
+      word-break: break-all;
+      max-height: 120px;
+      overflow-y: auto;
+    }
+
+    .error-box {
+      background: rgba(239, 68, 68, 0.08);
+      border: 1px solid rgba(239, 68, 68, 0.2);
+      color: #fca5a5;
+      font-size: 13px;
+      padding: 10px 12px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+    }
+
+    .actions-row {
+      display: flex;
+      gap: 12px;
+    }
+
+    .btn {
+      border: none;
+      border-radius: 8px;
+      padding: 9px 16px;
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-action {
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--text-main);
+      border: 1px solid var(--border-color);
+    }
+
+    .btn-action:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .btn-danger {
+      background: rgba(239, 68, 68, 0.1);
+      color: #f87171;
+      border: 1px solid rgba(239, 68, 68, 0.2);
+    }
+
+    .btn-danger:hover {
+      background: rgba(239, 68, 68, 0.2);
+      border-color: rgba(239, 68, 68, 0.3);
+    }
+
+    /* Change History log section */
+    .history-section {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .history-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      overflow: hidden;
+      backdrop-filter: blur(12px);
+      transition: all 0.25s ease;
+    }
+
+    .history-card:hover {
+      border-color: rgba(0, 242, 254, 0.2);
+    }
+
+    .history-card-header {
+      padding: 16px;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      user-select: none;
+      background: rgba(15, 23, 42, 0.25);
+      transition: background 0.2s ease;
+    }
+
+    .history-card-header:hover {
+      background: rgba(15, 23, 42, 0.4);
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .header-time {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    .change-type-badge {
+      font-size: 10px;
+      font-weight: 600;
+      padding: 2px 6px;
+      border-radius: 4px;
+      text-transform: uppercase;
+    }
+
+    .change-type-badge.numeric { background: rgba(59, 130, 246, 0.1); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.2); }
+    .change-type-badge.text { background: rgba(139, 92, 246, 0.1); color: #a78bfa; border: 1px solid rgba(139, 92, 246, 0.2); }
+    .change-type-badge.mixed { background: rgba(236, 72, 153, 0.1); color: #f472b6; border: 1px solid rgba(236, 72, 153, 0.2); }
+    .change-type-badge.image { background: rgba(16, 185, 129, 0.1); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.2); }
+    .change-type-badge.table { background: rgba(6, 182, 212, 0.1); color: #22d3ee; border: 1px solid rgba(6, 182, 212, 0.2); }
+
+    .header-chevron {
+      width: 16px;
+      height: 16px;
+      fill: none;
+      stroke: var(--text-muted);
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      transition: transform 0.25s ease;
+    }
+
+    /* Expandable Accordion Body */
+    .history-card-body {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease-out, padding 0.3s ease-out;
+      border-top: 1px solid transparent;
+      padding: 0 20px;
+      background: rgba(15, 23, 42, 0.15);
+    }
+
+    .history-card.expanded .history-card-body {
+      max-height: 600px;
+      padding: 20px;
+      border-color: var(--border-color);
+      overflow-y: auto;
+    }
+
+    .history-card.expanded .header-chevron {
+      transform: rotate(180deg);
+      stroke: var(--accent-color);
+    }
+
+    .fragment-box {
+      font-size: 14px;
+      background: rgba(0, 242, 254, 0.03);
+      border: 1px dashed rgba(0, 242, 254, 0.25);
+      border-radius: 8px;
+      padding: 12px;
+      color: #e2e8f0;
+      margin-bottom: 16px;
+    }
+
+    .fragment-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      color: var(--accent-color);
+      font-weight: 600;
+      margin-bottom: 4px;
+      letter-spacing: 0.5px;
+    }
+
+    .fragment-text {
+      font-family: monospace;
+      word-break: break-all;
+    }
+
+    .event-diff-summary {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-bottom: 16px;
+      background: rgba(15, 23, 42, 0.3);
+      padding: 8px 12px;
+      border-radius: 6px;
+      border-left: 3px solid var(--accent-color);
+    }
+
+    /* Dual Screenshots container */
+    .screenshots-comparison {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .screenshot-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .screenshot-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      font-weight: 600;
+      letter-spacing: 0.5px;
+    }
+
+    .screenshot-box {
+      width: 100%;
+      height: 180px;
+      background: #060910;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      overflow: hidden;
+      cursor: zoom-in;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .screenshot-box img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+      transition: transform 0.2s ease;
+    }
+
+    .screenshot-box:hover img {
+      transform: scale(1.03);
+    }
+
+    .screenshot-box::after {
+      content: "Zoom";
+      position: absolute;
+      bottom: 6px;
+      right: 8px;
+      background: rgba(15, 23, 42, 0.85);
+      color: var(--text-main);
+      font-size: 9px;
+      padding: 2px 6px;
+      border-radius: 4px;
+      opacity: 0;
+      transition: opacity 0.2s ease;
+      pointer-events: none;
+    }
+
+    .screenshot-box:hover::after {
+      opacity: 1;
+    }
+
+    /* Modal for zoom screenshots */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 10000;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(8, 12, 20, 0.95);
+      backdrop-filter: blur(8px);
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .modal-content {
+      max-width: 95%;
+      max-height: 95%;
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8);
+      background: #0c111d;
+      padding: 8px;
+      position: relative;
+    }
+
+    .modal-img {
+      max-width: 100%;
+      max-height: 85vh;
+      object-fit: contain;
+      display: block;
+    }
+
+    .modal-close {
+      position: absolute;
+      top: -16px;
+      right: -16px;
+      background: var(--accent-gradient);
+      color: #0b0f19;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 4px 10px rgba(0, 242, 254, 0.3);
+      font-size: 16px;
+    }
+
+    /* Helper styles */
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 4px 8px;
+      border-radius: 20px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .status-badge.active { background: var(--status-active-bg); color: var(--status-active-color); border: 1px solid rgba(16, 185, 129, 0.2); }
+    .status-badge.paused { background: var(--status-paused-bg); color: var(--status-paused-color); border: 1px solid rgba(245, 158, 11, 0.2); }
+    .status-badge.failed { background: var(--status-failed-bg); color: var(--status-failed-color); border: 1px solid rgba(239, 68, 68, 0.2); }
+
+    .confidence-badge {
+      display: inline-flex;
+      align-items: center;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .confidence-badge.HIGH {
+      background: rgba(16, 185, 129, 0.1);
+      color: #10b981;
+      border: 1px solid rgba(16, 185, 129, 0.2);
+    }
+    .confidence-badge.MEDIUM {
+      background: rgba(245, 158, 11, 0.1);
+      color: #f59e0b;
+      border: 1px solid rgba(245, 158, 11, 0.2);
+    }
+    .confidence-badge.LOW {
+      background: rgba(239, 68, 68, 0.1);
+      color: #ef4444;
+      border: 1px solid rgba(239, 68, 68, 0.2);
+    }
+    .fragile-warning {
+      color: #ef4444;
+      font-size: 12px;
+      font-weight: 600;
+      margin-left: 8px;
+    }
+
+    .pulse-indicator {
+      width: 6px;
+      height: 6px;
+      background-color: currentColor;
+      border-radius: 50%;
+      animation: pulse 1.5s infinite alternate;
+    }
+
+    @keyframes pulse {
+      0% { opacity: 0.4; }
+      100% { opacity: 1; transform: scale(1.15); }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <header>
+      <div class="brand-section">
+        <div class="brand-logo">
+          <svg viewBox="0 0 24 24">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H7c0-2.76 2.24-5 5-5s5 2.24 5 5c0 1.04-.42 1.99-1.07 2.75z"/>
+          </svg>
+        </div>
+        <div>
+          <h1>DOM Monitor</h1>
+          <div class="subtitle">Production Change Control Workspace</div>
+        </div>
+      </div>
+
+      <!-- Live Global Counters -->
+      <div class="header-stats">
+        <div class="header-stat-badge">
+          <span class="stat-dot active"></span>
+          <span>Active: <strong id="stats-active">0</strong></span>
+        </div>
+        <div class="header-stat-badge">
+          <span class="stat-dot paused"></span>
+          <span>Paused: <strong id="stats-paused">0</strong></span>
+        </div>
+        <div class="header-stat-badge">
+          <span class="stat-dot failed"></span>
+          <span>Failed: <strong id="stats-failed">0</strong></span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Monitor-Centric Dashboard layout -->
+    <div class="dashboard-layout">
+      
+      <!-- Left sidebar monitor lists -->
+      <aside class="sidebar">
+        <div class="sidebar-title">Monitors</div>
+        <div id="monitor-list" class="monitor-list">
+          <!-- Dynamically populated -->
+        </div>
+      </aside>
+
+      <!-- Right content workspace -->
+      <main class="workspace" id="workspace-container">
+        <div class="workspace-empty">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+            <line x1="9" y1="3" x2="9" y2="21"></line>
+          </svg>
+          <h3>No Monitor Selected</h3>
+          <p style="margin-top: 8px;">Select a monitor from the left sidebar to view details, controls, and change logs.</p>
+        </div>
+      </main>
+
+    </div>
+  </div>
+
+  <!-- Zoom Screenshot Modal -->
+  <div id="zoom-modal" class="modal">
+    <div class="modal-content">
+      <span class="modal-close" id="modal-close">&times;</span>
+      <img class="modal-img" id="modal-img" src="" alt="Screenshot Full Zoom View">
+    </div>
+  </div>
+
+  <script>
+    const API_BASE = window.location.origin;
+    let allMonitors = [];
+    let allEvents = [];
+    let selectedMonitorId = null;
+
+    // Load metrics from server
+    async function loadDashboardData(isInitial = false) {
+      try {
+        const monitorsRes = await fetch(`${API_BASE}/api/monitor/list`);
+        allMonitors = await monitorsRes.json();
+
+        const eventsRes = await fetch(`${API_BASE}/api/monitor/events`);
+        allEvents = await eventsRes.json();
+
+        // Default to first monitor if none is selected
+        if (isInitial && allMonitors.length > 0) {
+          selectedMonitorId = allMonitors[0].id;
+        }
+
+        updateStats();
+        renderSidebar();
+        renderWorkspace();
+      } catch (err) {
+        console.error("Failed to load dashboard metrics:", err);
+      }
+    }
+
+    function updateStats() {
+      const active = allMonitors.filter(m => m.status === 'active').length;
+      const paused = allMonitors.filter(m => m.status === 'paused').length;
+      const failed = allMonitors.filter(m => m.status === 'failed').length;
+
+      document.getElementById('stats-active').textContent = active;
+      document.getElementById('stats-paused').textContent = paused;
+      document.getElementById('stats-failed').textContent = failed;
+    }
+
+    function renderSidebar() {
+      const sidebarEl = document.getElementById('monitor-list');
+      if (allMonitors.length === 0) {
+        sidebarEl.innerHTML = `
+          <div style="font-size: 13px; color: var(--text-muted); text-align: center; padding: 20px 0;">
+            No monitors found.
+          </div>
+        `;
+        return;
+      }
+
+      sidebarEl.innerHTML = allMonitors.map(monitor => {
+        const isSelected = monitor.id === selectedMonitorId;
+        const statusClass = `stat-dot ${monitor.status}`;
+        
+        return `
+          <div class="monitor-item ${isSelected ? 'selected' : ''}" onclick="selectMonitor('${monitor.id}')">
+            <div class="monitor-item-header">
+              <span class="monitor-item-name" title="${escapeHtml(monitor.name)}">${escapeHtml(monitor.name)}</span>
+              <span class="stat-dot ${monitor.status}"></span>
+            </div>
+            <div class="monitor-item-val" title="${escapeHtml(monitor.text_snapshot || monitor.last_value || '(No checks yet)')}">
+              ${escapeHtml(monitor.text_snapshot || monitor.last_value || '(No checks performed)')}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function selectMonitor(id) {
+      selectedMonitorId = id;
+      renderSidebar();
+      renderWorkspace();
+    }
+
+    function renderWorkspace() {
+      const workspaceEl = document.getElementById('workspace-container');
+      
+      if (!selectedMonitorId || allMonitors.length === 0) {
+        workspaceEl.innerHTML = `
+          <div class="workspace-empty">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+              <line x1="9" y1="3" x2="9" y2="21"></line>
+            </svg>
+            <h3>No Monitor Selected</h3>
+            <p style="margin-top: 8px;">Select a monitor from the left sidebar to view details, controls, and change logs.</p>
+          </div>
+        `;
+        return;
+      }
+
+      const monitor = allMonitors.find(m => m.id === selectedMonitorId);
+      if (!monitor) {
+        selectedMonitorId = null;
+        renderWorkspace();
+        return;
+      }
+
+      // Filter events belonging ONLY to this monitor
+      const monitorEvents = allEvents.filter(e => e.monitor_id === monitor.id);
+      
+      const lastCheck = monitor.last_checked_at 
+        ? new Date(monitor.last_checked_at + 'Z').toLocaleString() 
+        : 'Never';
+
+      const isFailed = monitor.status === 'failed';
+      const isPaused = monitor.status === 'paused';
+      
+      let statusBadgeClass = 'status-badge active';
+      if (isPaused) statusBadgeClass = 'status-badge paused';
+      if (isFailed) statusBadgeClass = 'status-badge failed';
+
+      let actionButton = '';
+      if (isPaused) {
+        actionButton = `<button class="btn btn-action" onclick="resumeMonitor('${monitor.id}')">Resume Monitor</button>`;
+      } else {
+        actionButton = `<button class="btn btn-action" onclick="pauseMonitor('${monitor.id}')">Pause Monitor</button>`;
+      }
+
+      // Format events list html
+      let eventsHtml = '';
+      if (monitorEvents.length === 0) {
+        eventsHtml = `
+          <div style="background: rgba(15,23,42,0.2); border: 1px dashed var(--border-color); border-radius: 12px; padding: 24px; text-align: center; color: var(--text-muted); font-size: 14px;">
+            No change events recorded for this monitor.
+          </div>
+        `;
+      } else {
+        eventsHtml = monitorEvents.map((event, idx) => {
+          const timeStr = new Date(event.detected_at + 'Z').toLocaleString();
+          const oldPageScreenshot = event.old_page_screenshot_path ? `/${event.old_page_screenshot_path}` : null;
+          const newPageScreenshot = event.new_page_screenshot_path ? `/${event.new_page_screenshot_path}` : null;
+          const oldElementScreenshot = event.old_element_screenshot_path ? `/${event.old_element_screenshot_path}` : null;
+          const newElementScreenshot = event.new_element_screenshot_path ? `/${event.new_element_screenshot_path}` : null;
+          
+          return `
+            <div class="history-card" id="card-${event.id}">
+              <div class="history-card-header" onclick="toggleCard('${event.id}')">
+                <div class="header-left">
+                  <span class="change-type-badge ${event.change_type}">${event.change_type}</span>
+                  <span class="header-time">${timeStr}</span>
+                </div>
+                <svg class="header-chevron" viewBox="0 0 24 24">
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+              </div>
+
+              <div class="history-card-body">
+                ${event.change_type === 'table' ? renderTableDiff(event) : event.change_type === 'element' ? renderElementDiff(event) : `
+                <div class="fragment-box">
+                  <div class="fragment-label">${event.change_type === 'image' ? 'IMAGE CHANGE' : 'Changed Fragment'}</div>
+                  <div class="fragment-text">
+                    ${event.change_type === 'image' ? `
+                      <div style="margin-bottom: 6px;"><strong>Old URL:</strong> <a href="${escapeHtml(event.old_value)}" target="_blank" style="color: var(--accent-color); text-decoration: none;">${escapeHtml(event.old_value)}</a></div>
+                      <div><strong>New URL:</strong> <a href="${escapeHtml(event.new_value)}" target="_blank" style="color: var(--accent-color); text-decoration: none;">${escapeHtml(event.new_value)}</a></div>
+                    ` : escapeHtml(event.changed_fragment || `${event.old_value} → ${event.new_value}`)}
+                  </div>
+                </div>
+
+                <div class="event-diff-summary">
+                  <strong>Diff Summary:</strong> ${escapeHtml(event.diff_summary || 'No numerical summary computed')}
+                </div>
+                `}
+
+                ${(oldElementScreenshot || newElementScreenshot) && event.change_type !== 'table' ? `
+                  <div class="screenshots-comparison">
+                    <div class="screenshot-group">
+                      <span class="screenshot-label">Old Element State</span>
+                      <div class="screenshot-box" onclick="openZoomModal('${oldElementScreenshot}')">
+                        ${oldElementScreenshot ? `<img src="${oldElementScreenshot}" alt="Old element screenshot">` : '<div style="color:var(--text-muted);font-size:12px;">No screenshot</div>'}
+                      </div>
+                    </div>
+                    <div class="screenshot-group">
+                      <span class="screenshot-label">New Element State</span>
+                      <div class="screenshot-box" onclick="openZoomModal('${newElementScreenshot}')">
+                        ${newElementScreenshot ? `<img src="${newElementScreenshot}" alt="New element screenshot">` : '<div style="color:var(--text-muted);font-size:12px;">No screenshot</div>'}
+                      </div>
+                    </div>
+                  </div>
+                ` : ''}
+
+                ${oldPageScreenshot || newPageScreenshot ? (
+                  event.change_type === 'table' ? `
+                  <div class="screenshots-comparison" style="margin-top: 14px;">
+                    <div class="screenshot-group">
+                      <span class="screenshot-label">Old Page Context (Annotated)</span>
+                      <div class="screenshot-box" onclick="openZoomModal('${oldPageScreenshot}')" style="height: 250px;">
+                        ${oldPageScreenshot ? `<img src="${oldPageScreenshot}" alt="Old full-page screenshot">` : '<div style="color:var(--text-muted);font-size:12px;">No screenshot</div>'}
+                      </div>
+                    </div>
+                    <div class="screenshot-group">
+                      <span class="screenshot-label">New Page Context (Annotated)</span>
+                      <div class="screenshot-box" onclick="openZoomModal('${newPageScreenshot}')" style="height: 250px;">
+                        ${newPageScreenshot ? `<img src="${newPageScreenshot}" alt="New full-page screenshot">` : '<div style="color:var(--text-muted);font-size:12px;">No screenshot</div>'}
+                      </div>
+                    </div>
+                  </div>
+                  ` : `
+                  <div class="full-page-collapsible" style="margin-top: 14px;">
+                    <button class="btn btn-action" onclick="toggleFullPageScreenshots(event, '${event.id}')" style="width: 100%; display: flex; justify-content: center; font-size: 12px; padding: 6px 12px;">
+                      Toggle Full-Page Context (Annotated)
+                    </button>
+                    <div id="full-page-container-${event.id}" class="screenshots-comparison" style="display: none; margin-top: 10px;">
+                      <div class="screenshot-group">
+                        <span class="screenshot-label">Old Page Context (RED Box)</span>
+                        <div class="screenshot-box" onclick="openZoomModal('${oldPageScreenshot}')" style="height: 250px;">
+                          ${oldPageScreenshot ? `<img src="${oldPageScreenshot}" alt="Old full-page screenshot">` : '<div style="color:var(--text-muted);font-size:12px;">No screenshot</div>'}
+                        </div>
+                      </div>
+                      <div class="screenshot-group">
+                        <span class="screenshot-label">New Page Context (GREEN Box)</span>
+                        <div class="screenshot-box" onclick="openZoomModal('${newPageScreenshot}')" style="height: 250px;">
+                          ${newPageScreenshot ? `<img src="${newPageScreenshot}" alt="New full-page screenshot">` : '<div style="color:var(--text-muted);font-size:12px;">No screenshot</div>'}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  `
+                ) : ''}
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+
+      workspaceEl.innerHTML = `
+        <!-- Details Card -->
+        <div class="monitor-details-card">
+          <div class="details-header">
+            <div class="details-title-section">
+              <div class="details-name">${escapeHtml(monitor.name)}</div>
+              <div class="details-page-title" title="${escapeHtml(monitor.page_title || '')}">${escapeHtml(monitor.page_title || 'Untitled Webpage')}</div>
+            </div>
+            <div class="${statusBadgeClass}">
+              ${!isPaused ? '<div class="pulse-indicator"></div>' : ''}
+              <span>${monitor.status}</span>
+            </div>
+          </div>
+
+          ${isFailed && monitor.last_error ? `
+            <div class="error-box">
+              <strong>Error:</strong> ${escapeHtml(monitor.last_error)}
+            </div>
+          ` : ''}
+
+          <div class="details-meta-grid">
+            <div class="meta-group">
+              <span class="meta-label">Target URL</span>
+              <span class="meta-val"><a href="${monitor.url}" target="_blank" rel="noopener">${escapeHtml(monitor.url)}</a></span>
+            </div>
+            <div class="meta-group">
+              <span class="meta-label">CSS Selector</span>
+              <span class="meta-val" style="font-family: monospace;">${escapeHtml(monitor.selector)}</span>
+            </div>
+            <div class="meta-group">
+              <span class="meta-label">Check Interval</span>
+              <span class="meta-val">${monitor.check_interval} seconds</span>
+            </div>
+            <div class="meta-group">
+              <span class="meta-label">Last Checked</span>
+              <span class="meta-val">${lastCheck}</span>
+            </div>
+            <div class="meta-group">
+              <span class="meta-label">Monitor Type</span>
+              <span class="meta-val" style="text-transform: uppercase; font-weight: 600;">${escapeHtml(monitor.monitor_type || 'text')}</span>
+            </div>
+            ${monitor.monitor_type === 'image' && monitor.image_url ? `
+            <div class="meta-group">
+              <span class="meta-label">Baseline Image URL</span>
+              <span class="meta-val"><a href="${monitor.image_url}" target="_blank" rel="noopener">${escapeHtml(monitor.image_url)}</a></span>
+            </div>
+            ` : ''}
+            <div class="meta-group">
+              <span class="meta-label">Selector Confidence</span>
+              <span class="meta-val">
+                <span class="confidence-badge ${monitor.selector_confidence || 'LOW'}">
+                  ${monitor.selector_confidence || 'LOW'}
+                </span>
+                ${(monitor.selector_confidence || 'LOW') === 'LOW' ? '<span class="fragile-warning">⚠ Fragile Selector</span>' : ''}
+              </span>
+            </div>
+          </div>
+
+          <div class="meta-label" style="margin-bottom: 6px;">Current Value</div>
+          <div class="details-value-box">${escapeHtml(monitor.text_snapshot || monitor.last_value || '(Pending initial check)')}</div>
+
+          <div class="actions-row">
+            ${actionButton}
+            <button class="btn btn-danger" onclick="deleteMonitor('${monitor.id}')">Delete Monitor</button>
+          </div>
+        </div>
+
+        <!-- History Log Section -->
+        <div class="history-section">
+          <div class="section-title" style="margin-bottom: 0;">
+            <span>Change</span> History Logs
+          </div>
+          <div id="workspace-events-list">
+            ${eventsHtml}
+          </div>
+        </div>
+      `;
+    }
+
+    // Toggle history card open/close state
+    function toggleCard(eventId) {
+      const card = document.getElementById(`card-${eventId}`);
+      if (card) {
+        card.classList.toggle('expanded');
+      }
+    }
+
+    function toggleFullPageScreenshots(e, eventId) {
+      e.stopPropagation(); // prevent collapsing/expanding the parent history card
+      const container = document.getElementById(`full-page-container-${eventId}`);
+      if (container) {
+        if (container.style.display === 'none') {
+          container.style.display = 'grid';
+        } else {
+          container.style.display = 'none';
+        }
+      }
+    }
+
+    // API bindings
+    async function pauseMonitor(id) {
+      if (confirm("Pause background checks for this monitor?")) {
+        await fetch(`${API_BASE}/api/monitor/${id}/pause`, { method: "POST" });
+        loadDashboardData();
+      }
+    }
+
+    async function resumeMonitor(id) {
+      await fetch(`${API_BASE}/api/monitor/${id}/resume`, { method: "POST" });
+      loadDashboardData();
+    }
+
+    async function deleteMonitor(id) {
+      if (confirm("Delete this monitor and all its change logs permanently?")) {
+        await fetch(`${API_BASE}/api/monitor/${id}`, { method: "DELETE" });
+        selectedMonitorId = null;
+        loadDashboardData(true);
+      }
+    }
+
+    // Modal triggers
+    const modal = document.getElementById("zoom-modal");
+    const modalImg = document.getElementById("modal-img");
+
+    function openZoomModal(src) {
+      // Prevent event bubbling so accordion header click is not triggered
+      event.stopPropagation();
+      modal.style.display = "flex";
+      modalImg.src = src;
+    }
+
+    document.getElementById("modal-close").onclick = function() {
+      modal.style.display = "none";
+    }
+
+    modal.onclick = function(e) {
+      if (e.target === modal) {
+        modal.style.display = "none";
+      }
+    }
+
+    function renderTableDiff(event) {
+      if (!event.diff_summary) return '';
+      
+      let html = `<div style="font-family: inherit; color: var(--text-main);">`;
+      
+      try {
+        const diffData = JSON.parse(event.diff_summary);
+        
+        // Handle both legacy (pure table diff) and composite JSON
+        const tableData = diffData.table_diff || diffData;
+
+        const added = tableData.added || [];
+        const removed = tableData.removed || [];
+        const modified = tableData.modified || [];
+        const headerChanges = tableData.header_changes || [];
+        const titleChange = diffData.title_change || tableData.title_change;
+        const containerTextChange = diffData.container_text_change || tableData.container_text_change;
+
+        if (added.length > 0) {
+          added.forEach(row => {
+            html += `<div style="margin-bottom: 12px;">`;
+            html += `<div style="font-weight: 600; font-size: 13px; color: #10b981; margin-bottom: 4px;">Added Row:</div>`;
+            html += `<div style="font-family: monospace; font-size: 13px; padding: 4px 8px; background: rgba(16, 185, 129, 0.05); border-left: 3px solid #10b981; margin-bottom: 4px; color: #a7f3d0; white-space: pre-wrap;">${escapeHtml(row.text)}</div>`;
+            html += `</div>`;
+          });
+        }
+
+        if (removed.length > 0) {
+          removed.forEach(row => {
+            html += `<div style="margin-bottom: 12px;">`;
+            html += `<div style="font-weight: 600; font-size: 13px; color: #ef4444; margin-bottom: 4px;">Removed Row:</div>`;
+            html += `<div style="font-family: monospace; font-size: 13px; padding: 4px 8px; background: rgba(239, 68, 68, 0.05); border-left: 3px solid #ef4444; margin-bottom: 4px; color: #fca5a5; white-space: pre-wrap;">${escapeHtml(row.text)}</div>`;
+            html += `</div>`;
+          });
+        }
+
+        if (modified.length > 0) {
+          modified.forEach(row => {
+            row.changes.forEach(ch => {
+              html += `<div style="margin-bottom: 12px;">`;
+              html += `<div style="font-weight: 600; font-size: 13px; color: #f59e0b; margin-bottom: 4px;">Modified Cell:</div>`;
+              html += `<div style="font-family: monospace; font-size: 13px; padding: 6px 8px; background: rgba(245, 158, 11, 0.05); border-left: 3px solid #f59e0b; margin-bottom: 4px; color: #fde68a; white-space: pre-wrap;">`;
+              html += `${escapeHtml(ch.old)}\n→\n${escapeHtml(ch.new)}`;
+              html += `</div>`;
+              html += `</div>`;
+            });
+          });
+        }
+
+        if (headerChanges.length > 0) {
+          headerChanges.forEach(hc => {
+            html += `<div style="margin-bottom: 12px;">`;
+            html += `<div style="font-weight: 600; font-size: 13px; color: #f59e0b; margin-bottom: 4px;">Modified Header:</div>`;
+            html += `<div style="font-family: monospace; font-size: 13px; padding: 6px 8px; background: rgba(245, 158, 11, 0.05); border-left: 3px solid #f59e0b; margin-bottom: 4px; color: #fde68a; white-space: pre-wrap;">`;
+            html += `${escapeHtml(hc.old)}\n→\n${escapeHtml(hc.new)}`;
+            html += `</div>`;
+            html += `</div>`;
+          });
+        }
+
+        if (titleChange) {
+          html += `<div style="margin-bottom: 12px;">`;
+          html += `<div style="font-weight: 600; font-size: 13px; color: #f59e0b; margin-bottom: 4px;">Modified Title:</div>`;
+          html += `<div style="font-family: monospace; font-size: 13px; padding: 6px 8px; background: rgba(245, 158, 11, 0.05); border-left: 3px solid #f59e0b; margin-bottom: 4px; color: #fde68a; white-space: pre-wrap;">`;
+          html += `${escapeHtml(titleChange.old)}\n→\n${escapeHtml(titleChange.new)}`;
+          html += `</div>`;
+          html += `</div>`;
+        }
+
+        if (containerTextChange) {
+          html += `<div style="margin-bottom: 12px;">`;
+          html += `<div style="font-weight: 600; font-size: 13px; color: #f59e0b; margin-bottom: 4px;">Modified Container Text:</div>`;
+          html += `<div style="font-family: monospace; font-size: 13px; padding: 6px 8px; background: rgba(245, 158, 11, 0.05); border-left: 3px solid #f59e0b; margin-bottom: 4px; color: #fde68a; white-space: pre-wrap;">`;
+          html += `${escapeHtml(containerTextChange.old)}\n→\n${escapeHtml(containerTextChange.new)}`;
+          html += `</div>`;
+          html += `</div>`;
+        }
+        
+      } catch (e) {
+        // Not JSON, this is the new multiline text format
+        const blocks = event.diff_summary.trim().split(/\n\n+/);
+        blocks.forEach(block => {
+          block = block.trim();
+          if (!block) return;
+          
+          let title = "";
+          let content = block;
+          let color = "#f59e0b"; // yellow default
+          let bgColor = "rgba(245, 158, 11, 0.05)";
+          let textColor = "#fde68a";
+          
+          if (block.startsWith("Added Row:")) {
+            title = "Added Row:";
+            content = block.substring("Added Row:".length).trim();
+            color = "#10b981"; // green
+            bgColor = "rgba(16, 185, 129, 0.05)";
+            textColor = "#a7f3d0";
+          } else if (block.startsWith("Removed Row:")) {
+            title = "Removed Row:";
+            content = block.substring("Removed Row:".length).trim();
+            color = "#ef4444"; // red
+            bgColor = "rgba(239, 68, 68, 0.05)";
+            textColor = "#fca5a5";
+          } else if (block.startsWith("Modified Cell:")) {
+            title = "Modified Cell:";
+            content = block.substring("Modified Cell:".length).trim();
+          } else if (block.startsWith("Modified Header:")) {
+            title = "Modified Header:";
+            content = block.substring("Modified Header:".length).trim();
+          } else if (block.startsWith("Modified Title:")) {
+            title = "Modified Title:";
+            content = block.substring("Modified Title:".length).trim();
+          } else if (block.startsWith("Modified Container Text:")) {
+            title = "Modified Container Text:";
+            content = block.substring("Modified Container Text:".length).trim();
+          } else {
+            content = block;
+            color = "#9ca3af";
+            bgColor = "rgba(156, 163, 175, 0.05)";
+            textColor = "#e5e7eb";
+          }
+          
+          html += `<div style="margin-bottom: 12px;">`;
+          if (title) {
+            html += `<div style="font-weight: 600; font-size: 13px; color: ${color}; margin-bottom: 4px;">${title}</div>`;
+          }
+          html += `<div style="font-family: monospace; font-size: 13px; padding: 6px 8px; background: ${bgColor}; border-left: 3px solid ${color}; margin-bottom: 4px; color: ${textColor}; white-space: pre-wrap;">${escapeHtml(content)}</div>`;
+          html += `</div>`;
+        });
+      }
+
+      html += `</div>`;
+      return html;
+    }
+
+    function renderElementDiff(event) {
+      if (!event.diff_summary) return '';
+      let html = `<div style="font-family: inherit; color: var(--text-main);">`;
+      const blocks = event.diff_summary.trim().split(/\n\n+/);
+      
+      blocks.forEach(block => {
+        block = block.trim();
+        if (!block) return;
+        
+        let title = "";
+        let content = block;
+        let color = "#f59e0b"; // yellow default
+        let bgColor = "rgba(245, 158, 11, 0.05)";
+        let textColor = "#fde68a";
+        
+        if (block.startsWith("Added ")) {
+          title = block.substring(0, block.indexOf(":")) + ":";
+          content = block.substring(block.indexOf(":") + 1).trim();
+          color = "#10b981"; // green
+          bgColor = "rgba(16, 185, 129, 0.05)";
+          textColor = "#a7f3d0";
+        } else if (block.startsWith("Removed ")) {
+          title = block.substring(0, block.indexOf(":")) + ":";
+          content = block.substring(block.indexOf(":") + 1).trim();
+          color = "#ef4444"; // red
+          bgColor = "rgba(239, 68, 68, 0.05)";
+          textColor = "#fca5a5";
+        } else if (block.startsWith("Modified ")) {
+          title = block.substring(0, block.indexOf(":")) + ":";
+          content = block.substring(block.indexOf(":") + 1).trim();
+        } else if (block.startsWith("Table ")) {
+          title = block.substring(0, block.indexOf(":")) + ":";
+          content = block.substring(block.indexOf(":") + 1).trim();
+          // parse Table 1 Added Row: ...
+          if (title.includes("Added")) {
+            color = "#10b981";
+            bgColor = "rgba(16, 185, 129, 0.05)";
+            textColor = "#a7f3d0";
+          } else if (title.includes("Removed")) {
+            color = "#ef4444";
+            bgColor = "rgba(239, 68, 68, 0.05)";
+            textColor = "#fca5a5";
+          }
+        } else {
+          content = block;
+          color = "#9ca3af";
+          bgColor = "rgba(156, 163, 175, 0.05)";
+          textColor = "#e5e7eb";
+        }
+        
+        html += `<div style="margin-bottom: 12px;">`;
+        if (title) {
+          html += `<div style="font-weight: 600; font-size: 13px; color: ${color}; margin-bottom: 4px;">${escapeHtml(title)}</div>`;
+        }
+        html += `<div style="font-family: monospace; font-size: 13px; padding: 6px 8px; background: ${bgColor}; border-left: 3px solid ${color}; margin-bottom: 4px; color: ${textColor}; white-space: pre-wrap;">${escapeHtml(content)}</div>`;
+        html += `</div>`;
+      });
+      
+      html += `</div>`;
+      return html;
+    }
+
+    function escapeHtml(text) {
+      if (!text) return '';
+      return text
+        .toString()
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    // Initialize Page load and Polling interval
+    loadDashboardData(true);
+    setInterval(loadDashboardData, 15000); // refresh layout grid every 15s
+  </script>
+</body>
+</html>

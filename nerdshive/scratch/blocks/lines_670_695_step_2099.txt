@@ -1,0 +1,26 @@
+                         <h3 className="font-semibold text-lg border-b pb-2 mb-4">Address</h3>
+                         <div className="space-y-3">
+                           <div><span className="text-muted-foreground text-sm">Address:</span> <p className="font-medium">{companyInfo.address || '-'}</p></div>
+                           <div><span className="text-muted-foreground text-sm">City:</span> <p className="font-medium">{companyInfo.city || '-'}</p></div>
+                           <div><span className="text-muted-foreground text-sm">State:</span> <p className="font-medium">{companyInfo.state || '-'}</p></div>
+                           <div><span className="text-muted-foreground text-sm">Pincode:</span> <p className="font-medium">{companyInfo.pincode || '-'}</p></div>
+                         </div>
+                       </div>
+                       
+                       <div>
+                         <h3 className="font-semibold text-lg border-b pb-2 mb-4">Capacity & Status</h3>
+                         <div className="space-y-3">
+                           <div><span className="text-muted-foreground text-sm">Seats Requested:</span> <p className="font-medium">{companyInfo.seats_requested || 0}</p></div>
+                           <div><span className="text-muted-foreground text-sm">Employees Added:</span> <p className="font-medium">{companyInfo.employees_added || 0}</p></div>
+                           <div><span className="text-muted-foreground text-sm block mb-1">Seats Remaining:</span> <p className={`font-bold ${getSeatRemainingColor()}`}>{Math.max(0, (companyInfo.seats_requested || 0) - (companyInfo.employees_added || 0))}</p></div>
+                           <div>
+                             <span className="text-muted-foreground text-sm block mb-1">Approval Status:</span>
+                             <Badge variant={companyInfo.status === 'approved' ? 'default' : companyInfo.status === 'rejected' ? 'destructive' : 'secondary'}>
+                                {companyInfo.status.toUpperCase()}
+                             </Badge>
+                           </div>
+                           <div><span className="text-muted-foreground text-sm block mb-1">Approved By:</span> <p className="font-medium">{companyInfo.approved_by || 'Pending'}</p></div>
+                           <div><span className="text-muted-foreground text-sm block mb-1">Approved Date:</span> <p className="font-medium">{companyInfo.status === 'approved' ? new Date(companyInfo.updated_at).toLocaleDateString() : 'Pending'}</p></div>
+                         </div>
+                       </div>
+                     </div>

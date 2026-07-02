@@ -1,0 +1,834 @@
+{
+  "total_frontend_calls": 57,
+  "total_backend_endpoints": 60,
+  "unmatched_frontend": [],
+  "backend_endpoints": [
+    {
+      "file": "admins.py",
+      "method": "POST",
+      "url": "invite",
+      "is_mock": false,
+      "is_tested": false,
+      "full_url": "admins/invite",
+      "norm_url": "admins/invite"
+    },
+    {
+      "file": "admins.py",
+      "method": "GET",
+      "url": "",
+      "is_mock": false,
+      "is_tested": false,
+      "full_url": "admins",
+      "norm_url": "admins"
+    },
+    {
+      "file": "admins.py",
+      "method": "DELETE",
+      "url": "",
+      "is_mock": false,
+      "is_tested": false,
+      "full_url": "admins",
+      "norm_url": "admins"
+    },
+    {
+      "file": "admins.py",
+      "method": "GET",
+      "url": "me",
+      "is_mock": false,
+      "is_tested": false,
+      "full_url": "admins/me",
+      "norm_url": "admins/me"
+    },
+    {
+      "file": "admins.py",
+      "method": "DELETE",
+      "url": "{admin_id}",
+      "is_mock": false,
+      "is_tested": false,
+      "full_url": "admins/{admin_id}",
+      "norm_url": "admins/{param}"
+    },
+    {
+      "file": "audit.py",
+      "method": "GET",
+      "url": "usage_logs",
+      "is_mock": false,
+      "is_tested": false,
+      "full_url": "usage_logs",
+      "norm_url": "usage_logs"
+    },
+    {
+      "file": "audit.py",
+      "method": "GET",
+      "url": "updates",
+      "is_mock": false,
+      "is_tested": false,
+      "full_url": "updates",
+      "norm_url": "updates"
+    },
+    {
+      "file": "audit.py",
+      "method": "GET",
+      "url": "queries/my",
+      "is_mock": false,
+      "is_tested": false,
+      "full_url": "queries/my",
+      "norm_url": "queries/my"
+    },
+    {
+      "file": "audit.py",
+      "method": "GET",
+      "url": "queries",
+      "is_mock": false,
+      "is_tested": false,
+      "full_url": "queries",
+      "norm_url": "queries"
+    },
+    {
+      "file": "audit.py",
+      "method": "POST",
+      "url": "queries",
+      "is_mock": false,
+      "is_tested": false,
+      "full_url": "queries",
+      "norm_url": "queries"
+    },
+    {
+      "file": "audit.py",
+      "method": "PUT",
+      "url": "queries/{query_id}",
+      "is_mock": false,
+      "is_tested": false,
+      "full_url": "queries/{query_id}",
+      "norm_url": "queries/{param}"
+    },
+    {
+      "file": "audit.py",
+      "method": "GET",
+      "url": "activity_logs/count",
+      "is_mock": false,
+      "is_tested": false,
+      "full_url": "activity_logs/count",
+      "norm_url": "activity_logs/count"
+    },
+    {
+      "file": "audit.py",
+      "method": "GET",
+      "url": "activity_logs",
+      "is_mock": false,
+      "is_tested": false,
+      "full_url": "activity_logs",
+      "norm_url": "activity_logs"
+    },
+    {
+      "file": "audit.py",
+      "method": "POST",
+      "url": "activity_logs",
+      "is_mock": false,
+      "is_tested": false,
+      "full_url": "activity_logs",
+      "norm_url": "activity_logs"
+    },
+    {
+      "file": "audit.py",
+      "method": "GET",
+      "url": "content_sections",
+      "is_mock": false,
+      "is_tested": false,
+      "full_url": "content_sections",
+      "norm_url": "content_sections"
+    },
+    {
+      "file": "audit.py",
+      "method": "POST",
+      "url": "content_sections",
+      "is_mock": false,
+      "is_tested": false,
+      "full_url": "content_sections",
+      "norm_url": "content_sections"
+    },
+    {
+      "file": "audit.py",
+      "method": "POST",
+      "url": "admin_tab_views",
+      "is_mock": false,
+      "is_tested": false,
+      "full_url": "admin_tab_views",
+      "norm_url": "admin_tab_views"
+    },
+    {
+      "file": "auth.py",
+      "method": "POST",
+      "url": "login",
+      "is_mock": false,
+      "is_tested": false,
+      "full_url": "auth/login",
+      "norm_url": "auth/login"
+    },
+    {
+      "file": "auth.py",
+      "method": "POST",
+      "url": "refresh",
+      "is_mock": false,
+      "is_tested": false,
+      "full_url": "auth/refresh",
+      "norm_url": "auth/refresh"
+    },
+    {
+      "file": "auth.py",
+      "method": "POST",
+      "url": "password-recovery",
+      "is_mock": false,
+      "is_tested": false,
+      "full_url": "auth/password-recovery",
+      "norm_url": "auth/password-recovery"
+    },
+    {
+      "file": "auth.py",
+      "method": "POST",
+      "url": "reset-password",
+      "is_mock": false,
+      "is_tested": false,
+      "full_url": "auth/reset-password",
+      "norm_url": "auth/reset-password"
+    },
+    {
+      "file": "auth.py",
+      "method": "POST",
+      "url": "logout",
+      "is_mock": false,
+      "is_tested": false,
+      "full_url": "auth/logout",
+      "norm_url": "auth/logout"
+    },
+    {
+      "file": "auth.py",
+      "method": "POST",
+      "url": "register",
+      "is_mock": false,
+      "is_tested": false,
+      "full_url": "auth/register",
+      "norm_url": "auth/register"
+    },
+    {
+      "file": "auth.py",
+      "method": "GET",
+      "url": "session",
+      "is_mock": false,
+      "is_tested": false,
+      "full_url": "auth/session",
+      "norm_url": "auth/session"
+    },
+    {
+      "file": "auth.py",
+      "method": "POST",
+      "url": "change-password",
+      "is_mock": false,
+      "is_tested": false,
+      "full_url": "auth/change-password",
+      "norm_url": "auth/change-password"
+    },
+    {
+      "file": "business.py",
+      "method": "GET",
+      "url": "plans/my",
+      "is_mock": false,
+      "is_tested": false,
+      "full_url": "plans/my",
+      "norm_url": "plans/my"
+    },
+    {
+      "file": "business.py",
+      "method": "GET",
+      "url": "plans",
+      "is_mock": false,
+      "is_tested": false,
+      "full_url": "plans",
+      "norm_url": "plans"
+    },
+    {
+      "file": "business.py",
+      "method": "POST",
+      "url": "plans",
+      "is_mock": false,
+      "is_tested": false,
+      "full_url": "plans",
+      "norm_url": "plans"
+    },
+    {
+      "file": "business.py",
+      "method": "GET",
+      "url": "pricing",
+      "is_mock": false,
+      "is_tested": false,
+      "full_url": "pricing",
+      "norm_url": "pricing"
+    },
+    {
+      "file": "business.py",
+      "method": "PUT",
+      "url": "pricing/update",
+      "is_mock": false,
+      "is_tested": false,
+      "full_url": "pricing/update",
+      "norm_url": "pricing/update"
+    },
+    {
+      "file": "business.py",
+      "method": "GET",
+      "url": "checkins/my",
+      "is_mock": false,
+      "is_tested": false,
+      "full_url": "checkins/my",
+      "norm_url": "checkins/my"
+    },
+    {
+      "file": "business.py",
+      "method": "GET",
+      "url": "checkins/",
+      "is_mock": false,
+      "is_tested": false,
+      "full_url": "checkins/",
+      "norm_url": "checkins"
+    },
+    {
+      "file": "business.py",
+      "method": "POST",
+      "url": "checkins/expired/mark",
+      "is_mock": false,
+      "is_tested": false,
+      "full_url": "checkins/expired/mark",
+      "norm_url": "checkins/expired/mark"
+    },
+    {
+      "file": "business.py",
+      "method": "POST",
+      "url": "checkins/expired/delete-old",
+      "is_mock": false,
+      "is_tested": false,
+      "full_url": "checkins/expired/delete-old",
+      "norm_url": "checkins/expired/delete-old"
+    },
+    {
+      "file": "checkins.py",
+      "method": "POST",
+      "url": "",
+      "is_mock": false,
+      "is_tested": false,
+      "full_url": "checkins",
+      "norm_url": "checkins"
+    },
+    {
+      "file": "checkins.py",
+      "method": "PUT",
+      "url": "{checkin_id}",
+      "is_mock": false,
+      "is_tested": false,
+      "full_url": "checkins/{checkin_id}",
+      "norm_url": "checkins/{param}"
+    },
+    {
+      "file": "checkins.py",
+      "method": "PUT",
+      "url": "{checkin_id}/approve",
+      "is_mock": false,
+      "is_tested": false,
+      "full_url": "checkins/{checkin_id}/approve",
+      "norm_url": "checkins/{param}/approve"
+    },
+    {
+      "file": "checkins.py",
+      "method": "POST",
+      "url": "{checkin_id}/verify_payment",
+      "is_mock": false,
+      "is_tested": false,
+      "full_url": "checkins/{checkin_id}/verify_payment",
+      "norm_url": "checkins/{param}/verify_payment"
+    },
+    {
+      "file": "checkins.py",
+      "method": "DELETE",
+      "url": "{checkin_id}",
+      "is_mock": false,
+      "is_tested": false,
+      "full_url": "checkins/{checkin_id}",
+      "norm_url": "checkins/{param}"
+    },
+    {
+      "file": "dashboard.py",
+      "method": "GET",
+      "url": "stats",
+      "is_mock": false,
+      "is_tested": false,
+      "full_url": "dashboard/stats",
+      "norm_url": "dashboard/stats"
+    },
+    {
+      "file": "dashboard.py",
+      "method": "GET",
+      "url": "metrics",
+      "is_mock": false,
+      "is_tested": false,
+      "full_url": "dashboard/metrics",
+      "norm_url": "dashboard/metrics"
+    },
+    {
+      "file": "notifications.py",
+      "method": "GET",
+      "url": "",
+      "is_mock": false,
+      "is_tested": false,
+      "full_url": "notifications",
+      "norm_url": "notifications"
+    },
+    {
+      "file": "notifications.py",
+      "method": "PUT",
+      "url": "{notification_id}/read",
+      "is_mock": false,
+      "is_tested": false,
+      "full_url": "notifications/{notification_id}/read",
+      "norm_url": "notifications/{param}/read"
+    },
+    {
+      "file": "notifications.py",
+      "method": "PUT",
+      "url": "read-all",
+      "is_mock": false,
+      "is_tested": false,
+      "full_url": "notifications/read-all",
+      "norm_url": "notifications/read-all"
+    },
+    {
+      "file": "storage.py",
+      "method": "POST",
+      "url": "upload",
+      "is_mock": false,
+      "is_tested": false,
+      "full_url": "storage/upload",
+      "norm_url": "storage/upload"
+    },
+    {
+      "file": "storage.py",
+      "method": "POST",
+      "url": "id-proofs/{filename:path}",
+      "is_mock": false,
+      "is_tested": false,
+      "full_url": "storage/id-proofs/{filename:path}",
+      "norm_url": "storage/id-proofs/{param}"
+    },
+    {
+      "file": "storage.py",
+      "method": "POST",
+      "url": "customer-photos/{filename:path}",
+      "is_mock": false,
+      "is_tested": false,
+      "full_url": "storage/customer-photos/{filename:path}",
+      "norm_url": "storage/customer-photos/{param}"
+    },
+    {
+      "file": "storage.py",
+      "method": "GET",
+      "url": "raw/{bucket}/{path:path}",
+      "is_mock": false,
+      "is_tested": false,
+      "full_url": "storage/raw/{bucket}/{path:path}",
+      "norm_url": "storage/raw/{param}/{param}"
+    },
+    {
+      "file": "storage.py",
+      "method": "GET",
+      "url": "{bucket}/{path:path}",
+      "is_mock": false,
+      "is_tested": false,
+      "full_url": "storage/{bucket}/{path:path}",
+      "norm_url": "storage/{param}/{param}"
+    },
+    {
+      "file": "storage.py",
+      "method": "GET",
+      "url": "{filename}",
+      "is_mock": false,
+      "is_tested": false,
+      "full_url": "storage/{filename}",
+      "norm_url": "storage/{param}"
+    },
+    {
+      "file": "users.py",
+      "method": "GET",
+      "url": "me",
+      "is_mock": false,
+      "is_tested": false,
+      "full_url": "users/me",
+      "norm_url": "users/me"
+    },
+    {
+      "file": "users.py",
+      "method": "PUT",
+      "url": "me",
+      "is_mock": false,
+      "is_tested": false,
+      "full_url": "users/me",
+      "norm_url": "users/me"
+    },
+    {
+      "file": "users.py",
+      "method": "GET",
+      "url": "",
+      "is_mock": false,
+      "is_tested": false,
+      "full_url": "users",
+      "norm_url": "users"
+    },
+    {
+      "file": "users.py",
+      "method": "PUT",
+      "url": "{user_id}/approve",
+      "is_mock": false,
+      "is_tested": false,
+      "full_url": "users/{user_id}/approve",
+      "norm_url": "users/{param}/approve"
+    },
+    {
+      "file": "users.py",
+      "method": "PUT",
+      "url": "{user_id}/reject",
+      "is_mock": false,
+      "is_tested": false,
+      "full_url": "users/{user_id}/reject",
+      "norm_url": "users/{param}/reject"
+    },
+    {
+      "file": "users.py",
+      "method": "PUT",
+      "url": "{user_id}/inactive",
+      "is_mock": false,
+      "is_tested": false,
+      "full_url": "users/{user_id}/inactive",
+      "norm_url": "users/{param}/inactive"
+    },
+    {
+      "file": "users.py",
+      "method": "POST",
+      "url": "",
+      "is_mock": false,
+      "is_tested": false,
+      "full_url": "users",
+      "norm_url": "users"
+    },
+    {
+      "file": "users.py",
+      "method": "GET",
+      "url": "{user_id}",
+      "is_mock": false,
+      "is_tested": false,
+      "full_url": "users/{user_id}",
+      "norm_url": "users/{param}"
+    },
+    {
+      "file": "users.py",
+      "method": "POST",
+      "url": "delete",
+      "is_mock": false,
+      "is_tested": false,
+      "full_url": "users/delete",
+      "norm_url": "users/delete"
+    },
+    {
+      "file": "users.py",
+      "method": "DELETE",
+      "url": "",
+      "is_mock": false,
+      "is_tested": false,
+      "full_url": "users",
+      "norm_url": "users"
+    }
+  ],
+  "frontend_unique": [
+    {
+      "file": "services\\authService.ts",
+      "method": "POST",
+      "url": "auth/password-recovery"
+    },
+    {
+      "file": "components\\ui\\image-modal.tsx",
+      "method": "GET",
+      "url": "storage/{param}/{param}"
+    },
+    {
+      "file": "services\\dashboardService.ts",
+      "method": "POST",
+      "url": "content_sections"
+    },
+    {
+      "file": "services\\businessService.ts",
+      "method": "PUT",
+      "url": "pricing/update"
+    },
+    {
+      "file": "services\\authService.ts",
+      "method": "POST",
+      "url": "auth/register"
+    },
+    {
+      "file": "services\\storageService.ts",
+      "method": "POST",
+      "url": "storage/id-proofs/{param}"
+    },
+    {
+      "file": "services\\storageService.ts",
+      "method": "POST",
+      "url": "storage/customer-photos/{param}"
+    },
+    {
+      "file": "services\\authService.ts",
+      "method": "GET",
+      "url": "auth/session"
+    },
+    {
+      "file": "pages\\Register.tsx",
+      "method": "POST",
+      "url": "users/"
+    },
+    {
+      "file": "services\\userService.ts",
+      "method": "PUT",
+      "url": "users/me"
+    },
+    {
+      "file": "services\\authService.ts",
+      "method": "POST",
+      "url": "auth/logout"
+    },
+    {
+      "file": "pages\\SuperuserDashboard.tsx",
+      "method": "DELETE",
+      "url": "users"
+    },
+    {
+      "file": "pages\\SuperuserDashboard.tsx",
+      "method": "DELETE",
+      "url": "admins"
+    },
+    {
+      "file": "services\\adminService.ts",
+      "method": "GET",
+      "url": "admins/"
+    },
+    {
+      "file": "services\\adminService.ts",
+      "method": "POST",
+      "url": "admins/invite"
+    },
+    {
+      "file": "services\\adminService.ts",
+      "method": "DELETE",
+      "url": "admins/{param}"
+    },
+    {
+      "file": "services\\userService.ts",
+      "method": "GET",
+      "url": "users/"
+    },
+    {
+      "file": "services\\adminService.ts",
+      "method": "PUT",
+      "url": "users/{param}/approve"
+    },
+    {
+      "file": "services\\adminService.ts",
+      "method": "PUT",
+      "url": "users/{param}/reject"
+    },
+    {
+      "file": "services\\adminService.ts",
+      "method": "PUT",
+      "url": "users/{param}/inactive"
+    },
+    {
+      "file": "services\\adminService.ts",
+      "method": "GET",
+      "url": "admins/me"
+    },
+    {
+      "file": "services\\dashboardService.ts",
+      "method": "GET",
+      "url": "usage_logs"
+    },
+    {
+      "file": "services\\dashboardService.ts",
+      "method": "GET",
+      "url": "queries"
+    },
+    {
+      "file": "services\\dashboardService.ts",
+      "method": "POST",
+      "url": "queries"
+    },
+    {
+      "file": "services\\dashboardService.ts",
+      "method": "PUT",
+      "url": "queries/{param}"
+    },
+    {
+      "file": "services\\auditService.ts",
+      "method": "GET",
+      "url": "activity_logs"
+    },
+    {
+      "file": "services\\auditService.ts",
+      "method": "POST",
+      "url": "activity_logs"
+    },
+    {
+      "file": "services\\dashboardService.ts",
+      "method": "POST",
+      "url": "admin_tab_views"
+    },
+    {
+      "file": "services\\authService.ts",
+      "method": "POST",
+      "url": "auth/login"
+    },
+    {
+      "file": "services\\authService.ts",
+      "method": "POST",
+      "url": "auth/reset-password"
+    },
+    {
+      "file": "services\\authService.ts",
+      "method": "POST",
+      "url": "auth/change-password"
+    },
+    {
+      "file": "services\\businessService.ts",
+      "method": "GET",
+      "url": "plans/my"
+    },
+    {
+      "file": "services\\businessService.ts",
+      "method": "GET",
+      "url": "plans"
+    },
+    {
+      "file": "services\\businessService.ts",
+      "method": "POST",
+      "url": "plans"
+    },
+    {
+      "file": "services\\businessService.ts",
+      "method": "GET",
+      "url": "pricing"
+    },
+    {
+      "file": "services\\businessService.ts",
+      "method": "GET",
+      "url": "checkins/my"
+    },
+    {
+      "file": "services\\businessService.ts",
+      "method": "GET",
+      "url": "checkins/"
+    },
+    {
+      "file": "services\\businessService.ts",
+      "method": "PUT",
+      "url": "checkins/{param}/approve"
+    },
+    {
+      "file": "services\\businessService.ts",
+      "method": "POST",
+      "url": "checkins/expired/mark"
+    },
+    {
+      "file": "services\\businessService.ts",
+      "method": "POST",
+      "url": "checkins/expired/delete-old"
+    },
+    {
+      "file": "services\\businessService.ts",
+      "method": "POST",
+      "url": "checkins/{param}/verify_payment"
+    },
+    {
+      "file": "services\\businessService.ts",
+      "method": "POST",
+      "url": "checkins/"
+    },
+    {
+      "file": "services\\businessService.ts",
+      "method": "PUT",
+      "url": "checkins/{param}"
+    },
+    {
+      "file": "services\\businessService.ts",
+      "method": "DELETE",
+      "url": "checkins/{param}"
+    },
+    {
+      "file": "services\\dashboardService.ts",
+      "method": "GET",
+      "url": "dashboard/stats"
+    },
+    {
+      "file": "services\\dashboardService.ts",
+      "method": "GET",
+      "url": "dashboard/metrics"
+    },
+    {
+      "file": "services\\dashboardService.ts",
+      "method": "GET",
+      "url": "queries/my"
+    },
+    {
+      "file": "services\\dashboardService.ts",
+      "method": "GET",
+      "url": "updates"
+    },
+    {
+      "file": "services\\dashboardService.ts",
+      "method": "GET",
+      "url": "content_sections"
+    },
+    {
+      "file": "services\\dashboardService.ts",
+      "method": "GET",
+      "url": "activity_logs/count"
+    },
+    {
+      "file": "services\\notificationService.ts",
+      "method": "GET",
+      "url": "notifications/"
+    },
+    {
+      "file": "services\\notificationService.ts",
+      "method": "PUT",
+      "url": "notifications/{param}/read"
+    },
+    {
+      "file": "services\\notificationService.ts",
+      "method": "PUT",
+      "url": "notifications/read-all"
+    },
+    {
+      "file": "services\\storageService.ts",
+      "method": "POST",
+      "url": "storage/upload"
+    },
+    {
+      "file": "services\\userService.ts",
+      "method": "GET",
+      "url": "users/me"
+    },
+    {
+      "file": "services\\userService.ts",
+      "method": "POST",
+      "url": "users/delete"
+    },
+    {
+      "file": "services\\userService.ts",
+      "method": "GET",
+      "url": "users/{param}"
+    }
+  ]
+}

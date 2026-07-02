@@ -1,0 +1,50 @@
+      toast({ title: "Failed to submit biometric request", variant: "destructive" });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const getSeatRemainingColor = () => {
+    if (!stats) return "text-foreground";
+    const capacity = stats.max_employee_capacity || 0;
+    const remaining = Math.max(0, capacity - stats.total_employees);
+    if (remaining === 0) return "text-red-500";
+    const percentage = capacity > 0 ? remaining / capacity : 0;
+    if (percentage <= 0.2) return "text-orange-500";
+    return "text-green-500";
+  };
+
+  const openEditModal = () => {
+    setEditData({
+      company_name: companyInfo?.company_name || '',
+      company_website: companyInfo?.company_website || '',
+      company_email: companyInfo?.company_email || '',
+      industry_type: companyInfo?.industry_type || '',
+      admin_full_name: companyInfo?.admin_full_name || '',
+      admin_mobile: companyInfo?.admin_mobile || '',
+      address: companyInfo?.address || '',
+      city: companyInfo?.city || '',
+      state: companyInfo?.state || '',
+      pincode: companyInfo?.pincode || '',
+      gst_number: companyInfo?.gst_number || '',
+      max_employee_capacity: companyInfo?.max_employee_capacity || 0,
+      seats_requested: companyInfo?.seats_requested || 0,
+      biometric_required: companyInfo?.biometric_required || false,
+    });
+    setEditInfoModalOpen(true);
+  };
+
+  const saveCompanyInfo = async () => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(editData.company_email)) {
+      toast({ title: "Invalid email format.", variant: "destructive" });
+      return;
+    }
+    if (!editData.admin_mobile || editData.admin_mobile.length < 10) {
+      toast({ title: "Mobile number must be at least 10 characters.", variant: "destructive" });
+      return;
+    }
+    if (!editData.company_name || !editData.admin_full_name || !editData.company_email) {
+      toast({ title: "Required fields are missing.", variant: "destructive" });
+      return;
+    }

@@ -1,0 +1,215 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Nerdshive Design System - Professional coworking space branding */
+
+@layer base {
+  :root {
+    /* Nerdshive Brand Colors */
+    --background: 0 0% 100%;
+    --foreground: 0 0% 9%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 9%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 9%;
+
+    /* Primary: Nerdshive Yellow/Orange */
+    --primary: 45 95% 55%;
+    --primary-foreground: 0 0% 9%;
+    --primary-light: 48 100% 67%;
+    --primary-dark: 42 89% 48%;
+
+    /* Secondary: Professional neutral */
+    --secondary: 210 15% 96%;
+    --secondary-foreground: 0 0% 9%;
+
+    --muted: 210 15% 96%;
+    --muted-foreground: 0 0% 45%;
+
+    --accent: 42 89% 48%;
+    --accent-foreground: 0 0% 98%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 98%;
+
+    --success: 142 76% 36%;
+    --success-foreground: 0 0% 98%;
+
+    --warning: 38 92% 50%;
+    --warning-foreground: 0 0% 9%;
+
+    --border: 220 13% 91%;
+    --input: 220 13% 91%;
+    --ring: 45 95% 55%;
+
+    --radius: 0.75rem;
+
+    /* Nerdshive Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-light)));
+    --gradient-hero: linear-gradient(135deg, hsl(var(--primary-dark)), hsl(var(--primary)));
+    --gradient-accent: linear-gradient(135deg, hsl(var(--accent)), hsl(var(--primary)));
+    
+    /* Nerdshive Shadows */
+    --shadow-primary: 0 10px 30px -10px hsl(var(--primary) / 0.3);
+    --shadow-card: 0 4px 12px -2px hsl(220 13% 91% / 0.4);
+    --shadow-glow: 0 0 20px hsl(var(--primary) / 0.2);
+
+    /* Transitions */
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-bounce: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+
+    --sidebar-background: 0 0% 98%;
+
+    --sidebar-foreground: 240 5.3% 26.1%;
+
+    --sidebar-primary: 240 5.9% 10%;
+
+    --sidebar-primary-foreground: 0 0% 98%;
+
+    --sidebar-accent: 240 4.8% 95.9%;
+
+    --sidebar-accent-foreground: 240 5.9% 10%;
+
+    --sidebar-border: 220 13% 91%;
+
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+
+  .dark {
+    --background: 0 0% 9%;
+    --foreground: 0 0% 98%;
+
+    --card: 0 0% 9%;
+    --card-foreground: 0 0% 98%;
+
+    --popover: 0 0% 9%;
+    --popover-foreground: 0 0% 98%;
+
+    /* Keep Nerdshive primary in dark mode */
+    --primary: 45 95% 55%;
+    --primary-foreground: 0 0% 9%;
+    --primary-light: 48 100% 67%;
+    --primary-dark: 42 89% 48%;
+
+    --secondary: 0 0% 15%;
+    --secondary-foreground: 0 0% 98%;
+
+    --muted: 0 0% 15%;
+    --muted-foreground: 0 0% 65%;
+
+    --accent: 42 89% 48%;
+    --accent-foreground: 0 0% 98%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 98%;
+
+    --success: 142 76% 36%;
+    --success-foreground: 0 0% 98%;
+
+    --warning: 38 92% 50%;
+    --warning-foreground: 0 0% 9%;
+
+    --border: 0 0% 20%;
+    --input: 0 0% 20%;
+    --ring: 45 95% 55%;
+    --sidebar-background: 240 5.9% 10%;
+    --sidebar-foreground: 240 4.8% 95.9%;
+    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 3.7% 15.9%;
+    --sidebar-accent-foreground: 240 4.8% 95.9%;
+    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+}
+
+@layer components {
+  /* Nerdshive utility classes */
+  .gradient-primary {
+    background: var(--gradient-primary);
+  }
+  
+  .gradient-hero {
+    background: var(--gradient-hero);
+  }
+  
+  .gradient-accent {
+    background: var(--gradient-accent);
+  }
+  
+  .shadow-primary {
+    box-shadow: var(--shadow-primary);
+  }
+  
+  .shadow-card {
+    box-shadow: var(--shadow-card);
+  }
+  
+  .shadow-glow {
+    box-shadow: var(--shadow-glow);
+  }
+  
+  .transition-smooth {
+    transition: var(--transition-smooth);
+  }
+  
+  .transition-bounce {
+    transition: var(--transition-bounce);
+  }
+  
+  /* Blinking animation for check-in tab */
+  @keyframes blink-tab {
+    0%, 100% { opacity: 1; box-shadow: 0 0 0 0 hsl(var(--primary) / 0.4); }
+    50% { opacity: 0.7; box-shadow: 0 0 10px 2px hsl(var(--primary) / 0.4); }
+  }
+  
+  .blink-tab {
+    animation: blink-tab 1.5s ease-in-out 3;
+  }
+  
+  /* Hexagonal design elements inspired by hive */
+  .hexagon {
+    clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+  }
+  
+  .hexagon-border {
+    position: relative;
+  }
+  
+  .hexagon-border::before {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    background: var(--gradient-primary);
+    border-radius: inherit;
+    z-index: -1;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+    caret-color: hsl(var(--foreground)) !important;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+
+  /* Ensure text and caret color in inputs and textareas are pure black immediately with no transitions in light mode */
+  input, textarea {
+    color: #000000 !important;
+    caret-color: #000000 !important;
+    transition: none !important;
+  }
+
+  /* Respect dark mode */
+  .dark input, .dark textarea {
+    color: #ffffff !important;
+    caret-color: #ffffff !important;
+    transition: none !important;
+  }
+}

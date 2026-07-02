@@ -1,0 +1,31 @@
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between">
+                  <div>
+                    <CardTitle>Employee Directory</CardTitle>
+                    <CardDescription>Manage your organization's employees and their access</CardDescription>
+                  </div>
+                  <div className="flex space-x-2">
+                    <Button variant="outline" className="flex items-center" onClick={handleDownloadCSV}>
+                      <Download className="w-4 h-4 mr-2" />
+                      Download CSV Format
+                    </Button>
+                    <Button onClick={() => setEnrollModalOpen(true)} className="flex items-center">
+                      <UploadCloud className="w-4 h-4 mr-2" />
+                      Enroll Employees
+                    </Button>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Name</TableHead>
+                        <TableHead>Email</TableHead>
+                        <TableHead>Department</TableHead>
+                        <TableHead>Status</TableHead>
+                        <TableHead>Actions</TableHead>
+                      </TableRow>
+                    </TableHeader>

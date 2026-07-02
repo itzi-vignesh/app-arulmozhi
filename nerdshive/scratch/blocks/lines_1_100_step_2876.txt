@@ -1,0 +1,69 @@
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { corporateService, DashboardStats } from "@/services/corporateService";
+import { businessService } from "@/services/businessService";
+import { authService } from "@/services/authService";
+import { AuthGuard } from "@/components/ui/auth-guard";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Button } from "@/components/ui/button";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Badge } from "@/components/ui/badge";
+import { useToast } from "@/hooks/use-toast";
+import { Bell, LogOut, Users, Clock, CreditCard, MessageSquare, Building, Shield, Activity, Download, UploadCloud, Edit2, Settings, Lock } from "lucide-react";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog";
+import { EmployeeCsvUploader } from "@/components/EmployeeCsvUploader";
+
+export default function CorporateDashboard() {
+  const [stats, setStats] = useState<DashboardStats | null>(null);
+  const [employees, setEmployees] = useState<any[]>([]);
+  const [attendance, setAttendance] = useState<any[]>([]);
+  const [companyInfo, setCompanyInfo] = useState<any>(null);
+  const [loading, setL
+      if (empsResult.status === 'fulfilled') setEmployees(empsResult.value);
+      if (attResult.status === 'fulfilled') setAttendance(attResult.value);
+      if (infoResult.status === 'fulfilled') setCompanyInfo(infoResult.value);
+      if (plansResult.status === 'fulfilled') setCorporatePlans(plansResult.value);
+      
+      fetchQueries();
+    } catch (error) {
+      console.error("Error fetching dashboard data:", error);
+    }
+  };
+
+  const fetchQueries = async () => {
+    try {
+      const response = await corporateService.getDashboardStats(); // just a placeholder to use apiClient
+      // Actually use apiClient directly for queries since it's not in corporateService
+      const { apiClient } = await import('@/lib/apiClient');
+      const res = await apiClient.get('/queries/my');
+      setQueries(res.data);
+      
+      const notifRes = await apiClient.get('/notifications');
+      setNotifications(notifRes.data);
+    } catch (error) {
+      console.error("Error fetching queries:", error);
+    }
+  };
+
+  const submitQuery = async () => {
+    if (!newQueryMessage.trim()) return;
+    setIsSubmittingQuery(true);
+    try {
+      const { apiClient } = await import('@/lib/apiClient');
+      await apiClient.post('/queries', { message: newQueryMessage });
+      setNewQueryMessage("");
+      toast({ title: "Query Submitted Successfully" });
+      fetchQueries();
+    } catch (error) {
+      toast({ title: "Failed to submit query", variant: "destructive" });
+    } finally {
+      setIsSubmittingQuery(false);
+    }
+  };
+
+  const handleLogout = async () => {
+    try {
+      await authService.logout();

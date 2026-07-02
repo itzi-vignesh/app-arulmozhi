@@ -1,0 +1,14 @@
+  2. The endpoint forces the correct browser filename and MIME type by explicitly sending:
+     - `Content-Disposition: attachment; filename="bulk_enrollment_template.csv"` (or `employee_enrollment_template.csv` based on query param).
+     - `Content-Type: text/csv; charset=utf-8`.
+  3. Updated [BulkEnrollmentTab.tsx](file:///e:/1/src/components/BulkEnrollmentTab.tsx#L393-L406) and [CorporateDashboard.tsx](file:///e:/1/src/pages/CorporateDashboard.tsx#L340-L354) download links to point directly to the backend endpoint:
+     - `/api/v1/users/download-template?filename=bulk_enrollment_template.csv`
+     - `/api/v1/users/download-template?filename=employee_enrollment_template.csv`
+  4. Rebuilt backend & frontend Docker images and restarted both containers.
+- **Verification**:
+  - Validated that requesting `/api/v1/users/download-template` returns HTTP `200 OK` with `Content-Type: text/csv` and the correct `Content-Disposition: attachment; filename="..."` header.
+  - Verified through a browser subagent that clicking the download button in the Superuser Dashboard triggers the API-backed download successfully.
+
+
+
+

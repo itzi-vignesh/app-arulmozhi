@@ -1,0 +1,10 @@
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { corporateService, DashboardStats } from "@/services/corporateService";
+import { authService } from "@/services/authService";
+import { AuthGuard } from "@/components/ui/auth-guard";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Button } from "@/components/ui/button";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Badge } from "@/components/ui/badge";

@@ -1,0 +1,78 @@
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { corporateService, DashboardStats } from "@/services/corporateService";
+import { authService } from "@/services/authService";
+import { AuthGuard } from "@/components/ui/auth-guard";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Button } from "@/components/ui/button";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Badge } from "@/components/ui/badge";
+import { useToast } from "@/hooks/use-toast";
+import { Bell, LogOut, Users, Clock, CreditCard, MessageSquare, Building, Shield, Activity, Download, UploadCloud, Edit2, Settings } from "lucide-react";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog";
+import { EmployeeCsvUploader } from "@/components/EmployeeCsvUploader";
+
+export default function CorporateDashboard() {
+  const [stats, setStats] = useState<DashboardStats | null>(null);
+  const [employees, setEmployees] = useState<any[]>([]);
+  const [attendance, setAttendance] = useState<any[]>([]);
+  const [companyInfo, setCompanyInfo] = useState<any>(null);
+  const [loading, setLoading] = useState(false);
+  const [editInfoModalOpen, setEditInfoMo
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "employee_enrollment_template.csv";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      setTimeout(() => {
+        URL.revokeObjectURL(url);
+      }, 100);
+
+      toast({
+        title: "Template Downloaded",
+        description: "Standardized employee template has been downloaded.",
+      });
+    } catch (error) {
+      console.error("Error downloading template", error);
+      toast({
+        title: "Download Failed",
+        description: "Could not download the standardized CSV template.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const openRequestSeatsModal = () => {
+    setRequestedSeatsInput(companyInfo?.seats_requested || 0);
+    setRequestSeatsModalOpen(true);
+  };
+
+  const submitSeatsRequest = async () => {
+    if (requestedSeatsInput <= 0) {
+      toast({ 
+        title: "Invalid seat number", 
+        description: "Seats must be greater than zero.", 
+        variant: "destructive" 
+      });
+      return;
+    }
+    setLoading(true);
+    try {
+      await corporateService.updateCompanyInfo({
+        ...companyInfo,
+        seats_requested: requestedSeatsInput
+      });
+      toast({ title: "Seats upgrade request submitted successfully." });
+      setRequestSeatsModalOpen(false);
+      fetchDashboardData();
+    } catch (error) {
+      toast({ title: "Request Failed", variant: "destructive" });
+    } finally {
+      setLoading(false);
+    }
+  };

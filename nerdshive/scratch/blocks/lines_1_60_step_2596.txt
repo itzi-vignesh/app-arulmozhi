@@ -1,0 +1,30 @@
+# Walkthrough - Bulk Enrollment, Capacity Upgrades, and Document Security
+
+We have completed the redesign of the Bulk Enrollment workflow, the Capacity Upgrade workflow correction, and the Document Download security fixes across the NerdShive platform.
+
+## 1. Template Standardization & Bulk Enrollment
+* **Removed the old simplified template** (`email,name,mobile,department,designation`) from all downloads and validation layers.
+* **Standardized to the 21-column master template** containing:
+  `S.No`, `Name`, `Gender`, `Date Of Birth`, `Mobile No`, `Email ID`, `Emergency Contact Person`, `Emergency Contact No`, `Company Name`, `Department/Team`, `Designation/Role`, `Employee ID`, `Joining Date in NH`, `Duration`, `ID Proof Type`, `ID Proof No`, `Do you require Parking?`, `Vehicle Type`, `Vehicle Brand & Model`, `Vehicle Color`, `Vehicle Registration Number`
+* Created a reusable, highly polished React component in [EmployeeCsvUploader.tsx](file:///E:/1/src/components/EmployeeCsvUploader.tsx) to handle csv uploads, row validations, database checks, error tables, and import actions.
+* Integrated the uploader and template download buttons in Superuser, Admin, and Corporate dashboards.
+
+## 2. Capacity Upgrade Workflow Correction
+* **Decoupled Fields**: Separated approved limit (`max_employee_capacity`) and requested upgraded seats (`seats_requested`). Dashboard stats compute seats available/remaining strictly using `max_employee_capacity` before approval.
+* **Validation on Upgrade Requests*
+  - [Dashboard.tsx](file:///e:/1/src/pages/Dashboard.tsx): Fixed calculations and displays in dynamic pricing cards grid, select dropdown, and purchase trigger.
+
+## 6. Bug Fix - "Approved By" Showing UUID Instead of User Name
+* **Issue**: The Corporate Dashboard → Company Info rendered the raw database UUID of the approver (`approved_by`), which is not human-readable.
+* **Backend Fix**:
+  - Added an `approver` relationship to `AuthUser` inside the `Company` model ([company.py](file:///e:/1/backend/app/models/company.py)).
+  - Declared `approved_by_name` and `approved_by_email` property decorators resolving the approver's profile name (superuser, admin, company admin, customer) or falling back to their email.
+  - Added `approved_by_name` and `approved_by_email` to the `CompanyInfoResponse` and `CompanyResponse` schemas in [company.py](file:///e:/1/backend/app/schemas/company.py).
+  - Populated the resolved fields in [company_admin.py](file:///e:/1/backend/app/api/v1/endpoints/company_admin.py)'s manual dict serialization endpoints.
+* **Frontend Fix**:
+  - Replaced the raw UUID display in [CorporateDashboard.tsx](file:///e:/1/src/pages/CorporateDashboard.tsx#L707) with the resolved `approved_by_name` or `approved_by_email`, falling back to `'Approved'` or `'Pending'`.
+  - Audited the application defensively for other audit/action tracking fields (`created_by`, `updated_by`, etc.) and confirmed they are not leaking UUIDs to the user.
+* **Verification**:
+  - Wrote and successfully executed [test_approved_by_fields.py](file:///e:/1/scratch/test_approved_by_fields.py) integration test confirming correct values are mapped and returned for registration, approval, retrieval, and profile update actions.
+  - Rebuilt images and restarted containers. All endpoints function correctly.
+

@@ -1,0 +1,71 @@
+src\components/ActivityTabComponent.tsx:36:return Array.from(unique.values()).sort((a, b) =>
+src\components/CheckInApprovalTab.tsx:59:await apiClient.post(`/rpc/${ 'mark_expired_checkins' }`);
+src\components/CheckInApprovalTab.tsx:62:await apiClient.post(`/rpc/${ 'delete_old_expired_checkins' }`);
+src\components/CheckInApprovalTab.tsx:66:.eq('checkin_approved', false)
+src\components/CheckInApprovalTab.tsx:67:.neq('payment_status', 'rejected')
+src\components/CheckInApprovalTab.tsx:68:.gte('created_at', new Date().toISOString().split('T')[0])
+src\components/CheckInApprovalTab.tsx:69:.order('created_at', { ascending: false });
+src\components/CheckInApprovalTab.tsx:78:.single();
+src\components/CheckInApprovalTab.tsx:82:.single();
+src\components/CheckInApprovalTab.tsx:124:.eq('id', checkinId);
+src\components/CheckInApprovalTab.tsx:144:newSet.delete(checkinId);
+src\components/CheckInApprovalTab.tsx:154:const { error } = await apiClient.delete('/checkins');
+src\components/CheckInApprovalTab.tsx:174:newSet.delete(checkinId);
+src\components/CheckInOutTab.tsx:88:.single();
+src\components/CheckInOutTab.tsx:132:.eq('id', currentCheckIn.id);
+src\components/PaymentVerificationTab.tsx:57:.eq("checkin_approved", false)
+src\components/PaymentVerificationTab.tsx:58:.neq("payment_status", "rejected")
+src\components/PaymentVerificationTab.tsx:59:.gte("created_at", new Date().toISOString().split('T')[0])
+src\components/PaymentVerificationTab.tsx:60:.order("created_at", { ascending: false });
+src\components/PaymentVerificationTab.tsx:69:.single();
+src\components/PaymentVerificationTab.tsx:73:.single();
+src\components/PaymentVerificationTab.tsx:106:const { data, error } = await apiClient.post(`/rpc/${ 'verify_payment' }`, {
+src\components/PaymentVerificationTab.tsx:137:newSet.delete(checkinId);
+src\components/PaymentVerificationTab.tsx:170:newSet.delete(checkinId);
+src\components\ui/auth-guard.tsx:35:const { data: isSuperuser } = await apiClient.post(`/rpc/is_superuser`, { user_id: userId });
+src\components\ui/auth-guard.tsx:43:const { data: isAdmin } = await apiClient.post(`/rpc/is_admin`, { user_id: userId });
+src\components\ui/auth-guard.tsx:44:const { data: isSuperuser } = await apiClient.post(`/rpc/is_superuser`, { user_id: userId });
+src\components\ui/auth-guard.tsx:58:const { data: isSuperuser } = await apiClient.post(`/rpc/is_superuser`, { user_id: userId });
+src\components\ui/auth-guard.tsx:59:const { data: isAdmin } = await apiClient.post(`/rpc/is_admin`, { user_id: userId });
+src\components\ui/notification-bell.tsx:36:.order('created_at', { ascending: false })
+src\components\ui/notification-bell.tsx:54:.eq('id', notificationId);
+src\components\ui/notification-bell.tsx:79:.eq('is_read', false)
+src\components\ui/notification-bell.tsx:80:.eq('user_id', session.user.id);
+src\hooks/use-toast.ts:64:toastTimeouts.delete(toastId)
+src\lib/historyUtils.ts:88:const list = Array.from(map.values()).map(({ priority, ...rest }) => rest);
+src\pages/AdminDashboard.tsx:200:await apiClient.post(`/rpc/${ 'delete_user_completely' }`, {
+src\pages/AdminDashboard.tsx:1089:await apiClient.post(`/rpc/${ 'update_admin_tab_view' }`, {
+src\pages/AdminDashboard.tsx:1183:await apiClient.post('/rpc/delete_user_completely', { user_auth_id: userId });
+src\pages/Dashboard.tsx:136:.single();
+src\pages/Dashboard.tsx:149:.single();
+src\pages/Dashboard.tsx:153:.order('created_at', { ascending: false });
+src\pages/Dashboard.tsx:169:.single();
+src\pages/Dashboard.tsx:174:.order('created_at', { ascending: false });
+src\pages/Dashboard.tsx:190:.single();
+src\pages/Dashboard.tsx:194:.order('created_at', { ascending: false });
+src\pages/Dashboard.tsx:232:.single();
+src\pages/Dashboard.tsx:236:.order('created_at', { ascending: false });
+src\pages/Dashboard.tsx:255:.single();
+src\pages/Dashboard.tsx:259:.order('created_at', { ascending: false });
+src\pages/Dashboard.tsx:309:.single();
+src\pages/Dashboard.tsx:385:.single();
+src\pages/Login.tsx:61:const { data: isSuperuser } = await apiClient.post(`/rpc/${ 'is_superuser' }`, { user_id: userId });
+src\pages/Login.tsx:67:const { data: isAdmin } = await apiClient.post(`/rpc/${ 'is_admin' }`, { user_id: userId });
+src\pages/Login.tsx:75:.single();
+src\pages/Settings.tsx:128:const { data: isSuperuser } = await apiClient.post(`/rpc/${ 'is_superuser' }`, { user_id: session.user.id });
+src\pages/Settings.tsx:133:.single();
+src\pages/Settings.tsx:174:const { data: isAdmin } = await apiClient.post(`/rpc/${ 'is_admin' }`, { user_id: session.user.id });
+src\pages/Settings.tsx:179:.single();
+src\pages/Settings.tsx:222:.single();
+src\pages/Settings.tsx:392:.single();
+src\pages/Settings.tsx:402:.eq('auth_id', session.user.id);
+src\pages/Settings.tsx:409:.single();
+src\pages/Settings.tsx:419:.eq('auth_id', session.user.id);
+src\pages/Settings.tsx:516:.eq('auth_id', session.user.id);
+src\pages/SuperuserDashboard.tsx:221:await apiClient.post(`/rpc/${ 'delete_user_completely' }`, {
+src\pages/SuperuserDashboard.tsx:261:await apiClient.delete(`/users`).catch(() => {});
+src\pages/SuperuserDashboard.tsx:941:await apiClient.post(`/rpc/${ 'mark_expired_checkins' }`);
+src\pages/SuperuserDashboard.tsx:942:await apiClient.post(`/rpc/${ 'delete_old_expired_checkins' }`);
+src\pages/SuperuserDashboard.tsx:1024:await apiClient.post(`/rpc/${ 'update_admin_tab_view' }`, {
+src\pages/SuperuserDashboard.tsx:1337:await apiClient.delete(`/admins`).catch(() => {});
+src\pages/SuperuserDashboard.tsx:1438:await apiClient.post('/rpc/delete_user_completely', { user_auth_id: userId });

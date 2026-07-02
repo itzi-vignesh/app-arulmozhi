@@ -1,0 +1,50 @@
+                   </Card>
+                 </TabsContent>
+
+                 <TabsContent value="meetings_sub" className="space-y-6">
+                   <div className="flex justify-between items-center bg-card p-4 rounded-xl border">
+                     <div>
+                       <h2 className="text-lg font-bold">Workspace Meetings</h2>
+                       <p className="text-sm text-muted-foreground">Request meeting rooms and manage your scheduled sessions</p>
+                     </div>
+                     <Button onClick={() => {
+                       setBookingForm({
+                         meeting_title: "",
+                         purpose: "",
+                         meeting_date: "",
+                         start_time: "",
+                         end_time: "",
+                         participants: 1,
+                         room_id: "",
+                         department: "",
+                         notes: ""
+                       });
+                       setRequestMeetingModalOpen(true);
+                     }} className="flex items-center gap-2">
+                       <Plus className="w-4 h-4" /> Request Meeting
+                     </Button>
+                   </div>
+
+                   {/* Render Sections */}
+                   <div className="space-y-8">
+                     {/* Upcoming Meetings */}
+                     <div className="space-y-3">
+                       <h3 className="font-bold text-
+                         <p className="text-sm text-muted-foreground italic pl-2">No upcoming approved meetings.</p>
+                       ) : (
+                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                           {corpMeetings.filter(m => m.status === 'APPROVED' && new Date(m.meeting_date) >= new Date()).map(m => (
+                             <Card key={m.id} className="border-l-4 border-l-green-500">
+                               <CardContent className="p-4 flex justify-between items-start">
+                                 <div className="space-y-1">
+                                   <p className="font-bold text-base">{m.meeting_title}</p>
+                                   <p className="text-xs text-muted-foreground">Room: <span className="font-semibold text-primary">{m.room?.room_name || 'Not Assigned'}</span></p>
+                                   <p className="text-xs text-muted-foreground">Date: {m.meeting_date} | Time: {m.start_time.substring(0,5)} - {m.end_time.substring(0,5)}</p>
+                                   {m.decision_notes && <p className="text-xs italic mt-2 text-muted-foreground">Note: "{m.decision_notes}"</p>}
+                                 </div>
+                                 <Button variant="outline" size="sm" className="text-red-600 hover:text-red-700 text-xs h-7" onClick={() => {
+                                   setSelectedMeetingToCancel(m);
+                                   setCancelReason("");
+                                   setCancelMeetingModalOpen(true);
+                                 }}>Cancel</Button>
+                               </CardContent>

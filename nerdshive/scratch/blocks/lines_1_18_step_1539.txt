@@ -1,0 +1,17 @@
+# Tasks - Pricing Restructure Implementation
+
+- `[/]` Define Database Model `PricingPlan` in `backend/app/models/business.py`
+- `[ ]` Create Alembic Migration for `pricing_plans`
+- `[ ]` Create Pydantic schemas in `backend/app/schemas/pricing.py`
+- `[ ]` Implement endpoints in `backend/app/api/v1/endpoints/pricing.py`
+- `[ ]` Register pricing router in `backend/app/api/v1/api.py`
+- `[ ]` Update seeding script `backend/storage/seed_in_docker.py` to seed default plans
+- `[ ]` Implement activity logging for pricing updates
+- `[ ]` Implement dynamic pricing in React Customer Pricing pages (`src/pages/Dashboard.tsx`)
+- `[ ]` Implement dynamic pricing in Corporate Dashboard plans section (`src/pages/CorporateDashboard.tsx`)
+- `[ ]` Refactor Superuser Dashboard pricing section to manage customer and corporate plans
+- `[ ]` Refactor Admin Dashboard pricing section to allow editing customer plans only (Corporate read-only)
+- `[ ]` Build frontend and verify no compile errors
+- `[ ]` Run Alembic migration and seed script
+- `[ ]` Restart docker containers and verify runtime endpoints
+- `[ ]` Verify role-based access control and audit logging

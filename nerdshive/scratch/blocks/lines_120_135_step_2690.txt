@@ -1,0 +1,15 @@
+
+  const requestBiometricAccess = async () => {
+    if (!companyInfo?.id) return;
+    setLoading(true);
+    try {
+      const { apiClient } = await import('@/lib/apiClient');
+      await apiClient.post(`/companies/${companyInfo.id}/biometric-request`);
+      toast({ title: "Biometric request submitted successfully." });
+      fetchDashboardData();
+    } catch (error) {
+      toast({ title: "Failed to submit biometric request", variant: "destructive" });
+    } finally {
+      setLoading(false);
+    }
+  };

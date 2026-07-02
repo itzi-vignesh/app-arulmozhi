@@ -1,0 +1,52 @@
+# Implementation Plan - Attendance Module Controlled by Biometric Approval
+
+We will redesign the Attendance module across the platform to make it available only after a company's biometric attendance request is approved by the Superuser. The biometric status will be stored in the database as the single source of truth using a new string column `biometric_status` on the `Company` model.
+
+## User Review Required
+
+> [!IMPORTANT]
+> - A new database column `biometric_status` (String, default `"NOT_REQUESTED"`) is added to the `companies` table. We created Alembic migration `3a8d6b3f983c_add_biometric_status_field` to add this.
+> - The backend `POST /companies/{company_id}/biometric-request` endpoint will set `biometric_status = "PENDING"` and `biometric_requested = True`.
+> - Three new backend endpoints are introduced for Superuser approval actions:
+>   - `PUT /companies/{company_id}/biometric-approve` (sets `"APPROVED"`, `biometric_required = True`)
+>   - `PUT /companies/{company_id}/biometric-reject` (sets `"REJECTED"`, `biometric_required = False`, `biometric_requested = False`)
+>   - `PUT /companies/{company_id}/biometric-disable` (sets `"DISABLED"`, `biometric_required = False`)
+> - The Corporate Dashboard Attendance tab is updated to support three distinct states based on the `biometric_status` response field.
+
+## Open Questions
+
+None. The workflow rules are clearly laid out in the requirements.
+
+## Proposed Changes
+
+---
+
+### Database &
+    - If status is `PENDING`, show **Approve Biometric** and **Reject Biometric** buttons.
+    - If status is `APPROVED`, show **Disable Biometric** button.
+  * Connect these buttons to the new `corporateService` biometric decision helper calls.
+
+#### [MODIFY] [src/pages/CorporateDashboard.tsx](file:///e:/1/src/pages/CorporateDashboard.tsx)
+* Import `Lock` from `lucide-react`.
+* In `TabsContent value="attendance"`, render the 3 states:
+  * **State 1 (Not requested / Rejected / Disabled)**: If `biometric_status` is `NOT_REQUESTED`, `REJECTED`, or `DISABLED`, display a centered empty card with the text "Biometric Attendance Not Enabled" and a "Request Biometric Access" button.
+  * **State 2 (Request Pending)**: If status is `PENDING`, display a card with "Biometric Approval Pending", a description, and a "Pending Approval" badge (disabling further request submissions).
+  * **State 3 (Approved / Enabled)**: If status is `APPROVED`, render the fully operational attendance list table exactly as before.
+
+---
+
+## Verification Plan
+
+### Automated Tests
+* Create a verification script `scratch/test_biometric_workflow.py` performing:
+  1. Login as seeded company admin. Check initial status `NOT_REQUESTED`.
+  2. Request biometric access. Check status becomes `PENDING`.
+  3. Log in as Superuser and reject the request. Check status becomes `REJECTED`.
+  4. Request biometric access again. Check status becomes `PENDING`.
+  5. Log in as Superuser and approve request. Check status becomes `APPROVED`.
+  6. Verify dashboard stats returns `APPROVED`.
+  7. Log in as Superuser and disable biometric access. Check status becomes `DISABLED`.
+
+### Manual Verification
+* Rebuild and restart the container stack: `docker compose build` & `docker compose up -d`.
+* Access the frontend and run manual checks for Cases 1, 2, 3, and 4.

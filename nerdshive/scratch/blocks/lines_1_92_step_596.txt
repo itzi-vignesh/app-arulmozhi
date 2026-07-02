@@ -1,0 +1,47 @@
+# Migration Walkthrough & Final Verification
+
+We have successfully completed the migration work to bring frontend API coverage to 100%. Here is a breakdown of the changes made and the verification steps taken.
+
+## Changes Made
+
+### 1. Database Schema Updates
+To support the registration flow and profile management on the frontend, the following columns were added to the `User` model ([user.py](file:///e:/1/backend/app/models/user.py)) and user schemas ([user.py](file:///e:/1/backend/app/schemas/user.py)):
+- `city` (String, optional)
+- `location` (String, optional)
+- `occupation` (String, optional)
+- `govt_id_copy_url` (String, optional)
+- `reimbursement` (Boolean, default False)
+- `gst_number` (String, optional)
+- `org_location` (String, optional)
+
+These were successfully generated and applied via Alembic migrations (`alembic upgrade head`).
+
+### 2. Missing Backend Endpoints Implemented
+We implemented all 10 missing endpoints in the backend, adding appropriate Role-Based Access Control (RBAC):
+
+#### `backend/app/api/v1/endpoints/users.py` ([users.py](file:///e:/1/backend/app/api/v1/endpoints/users.py))
+- `POST /`: Create a new user profile linked to the authenticated user.
+- `GET /{user_id}`: Retrieve a specific user profile (restricted to Owner, Admins, or Superusers).
+- `POST /delete`: Entirely delete a specific user (Superuser only).
+- `DELETE /`: Bulk delete all non-elevated user profiles (Superuser only).
+
+#### `backend/app/api/v1/endpoints/storage.py` ([storage.py](file:///e:/1/backend/app/api/v1/endpoints/s
+  - **Registration & Cascades**: Verified that uploading valid CSV data inserts clean user profiles, generates unique sequential customer IDs, records admin activity logs, and handles DB updates correctly.
+  - **Pass Status**: The script completed successfully with all assertions passing.
+
+### 4. Recent Fixes & Frontend Verification (June 2026)
+
+#### Missing DialogDescription Import Fix
+- **Issue**: Navigating to the Corporate Dashboard threw a blank screen crash (`ReferenceError: DialogDescription is not defined`) because it was used in the dedicated "Request More Seats" modal but not imported from `@/components/ui/dialog`.
+- **Fix**: Added `DialogDescription` to the imports of `@/components/ui/dialog` in [CorporateDashboard.tsx](file:///e:/1/src/pages/CorporateDashboard.tsx#L15).
+- **Result**: Frontend rebuilt and deployed successfully. The page loads without error and the "Request More Seats" modal functions perfectly.
+
+#### Dedicated "Request More Seats" Modal Verification
+- Verified that clicking the **Request More Seats** button under the *Plans* tab opens a compact, dedicated modal showing the current seats capacity and allowing entry of the new total seats requested. It no longer opens the full "Edit Company Information" panel.
+- Verified that the updated value is sent correctly to the backend database via the API.
+
+#### User Rejection Flow Verification
+- Verified that registering a user and then rejecting them from the Superuser Approvals dashboard functions correctly.
+- The rejection flow deletes the `AuthUser` record (which cascades to clean up corresponding profile details, check-ins, and plans) to allow the email address to be reused in any future signup attempt.
+
+

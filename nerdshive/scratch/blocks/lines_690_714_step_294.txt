@@ -1,0 +1,24 @@
+                </div>
+              </div>
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setEditInfoModalOpen(false)}>Cancel</Button>
+              <Button onClick={saveCompanyInfo} disabled={loading}>
+                {loading ? "Saving..." : "Save Changes"}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        <Dialog open={enrollModalOpen} onOpenChange={setEnrollModalOpen}>
+          <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>Enroll Employees</DialogTitle>
+            </DialogHeader>
+            <BulkEnrollmentTab />
+          </DialogContent>
+        </Dialog>
+      </div>
+    </AuthGuard>
+  );
+}

@@ -1,0 +1,1488 @@
+﻿diff --git a/src/pages/CorporateDashboard.tsx b/src/pages/CorporateDashboard.tsx
+index 788be44..051acfe 100644
+--- a/src/pages/CorporateDashboard.tsx
++++ b/src/pages/CorporateDashboard.tsx
+@@ -3,17 +3,59 @@ import { useNavigate } from "react-router-dom";
+ import { corporateService, DashboardStats } from "@/services/corporateService";
+ import { authService } from "@/services/authService";
+ import { AuthGuard } from "@/components/ui/auth-guard";
+-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
++import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
+ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+ import { Button } from "@/components/ui/button";
+ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+ import { Badge } from "@/components/ui/badge";
+ import { useToast } from "@/hooks/use-toast";
+-import { Bell, LogOut, Users, Clock, CreditCard, MessageSquare, Building, Shield, Activity, Download, UploadCloud, Edit2, Settings } from "lucide-react";
++import { Bell, LogOut, Users, Clock, CreditCard, MessageSquare, Building, Shield, Activity, Download, UploadCloud, Edit2, Settings, Plus, Check, Loader2 } from "lucide-react";
+ import { Label } from "@/components/ui/label";
+ import { Input } from "@/components/ui/input";
+ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog";
+ import { EmployeeCsvUploader } from "@/components/EmployeeCsvUploader";
++import { NotificationBell } from "@/components/ui/notification-bell";
++import { MeetingCalendar } from "@/components/MeetingCalendar";
++import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
++import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
++
++const getTodayLocalDateStr = () => {
++  const d = new Date();
++  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
++};
++
++const getOverlappedInterval = (hour: number, item: { start_time: string; end_time: string }) => {
++  const [startH, startM] = item.start_time.split(':').map(Number);
++  const [endH, endM] = item.end_time.split(':').map(Number);
++  
++  const itemStartMin = startH * 60 + startM;
++  const itemEndMin = endH * 60 + endM;
++  const hourStartMin = hour * 60;
++  const hourEndMin = (hour + 1) * 60;
++  
++  const overlapStartMin = Math.max(itemStartMin, hourStartMin);
++  const overlapEndMin = Math.min(itemEndMin, hourEndMin);
++  
++  const formatMinToTime = (min: number) => {
++    const h = Math.floor(min / 60);
++    const m = min % 60;
++    return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
++  };
++  
++  return {
++    start: formatMinToTime(overlapStartMin),
++    end: formatMinToTime(overlapEndMin)
++  };
++};
++
++const isMeetingExpired = (meeting: any) => {
++  if (!meeting || !meeting.meeting_date || !meeting.end_time) return false;
++  const [year, month, day] = meeting.meeting_date.split("-").map(Number);
++  const [hours, minutes] = meeting.end_time.split(":").map(Number);
++  const now = new Date();
++  const meetingEnd = new Date(year, month - 1, day, hours, minutes, 0, 0);
++  return meetingEnd < now;
++};
+ 
+ export default function CorporateDashboard() {
+   const [stats, setStats] = useState<DashboardStats | null>(null);
+@@ -33,13 +75,236 @@ export default function CorporateDashboard() {
+   const [isSubmittingQuery, setIsSubmittingQuery] = useState(false);
+   const [notifications, setNotifications] = useState<any[]>([]);
+   
++  // Meetings State
++  const [corpMeetings, setCorpMeetings] = useState<any[]>([]);
++  const [corporatePlans, setCorporatePlans] = useState<any[]>([]);
++  const [availableRooms, setAvailableRooms] = useState<any[]>([]);
++  const [bookingForm, setBookingForm] = useState({
++    meeting_title: "",
++    purpose: "",
++    meeting_date: "",
++    start_time: "",
++    end_time: "",
++    participants: 1 as number | string,
++    room_id: "",
++    department: "",
++    notes: ""
++  });
++  const [requestMeetingModalOpen, setRequestMeetingModalOpen] = useState(false);
++  const [cancelMeetingModalOpen, setCancelMeetingModalOpen] = useState(false);
++  const [selectedMeetingToCancel, setSelectedMeetingToCancel] = useState<any | null>(null);
++  const [cancelReason, setCancelReason] = useState("");
++
++  // Availability & Room states
++  const [rooms, setRooms] = useState<any[]>([]);
++  const [selectedRoomId, setSelectedRoomId] = useState<string>("");
++  const [currentDate, setCurrentDate] = useState(new Date());
++  const [selectedCalendarDate, setSelectedCalendarDate] = useState<Date | null>(new Date());
++  const [meetings, setMeetings] = useState<any[]>([]);
++
++  const [availabilityData, setAvailabilityData] = useState<any[]>([]);
++  const [fetchingAvailability, setFetchingAvailability] = useState(false);
++  const [dialogAvailability, setDialogAvailability] = useState<any[]>([]);
++  const [dialogAvailabilityError, setDialogAvailabilityError] = useState("");
++  const [checkingDialogAvailability, setCheckingDialogAvailability] = useState(false);
++
++  // Seat allocation states
++  const [seatsActionType, setSeatsActionType] = useState<"increase" | "reduce">("increase");
++  
+   const { toast } = useToast();
+   const navigate = useNavigate();
+ 
++  const formatDateToInput = (date: Date) => {
++    return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
++  };
++
++  const formatLocalDate = (dateStr: string) => {
++    if (!dateStr) return "";
++    const parts = dateStr.split("-");
++    if (parts.length !== 3) return dateStr;
++    const [year, month, day] = parts;
++    const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
++    const mIdx = parseInt(month, 10) - 1;
++    const mName = monthNames[mIdx] || month;
++    return `${parseInt(day, 10)} ${mName} ${year}`;
++  };
++
++  const fetchRooms = async () => {
++    try {
++      const { apiClient } = await import('@/lib/apiClient');
++      const res = await apiClient.get('/meetings/rooms');
++      setRooms(res.data);
++      if (res.data.length > 0) {
++        setSelectedRoomId(res.data[0].id);
++      }
++    } catch (error) {
++      console.error("Error fetching rooms:", error);
++    }
++  };
++
++  const fetchMeetingsForRoom = async (roomId: string) => {
++    if (!roomId) return;
++    try {
++      const { apiClient } = await import('@/lib/apiClient');
++      const res = await apiClient.get(`/meetings/?room_id=${roomId}`);
++      setMeetings(res.data);
++    } catch (error) {
++      console.error("Error fetching meetings for room:", error);
++    }
++  };
++
++  const fetchAvailability = async (date: string, roomId: string) => {
++    if (!roomId) return;
++    setFetchingAvailability(true);
++    try {
++      const { apiClient } = await import('@/lib/apiClient');
++      const res = await apiClient.get(`/meetings/availability?date=${date}&room=${roomId}`);
++      setAvailabilityData(res.data);
++    } catch (error) {
++      console.error("Error fetching availability:", error);
++    } finally {
++      setFetchingAvailability(false);
++    }
++  };
++
+   useEffect(() => {
+     fetchDashboardData();
++    fetchCorporatePlans();
++    fetchRooms();
+   }, []);
+ 
++  useEffect(() => {
++    if (selectedRoomId) {
++      fetchMeetingsForRoom(selectedRoomId);
++    }
++  }, [selectedRoomId, currentDate]);
++
++  useEffect(() => {
++    if (selectedCalendarDate && selectedRoomId) {
++      const dateStr = formatDateToInput(selectedCalendarDate);
++      fetchAvailability(dateStr, selectedRoomId);
++    }
++  }, [selectedCalendarDate, selectedRoomId]);
++
++  // Dialog Availability & Validation
++  useEffect(() => {
++    const fetchDialogAvailability = async () => {
++      if (!bookingForm.meeting_date || !bookingForm.room_id) {
++        setDialogAvailability([]);
++        return;
++      }
++      setCheckingDialogAvailability(true);
++      try {
++        const { apiClient } = await import('@/lib/apiClient');
++        const res = await apiClient.get(`/meetings/availability?date=${bookingForm.meeting_date}&room=${bookingForm.room_id}`);
++        setDialogAvailability(res.data);
++      } catch (error) {
++        console.error("Error fetching dialog availability:", error);
++      } finally {
++        setCheckingDialogAvailability(false);
++      }
++    };
++    fetchDialogAvailability();
++  }, [bookingForm.meeting_date, bookingForm.room_id]);
++
++  const checkDialogOverlap = (date: string, start: string, end: string, availabilityList: any[]) => {
++    if (!date || !start || !end) return "";
++    
++    const [startH, startM] = start.split(':').map(Number);
++    const [endH, endM] = end.split(':').map(Number);
++    const requestedStartMin = startH * 60 + startM;
++    const requestedEndMin = endH * 60 + endM;
++    
++    if (requestedEndMin <= requestedStartMin) {
++      return "End time must be after start time.";
++    }
++
++    // Check if the slot date & time is in the past
++    const now = new Date();
++    now.setSeconds(0, 0);
++    const [y, m, d] = date.split('-').map(Number);
++    const requestedStart = new Date(y, m - 1, d, startH, startM, 0, 0);
++    if (requestedStart < now) {
++      return "You cannot book a meeting in a timed out slot.";
++    }
++    
++    for (const item of availabilityList) {
++      const [itemStartH, itemStartM] = item.start_time.split(':').map(Number);
++      const [itemEndH, itemEndM] = item.end_time.split(':').map(Number);
++      const itemStartMin = itemStartH * 60 + itemStartM;
++      const itemEndMin = itemEndH * 60 + itemEndM;
++      
++      // Check overlap
++      if (requestedStartMin < itemEndMin && itemStartMin < requestedEndMin) {
++        return "This meeting slot is already booked or has already been requested. Please choose another available time.";
++      }
++    }
++    
++    return "";
++  };
++
++  useEffect(() => {
++    if (!bookingForm.meeting_date || !bookingForm.room_id || !bookingForm.start_time || !bookingForm.end_time) {
++      setDialogAvailabilityError("");
++      return;
++    }
++    const err = checkDialogOverlap(
++      bookingForm.meeting_date,
++      bookingForm.start_time,
++      bookingForm.end_time,
++      dialogAvailability
++    );
++    setDialogAvailabilityError(err);
++  }, [bookingForm.meeting_date, bookingForm.room_id, bookingForm.start_time, bookingForm.end_time, dialogAvailability]);
++
++  const getHourStatus = (hour: number, availabilityList: any[]) => {
++    const startHourMin = hour * 60;
++    const endHourMin = (hour + 1) * 60;
++    
++    let status = "AVAILABLE";
++    
++    for (const item of availabilityList) {
++      const [startH, startM] = item.start_time.split(':').map(Number);
++      const [endH, endM] = item.end_time.split(':').map(Number);
++      const itemStartMin = startH * 60 + startM;
++      const itemEndMin = endH * 60 + endM;
++      
++      // Check overlap
++      if (startHourMin < itemEndMin && itemStartMin < endHourMin) {
++        if (item.status === "BOOKED") {
++          return "BOOKED";
++        }
++        status = "PENDING";
++      }
++    }
++    return status;
++  };
++
++  const requestSeatPermission = async () => {
++    setLoading(true);
++    try {
++      await corporateService.requestSeatPermission();
++      toast({ title: "Seat permission request submitted successfully." });
++      fetchDashboardData();
++    } catch (error) {
++      toast({ title: "Request Failed", variant: "destructive" });
++    } finally {
++      setLoading(false);
++    }
++  };
++
++  const openRequestIncreaseSeatsModal = () => {
++    setSeatsActionType("increase");
++    setRequestedSeatsInput((companyInfo?.max_employee_capacity || 0) + 5);
++    setRequestSeatsModalOpen(true);
++  };
++
++  const openRequestReduceSeatsModal = () => {
++    setSeatsActionType("reduce");
++    setRequestedSeatsInput(Math.max(stats?.total_employees || 0, (companyInfo?.max_employee_capacity || 0) - 5));
++    setRequestSeatsModalOpen(true);
++  };
++
+   const fetchDashboardData = async () => {
+     try {
+       const [statsResult, empsResult, attResult, infoResult] = await Promise.allSettled([
+@@ -55,11 +320,133 @@ export default function CorporateDashboard() {
+       if (infoResult.status === 'fulfilled') setCompanyInfo(infoResult.value);
+       
+       fetchQueries();
++      fetchCorpMeetings();
+     } catch (error) {
+       console.error("Error fetching dashboard data:", error);
+     }
+   };
+ 
++  const fetchCorporatePlans = async () => {
++    try {
++      const { businessService } = await import('@/services/businessService');
++      const data = await businessService.getCorporatePlans();
++      setCorporatePlans(data || []);
++    } catch (error) {
++      console.error("Error fetching corporate plans:", error);
++    }
++  };
++
++  const fetchCorpMeetings = async () => {
++    try {
++      const { apiClient } = await import('@/lib/apiClient');
++      const res = await apiClient.get('/meetings/');
++      setCorpMeetings(res.data);
++    } catch (error) {
++      console.error("Error fetching corporate meetings:", error);
++    }
++  };
++
++  const handleSlotClick = (hour: number) => {
++    const startTimeStr = `${String(hour).padStart(2, '0')}:00`;
++    const endTimeStr = `${String(hour + 1).padStart(2, '0')}:00`;
++    
++    setBookingForm({
++      meeting_title: "",
++      purpose: "",
++      meeting_date: selectedCalendarDate ? formatDateToInput(selectedCalendarDate) : "",
++      start_time: startTimeStr,
++      end_time: endTimeStr,
++      participants: 1,
++      room_id: selectedRoomId || "",
++      department: "",
++      notes: ""
++    });
++    setRequestMeetingModalOpen(true);
++  };
++
++  const handleBookingSubmit = async (e?: React.FormEvent) => {
++    if (e) e.preventDefault();
++    if (!bookingForm.meeting_title.trim() || !bookingForm.purpose.trim() || !bookingForm.meeting_date || !bookingForm.start_time || !bookingForm.end_time || !bookingForm.department.trim()) {
++      toast({ title: "Please fill in all required fields", variant: "destructive" });
++      return;
++    }
++    
++    const numParticipants = Number(bookingForm.participants);
++    if (isNaN(numParticipants) || numParticipants < 1) {
++      toast({ title: "Validation Error", description: "Participants must be 1 or more", variant: "destructive" });
++      return;
++    }
++
++    const availabilityErr = checkDialogOverlap(
++      bookingForm.meeting_date,
++      bookingForm.start_time,
++      bookingForm.end_time,
++      dialogAvailability
++    );
++    if (availabilityErr) {
++      toast({ title: "Validation Error", description: availabilityErr, variant: "destructive" });
++      return;
++    }
++    
++    setLoading(true);
++    try {
++      const { apiClient } = await import('@/lib/apiClient');
++      const formatTimeStr = (t: string) => t.length === 5 ? `${t}:00` : t;
++      const payload = {
++        ...bookingForm,
++        start_time: formatTimeStr(bookingForm.start_time),
++        end_time: formatTimeStr(bookingForm.end_time),
++        room_id: bookingForm.room_id || null
++      };
++      await apiClient.post('/meetings/request', payload);
++      toast({ title: "Meeting request submitted successfully" });
++      setRequestMeetingModalOpen(false);
++      setAvailableRooms([]); // Reset available rooms on success
++      if (bookingForm.room_id) {
++        setSelectedRoomId(bookingForm.room_id);
++      }
++      if (bookingForm.meeting_date) {
++        const [y, m, d] = bookingForm.meeting_date.split('-').map(Number);
++        setSelectedCalendarDate(new Date(y, m - 1, d));
++      }
++      fetchCorpMeetings();
++    } catch (error: any) {
++      const detail = error.response?.data?.detail;
++      if (detail && detail.error_code === "MULTIPLE_ROOMS_AVAILABLE") {
++        setAvailableRooms(detail.rooms);
++        toast({ 
++          title: "Multiple Rooms Available", 
++          description: "Please select your preferred room." 
++        });
++      } else {
++        const errMsg = typeof detail === "string" ? detail : (detail?.message || "Failed to submit request");
++        toast({ title: "Submission failed", description: errMsg, variant: "destructive" });
++      }
++    } finally {
++      setLoading(false);
++    }
++  };
++
++  const handleCancelSubmit = async (e?: React.FormEvent) => {
++    if (e) e.preventDefault();
++    if (!selectedMeetingToCancel) return;
++    setLoading(true);
++    try {
++      const { apiClient } = await import('@/lib/apiClient');
++      await apiClient.put(`/meetings/${selectedMeetingToCancel.id}/cancel`, {
++        cancel_reason: cancelReason
++      });
++      toast({ title: "Meeting cancelled successfully" });
++      setCancelMeetingModalOpen(false);
++      fetchCorpMeetings();
++    } catch (error: any) {
++      const errMsg = error.response?.data?.detail || "Failed to cancel meeting";
++      toast({ title: "Cancellation failed", description: errMsg, variant: "destructive" });
++    } finally {
++      setLoading(false);
++    }
++  };
++
+   const fetchQueries = async () => {
+     try {
+       const response = await corporateService.getDashboardStats(); // just a placeholder to use apiClient
+@@ -233,17 +620,42 @@ export default function CorporateDashboard() {
+       });
+       return;
+     }
++
++    if (seatsActionType === "reduce" && requestedSeatsInput < (stats?.total_employees || 0)) {
++      toast({
++        title: "Validation Error",
++        description: "Seat allocation cannot be reduced below the current number of registered employees.",
++        variant: "destructive"
++      });
++      return;
++    }
++
+     setLoading(true);
+     try {
+       await corporateService.updateCompanyInfo({
+         ...companyInfo,
+         seats_requested: requestedSeatsInput
+       });
+-      toast({ title: "Seats upgrade request submitted successfully." });
++      toast({ title: "Seat allocation change request submitted successfully." });
+       setRequestSeatsModalOpen(false);
+       fetchDashboardData();
++    } catch (error: any) {
++      const errMsg = error.response?.data?.detail || "Request Failed";
++      toast({ title: "Request Failed", description: errMsg, variant: "destructive" });
++    } finally {
++      setLoading(false);
++    }
++  };  const handleSelectPlan = async (planId: string) => {
++    setLoading(true);
++    try {
++      await corporateService.updateCompanyInfo({
++        ...companyInfo,
++        selected_plan_id: planId
++      });
++      toast({ title: "Plan selected successfully." });
++      fetchDashboardData();
+     } catch (error) {
+-      toast({ title: "Request Failed", variant: "destructive" });
++      toast({ title: "Plan Selection Failed", variant: "destructive" });
+     } finally {
+       setLoading(false);
+     }
+@@ -266,7 +678,17 @@ export default function CorporateDashboard() {
+                 </div>
+               </div>
+               <div className="flex items-center space-x-2">
+-                <Button onClick={handleLogout} variant="outline" size="sm" className="text-muted-foreground">
++                <NotificationBell />
++                <Button
++                  onClick={() => navigate("/settings")}
++                  variant="outline"
++                  size="sm"
++                  className="text-muted-foreground hover:text-foreground"
++                >
++                  <Settings className="w-4 h-4 mr-2" />
++                  Settings
++                </Button>
++                <Button onClick={handleLogout} variant="outline" size="sm" className="text-muted-foreground hover:text-foreground">
+                  <LogOut className="w-4 h-4 mr-2" />
+                  Logout
+                </Button>
+@@ -278,13 +700,13 @@ export default function CorporateDashboard() {
+         {/* Main Content */}
+         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+           <Tabs defaultValue="overview" className="space-y-6">
+-            <TabsList className="grid w-full grid-cols-6">
+-              <TabsTrigger value="overview"><Activity className="w-4 h-4 mr-2 hidden sm:block" />Overview</TabsTrigger>
+-              <TabsTrigger value="employees"><Users className="w-4 h-4 mr-2 hidden sm:block" />Employees</TabsTrigger>
+-              <TabsTrigger value="attendance"><Clock className="w-4 h-4 mr-2 hidden sm:block" />Attendance</TabsTrigger>
+-              <TabsTrigger value="plans" className="hidden md:flex"><CreditCard className="w-4 h-4 mr-2" />Plans</TabsTrigger>
+-              <TabsTrigger value="queries" className="hidden md:flex"><MessageSquare className="w-4 h-4 mr-2" />Queries</TabsTrigger>
+-              <TabsTrigger value="company-info" className="hidden md:flex"><Building className="w-4 h-4 mr-2" />Company Info</TabsTrigger>
++            <TabsList className="grid w-full grid-cols-3 md:grid-cols-6 h-auto p-1 bg-muted/50 gap-1">
++              <TabsTrigger value="overview" className="py-2.5 px-3 data-[state=active]:bg-background"><Activity className="w-4 h-4 mr-2 hidden md:block" />Overview</TabsTrigger>
++              <TabsTrigger value="employees" className="py-2.5 px-3 data-[state=active]:bg-background"><Users className="w-4 h-4 mr-2 hidden md:block" />Employees</TabsTrigger>
++              <TabsTrigger value="attendance" className="py-2.5 px-3 data-[state=active]:bg-background"><Clock className="w-4 h-4 mr-2 hidden md:block" />Attendance</TabsTrigger>
++              <TabsTrigger value="plans" className="py-2.5 px-3 data-[state=active]:bg-background"><CreditCard className="w-4 h-4 mr-2" />Plans</TabsTrigger>
++              <TabsTrigger value="queries" className="py-2.5 px-3 data-[state=active]:bg-background"><MessageSquare className="w-4 h-4 mr-2" />Queries & Meetings</TabsTrigger>
++              <TabsTrigger value="company-info" className="py-2.5 px-3 data-[state=active]:bg-background"><Building className="w-4 h-4 mr-2" />Company Info</TabsTrigger>
+             </TabsList>
+ 
+             <TabsContent value="overview">
+@@ -321,7 +743,7 @@ export default function CorporateDashboard() {
+                   <CardContent>
+                     <div className="text-2xl font-bold">{stats?.seats_available || 0}</div>
+                     <p className="text-xs text-muted-foreground">
+-                      Out of {stats?.seats_requested || 0} total requested
++                      Out of {stats?.max_employee_capacity || 0} current seats
+                     </p>
+                   </CardContent>
+                 </Card>
+@@ -420,10 +842,17 @@ export default function CorporateDashboard() {
+                     <CardDescription>Recent check-in activity for your employees</CardDescription>
+                   </div>
+                   <div>
+-                    {companyInfo?.biometric_required ? (
+-                      <Badge className="bg-green-500 hover:bg-green-600 text-white">Biometric Requested During Registration</Badge>
+-                    ) : companyInfo?.biometric_requested ? (
+-                      <Badge className="bg-blue-500 hover:bg-blue-600 text-white">Biometric Request Submitted</Badge>
++                    {companyInfo?.biometric_status === "APPROVED" || companyInfo?.biometric_required ? (
++                      <Badge className="bg-green-500 hover:bg-green-600 text-white">Biometric Access Approved</Badge>
++                    ) : companyInfo?.biometric_status === "PENDING" || companyInfo?.biometric_requested ? (
++                      <Badge className="bg-blue-500 hover:bg-blue-600 text-white">Biometric Request Pending</Badge>
++                    ) : companyInfo?.biometric_status === "REJECTED" ? (
++                      <div className="flex items-center gap-2">
++                        <Badge className="bg-red-500 hover:bg-red-600 text-white">Request Rejected</Badge>
++                        <Button onClick={requestBiometricAccess} disabled={loading}>
++                          Request Biometric Access
++                        </Button>
++                      </div>
+                     ) : (
+                       <Button onClick={requestBiometricAccess} disabled={loading}>
+                         Request Biometric Access
+@@ -432,136 +861,578 @@ export default function CorporateDashboard() {
+                   </div>
+                 </CardHeader>
+                 <CardContent>
+-                  <Table>
+-                    <TableHeader>
+-                      <TableRow>
+-                        <TableHead>Employee</TableHead>
+-                        <TableHead>Department</TableHead>
+-                        <TableHead>Check In</TableHead>
+-                        <TableHead>Check Out</TableHead>
+-                        <TableHead>Status</TableHead>
+-                      </TableRow>
+-                    </TableHeader>
+-                    <TableBody>
+-                      {attendance.map(record => (
+-                        <TableRow key={record.id}>
+-                          <TableCell className="font-medium">{record.employee_name}</TableCell>
+-                          <TableCell>{record.department || '-'}</TableCell>
+-                          <TableCell>{new Date(record.checkin_time).toLocaleString()}</TableCell>
+-                          <TableCell>{record.checkout_time ? new Date(record.checkout_time).toLocaleString() : '-'}</TableCell>
+-                          <TableCell>
+-                            <Badge variant={record.status === 'checked_in' ? 'default' : 'secondary'}>
+-                              {record.status.replace('_', ' ')}
+-                            </Badge>
+-                          </TableCell>
++                  {companyInfo?.biometric_status === "APPROVED" || companyInfo?.biometric_required ? (
++                    <Table>
++                      <TableHeader>
++                        <TableRow>
++                          <TableHead>Employee</TableHead>
++                          <TableHead>Department</TableHead>
++                          <TableHead>Check In</TableHead>
++                          <TableHead>Check Out</TableHead>
++                          <TableHead>Status</TableHead>
+                         </TableRow>
+-                      ))}
+-                    </TableBody>
+-                  </Table>
++                      </TableHeader>
++                      <TableBody>
++                        {attendance.map(record => (
++                          <TableRow key={record.id}>
++                            <TableCell className="font-medium">{record.employee_name}</TableCell>
++                            <TableCell>{record.department || '-'}</TableCell>
++                            <TableCell>{new Date(record.checkin_time).toLocaleString()}</TableCell>
++                            <TableCell>{record.checkout_time ? new Date(record.checkout_time).toLocaleString() : '-'}</TableCell>
++                            <TableCell>
++                              <Badge variant={record.status === 'checked_in' ? 'default' : 'secondary'}>
++                                {record.status.replace('_', ' ')}
++                              </Badge>
++                            </TableCell>
++                          </TableRow>
++                        ))}
++                      </TableBody>
++                    </Table>
++                  ) : (
++                    <div className="text-center py-12 bg-muted/30 rounded-lg border border-dashed flex flex-col items-center justify-center space-y-3">
++                      <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary">
++                        <Shield className="w-6 h-6" />
++                      </div>
++                      <h3 className="text-lg font-medium text-foreground">Biometric Access Required</h3>
++                      <p className="text-sm text-muted-foreground max-w-md">
++                        {companyInfo?.biometric_status === "PENDING" || companyInfo?.biometric_requested ? (
++                          "Biometric access request is pending administrator approval. Check-in logs will be available once approved."
++                        ) : companyInfo?.biometric_status === "REJECTED" ? (
++                          "Your request for biometric access was rejected. Please contact support or request access again."
++                        ) : companyInfo?.biometric_status === "DISABLED" ? (
++                          "Biometric attendance has been disabled for your organization. Please request access to enable check-ins."
++                        ) : (
++                          "Biometric attendance is not enabled. Please request access to track employee check-ins."
++                        )}
++                      </p>
++                    </div>
++                  )}
+                 </CardContent>
+               </Card>
+             </TabsContent>
+             
+-            <TabsContent value="plans">
++            <TabsContent value="plans" className="space-y-6">
+                <Card>
+-                 <CardHeader>
+-                   <CardTitle>Corporate Plans</CardTitle>
+-                   <CardDescription>View your current seat utilization and request upgrades</CardDescription>
++                 <CardHeader className="flex flex-row items-center justify-between">
++                   <div>
++                     <CardTitle>Corporate Plan & Capacity</CardTitle>
++                     <CardDescription>View your current seat utilization and manage upgrades</CardDescription>
++                   </div>
++                   {companyInfo?.allow_future_seat_requests ? (
++                     <div className="flex gap-2">
++                       <Button onClick={openRequestIncreaseSeatsModal} size="sm" className="flex items-center gap-1.5 hover:scale-[1.02] active:scale-[0.98] transition-all duration-150">
++                         <Plus className="w-3.5 h-3.5" /> Increase Seats
++                       </Button>
++                       <Button onClick={openRequestReduceSeatsModal} size="sm" variant="outline" className="flex items-center gap-1.5 hover:scale-[1.02] active:scale-[0.98] transition-all duration-150">
++                         <Plus className="w-3.5 h-3.5 rotate-45" /> Reduce Seats
++                       </Button>
++                     </div>
++                   ) : (
++                     companyInfo?.seat_allocation_permission_requested ? (
++                       <Badge variant="secondary" className="px-3 py-1.5 text-xs font-semibold">
++                         Seat Permission Requested
++                       </Badge>
++                     ) : (
++                       <Button onClick={requestSeatPermission} disabled={loading} size="sm" className="flex items-center gap-1.5 hover:scale-[1.02] active:scale-[0.98] transition-all duration-150">
++                         Request Seat Allocation Access
++                       </Button>
++                     )
++                   )}
+                  </CardHeader>
+                  <CardContent>
+-                   <div className="p-4 bg-muted rounded-lg text-center">
+-                     <p className="text-muted-foreground mb-4">You have {stats?.seats_available || 0} seats available out of {stats?.seats_requested || 0} requested.</p>
+-                      <Button onClick={openRequestSeatsModal}>Request More Seats</Button>
++                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4 p-4 bg-muted/30 rounded-xl">
++                     <div>
++                       <p className="text-xs text-muted-foreground uppercase tracking-wider">Current Seats</p>
++                       <p className="text-lg font-bold">{companyInfo?.max_employee_capacity || 0}</p>
++                     </div>
++                     <div>
++                       <p className="text-xs text-muted-foreground uppercase tracking-wider">Employees Registered</p>
++                       <p className="text-lg font-bold">{stats?.total_employees || 0}</p>
++                     </div>
++                     <div>
++                       <p className="text-xs text-muted-foreground uppercase tracking-wider">Seats Available</p>
++                       <p className={`text-lg font-bold ${getSeatRemainingColor()}`}>
++                         {stats?.seats_available || 0}
++                       </p>
++                     </div>
++                     <div>
++                       <p className="text-xs text-muted-foreground uppercase tracking-wider">Pending Seat Request</p>
++                       <p className="text-lg font-bold">
++                         {companyInfo?.seats_requested !== companyInfo?.max_employee_capacity 
++                           ? companyInfo?.seats_requested 
++                           : "None"}
++                       </p>
++                     </div>
+                    </div>
+                  </CardContent>
+                </Card>
+-            </TabsContent>
+-            
+-            <TabsContent value="queries">
+-               <Card>
+-                 <CardHeader>
+-                   <CardTitle>Company Queries</CardTitle>
+-                   <CardDescription>Submit queries to the Nerdshive administration team</CardDescription>
+-                 </CardHeader>
+-                 <CardContent>
+-                   <div className="space-y-6">
+-                     <div className="flex flex-col space-y-2">
+-                       <Label>New Query</Label>
+-                       <div className="flex space-x-2">
+-                         <Input 
+-                           value={newQueryMessage} 
+-                           onChange={(e) => setNewQueryMessage(e.target.value)} 
+-                           placeholder="Type your question or issue here..." 
+-                           className="flex-1"
+-                         />
+-                         <Button onClick={submitQuery} disabled={isSubmittingQuery}>
+-                           {isSubmittingQuery ? "Submitting..." : "Submit Query"}
+-                         </Button>
+-                       </div>
+-                     </div>
+-                     
+-                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+-                       <div>
+-                         <h3 className="font-semibold text-lg border-b pb-2 mb-4">Query History</h3>
+-                         {queries.length === 0 ? (
+-                           <div className="text-center py-8 text-muted-foreground">
+-                              <MessageSquare className="w-8 h-8 mx-auto mb-2 opacity-50" />
+-                              <p>No queries found.</p>
+-                           </div>
+-                         ) : (
+-                           <div className="space-y-4">
+-                             {queries.map((q: any) => (
+-                               <Card key={q.id} className="bg-muted/30">
+-                                 <CardContent className="p-4">
+-                                   <div className="flex justify-between items-start mb-2">
+-                                     <p className="font-medium">{q.message}</p>
+-                                     <Badge variant={q.status === 'resolved' ? 'default' : 'secondary'}>
+-                                       {q.status}
+-                                     </Badge>
+-                                   </div>
+-                                   <p className="text-xs text-muted-foreground mb-3">Submitted on {new Date(q.created_at).toLocaleString()}</p>
+-                                   
+-                                   {q.response && (
+-                                     <div className="bg-card p-3 rounded border">
+-                                       <p className="text-sm font-semibold mb-1">Response:</p>
+-                                       <p className="text-sm">{q.response}</p>
+-                                     </div>
+-                                   )}
+-                                 </CardContent>
+-                               </Card>
+-                             ))}
+-                           </div>
+-                         )}
+-                       </div>
+ 
+-                       <div>
+-                         <h3 className="font-semibold text-lg border-b pb-2 mb-4">Notifications</h3>
+-                         {notifications.length === 0 ? (
+-                           <div className="text-center py-8 text-muted-foreground">
+-                              <Bell className="w-8 h-8 mx-auto mb-2 opacity-50" />
+-                              <p>No new notifications.</p>
++               {corporatePlans.length > 0 && (
++                 <div className="space-y-4">
++                   <h3 className="text-lg font-bold text-foreground">Available Corporate Workspace Plans</h3>
++                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
++                     {corporatePlans.map((plan) => (
++                       <Card key={plan.id} className={`shadow-card border flex flex-col justify-between transition-all duration-200 ${
++                         companyInfo?.selected_plan_id === plan.id 
++                           ? "border-green-500 ring-1 ring-green-500 bg-green-500/5" 
++                           : "hover:border-muted-foreground/30"
++                       }`}>
++                         <CardHeader>
++                           <div className="flex justify-between items-start">
++                             <div>
++                               <CardTitle className="text-xl font-bold">{plan.plan_name}</CardTitle>
++                               <CardDescription>Premium corporate workspace package</CardDescription>
++                             </div>
++                             {companyInfo?.selected_plan_id === plan.id && (
++                               <Badge className="bg-green-500 hover:bg-green-600 text-white font-semibold flex items-center gap-1">
++                                 <Check className="w-3 h-3" /> Active
++                               </Badge>
++                             )}
+                            </div>
+-                         ) : (
+-                           <div className="space-y-4">
+-                             {notifications.map((n: any) => (
+-                               <Card key={n.id} className={n.is_read ? "bg-muted/30" : "bg-card border-primary/50"}>
+-                                 <CardContent className="p-4">
+-                                   <div className="flex justify-between items-start mb-1">
+-                                     <p className="font-semibold text-sm">{n.title}</p>
+-                                     {!n.is_read && <Badge variant="default" className="text-[10px] h-4">New</Badge>}
+-                                   </div>
+-                                   <p className="text-sm mb-2">{n.message}</p>
+-                                   <p className="text-xs text-muted-foreground">{new Date(n.created_at).toLocaleString()}</p>
+-                                 </CardContent>
+-                               </Card>
+-                             ))}
++                         </CardHeader>
++                         <CardContent className="space-y-4">
++                           <div className="text-3xl font-bold text-primary">
++                             Γé╣{Number(plan.price).toLocaleString()}
++                             <span className="text-sm font-normal text-muted-foreground"> / {plan.billing_type}</span>
+                            </div>
+-                         )}
+-                       </div>
+-                     </div>
++                           <div className="space-y-2">
++                             <p className="font-semibold text-sm">Features Included:</p>
++                             <ul className="space-y-1 text-sm text-muted-foreground list-disc list-inside">
++                               {Array.isArray(plan.features_json) 
++                                 ? plan.features_json.map((f: string, i: number) => <li key={i}>{f}</li>)
++                                 : typeof plan.features_json === "string"
++                                   ? JSON.parse(plan.features_json).map((f: string, i: number) => <li key={i}>{f}</li>)
++                                   : null
++                               }
++                             </ul>
++                           </div>
++                         </CardContent>
++                         <CardFooter className="pt-4 border-t">
++                           {companyInfo?.selected_plan_id === plan.id ? (
++                             <Button disabled className="w-full bg-green-500/10 text-green-600 border border-green-500/20 font-semibold flex items-center justify-center gap-2 cursor-default disabled:opacity-100">
++                               <Check className="w-4 h-4 text-green-600" /> Current Plan
++                             </Button>
++                           ) : (
++                             <Button onClick={() => handleSelectPlan(plan.id)} disabled={loading} className="w-full hover:scale-[1.01] active:scale-[0.99] transition-all duration-150">
++                               Select Plan
++                             </Button>
++                           )}
++                         </CardFooter>
++                       </Card>
++                     ))}
+                    </div>
+-                 </CardContent>
+-               </Card>
++                 </div>
++               )}
++            </TabsContent>
++            
++            <TabsContent value="queries">
++              <Tabs defaultValue="queries_sub" className="space-y-6">
++                <TabsList className="grid grid-cols-2 w-full lg:w-[400px]">
++                  <TabsTrigger value="queries_sub">Queries</TabsTrigger>
++                  <TabsTrigger value="meetings_sub">Meetings</TabsTrigger>
++                </TabsList>
++                
++                <TabsContent value="queries_sub" className="space-y-6">
++                  <Card>
++                    <CardHeader>
++                      <CardTitle>Company Queries</CardTitle>
++                      <CardDescription>Submit queries to the Nerdshive administration team</CardDescription>
++                    </CardHeader>
++                    <CardContent>
++                      <div className="space-y-6">
++                        <div className="flex flex-col space-y-2">
++                          <Label>New Query</Label>
++                          <div className="flex space-x-2">
++                            <Input 
++                              value={newQueryMessage} 
++                              onChange={(e) => setNewQueryMessage(e.target.value)} 
++                              placeholder="Type your question or issue here..." 
++                              className="flex-1"
++                            />
++                            <Button onClick={submitQuery} disabled={isSubmittingQuery}>
++                              {isSubmittingQuery ? "Submitting..." : "Submit Query"}
++                            </Button>
++                          </div>
++                        </div>
++                        
++                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
++                          <div>
++                            <h3 className="font-semibold text-lg border-b pb-2 mb-4">Query History</h3>
++                            {queries.length === 0 ? (
++                              <div className="text-center py-8 text-muted-foreground">
++                                <MessageSquare className="w-8 h-8 mx-auto mb-2 opacity-50" />
++                                <p>No queries found.</p>
++                              </div>
++                            ) : (
++                              <div className="space-y-4">
++                                {queries.map((q: any) => (
++                                  <Card key={q.id} className="bg-muted/30">
++                                    <CardContent className="p-4">
++                                      <div className="flex justify-between items-start mb-2">
++                                        <p className="font-medium">{q.message}</p>
++                                        <Badge variant={q.status === 'resolved' ? 'default' : 'secondary'}>
++                                          {q.status}
++                                        </Badge>
++                                      </div>
++                                      <p className="text-xs text-muted-foreground mb-3">Submitted on {new Date(q.created_at).toLocaleString()}</p>
++                                      
++                                      {q.response && (
++                                        <div className="bg-card p-3 rounded border">
++                                          <p className="text-sm font-semibold mb-1">Response:</p>
++                                          <p className="text-sm">{q.response}</p>
++                                        </div>
++                                      )}
++                                    </CardContent>
++                                  </Card>
++                                ))}
++                              </div>
++                            )}
++                          </div>
++
++                          <div>
++                            <h3 className="font-semibold text-lg border-b pb-2 mb-4">Notifications</h3>
++                            {notifications.length === 0 ? (
++                              <div className="text-center py-8 text-muted-foreground">
++                                <Bell className="w-8 h-8 mx-auto mb-2 opacity-50" />
++                                <p>No new notifications.</p>
++                              </div>
++                            ) : (
++                              <div className="space-y-4">
++                                {notifications.map((n: any) => (
++                                  <Card key={n.id} className={n.is_read ? "bg-muted/30" : "bg-card border-primary/50"}>
++                                    <CardContent className="p-4">
++                                      <div className="flex justify-between items-start mb-1">
++                                        <p className="font-semibold text-sm">{n.title}</p>
++                                        {!n.is_read && <Badge variant="default" className="text-[10px] h-4">New</Badge>}
++                                      </div>
++                                      <p className="text-sm mb-2">{n.message}</p>
++                                      <p className="text-xs text-muted-foreground">{new Date(n.created_at).toLocaleString()}</p>
++                                    </CardContent>
++                                  </Card>
++                                ))}
++                              </div>
++                            )}
++                          </div>
++                        </div>
++                      </div>
++                    </CardContent>
++                  </Card>
++                </TabsContent>
++
++                <TabsContent value="meetings_sub" className="space-y-6">
++                  <div className="bg-card p-4 rounded-xl border">
++                    <h2 className="text-lg font-bold">Workspace Meetings</h2>
++                    <p className="text-sm text-muted-foreground">Select a date on the calendar, click any green hourly available slot on the schedule, and request a booking.</p>
++                  </div>
++
++                  {/* Workspace Meeting Availability Calendar (Left) and Details/Lists (Right) */}
++                  <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
++                    {/* Left Column: Calendar */}
++                    <div className="lg:col-span-7 space-y-6">
++                      <Card className="shadow-sm">
++                        <CardHeader className="pb-3 border-b">
++                          <CardTitle className="text-base font-bold">Workspace Meeting Availability</CardTitle>
++                          <CardDescription>Select a date on the calendar to view its schedule and check available slots</CardDescription>
++                        </CardHeader>
++                        <CardContent className="p-0 border-0">
++                          <MeetingCalendar
++                            userRole="corporate"
++                            meetings={meetings}
++                            currentDate={currentDate}
++                            setCurrentDate={setCurrentDate}
++                            selectedCalendarDate={selectedCalendarDate}
++                            setSelectedCalendarDate={setSelectedCalendarDate}
++                            startOfWeek="mon"
++                          />
++                        </CardContent>
++                      </Card>
++                    </div>
++
++                    {/* Right Column: Schedule and Meeting lists stacked down */}
++                    <div className="lg:col-span-5 space-y-6">
++                      {selectedCalendarDate && (
++                        <Card className="shadow-sm">
++                          <CardContent className="p-4 space-y-4">
++                            <div className="flex items-center justify-between border-b pb-2">
++                              <h4 className="font-bold text-sm text-foreground">
++                                {selectedCalendarDate.getDate()} {selectedCalendarDate.toLocaleString("default", { month: "long" })} {selectedCalendarDate.getFullYear()} Schedule
++                              </h4>
++                              <span className="text-xs text-muted-foreground font-semibold">
++                                Room: {rooms.find(r => r.id === selectedRoomId)?.room_name || "Meeting Room"}
++                              </span>
++                            </div>
++
++                            {/* Legend */}
++                            <div className="flex items-center space-x-3 text-[10px] font-medium text-muted-foreground">
++                              <span className="flex items-center gap-1">
++                                <span className="w-2.5 h-2.5 rounded-full bg-green-500 inline-block"></span>
++                                Available
++                              </span>
++                              <span className="flex items-center gap-1">
++                                <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block"></span>
++                                Pending
++                              </span>
++                              <span className="flex items-center gap-1">
++                                <span className="w-2.5 h-2.5 rounded-full bg-red-500 inline-block"></span>
++                                Booked
++                              </span>
++                            </div>
++
++                            {fetchingAvailability ? (
++                              <div className="flex items-center justify-center py-6">
++                                <Loader2 className="w-5 h-5 animate-spin text-primary mr-2" />
++                                <span className="text-xs text-muted-foreground">Checking availability...</span>
++                              </div>
++                            ) : (
++                              <div className="grid grid-cols-2 gap-2">
++                                {Array.from({ length: 12 }, (_, i) => i + 8).map((hour) => {
++                                  const status = getHourStatus(hour, availabilityData);
++                                  const displayStart = `${String(hour).padStart(2, '0')}:00`;
++                                  const displayEnd = `${String(hour + 1).padStart(2, '0')}:00`;
++
++                                  const isPast = (() => {
++                                    if (!selectedCalendarDate) return false;
++                                    const now = new Date();
++                                    const slotEnd = new Date(
++                                      selectedCalendarDate.getFullYear(),
++                                      selectedCalendarDate.getMonth(),
++                                      selectedCalendarDate.getDate(),
++                                      hour + 1,
++                                      0,
++                                      0,
++                                      0
++                                    );
++                                    return slotEnd < now;
++                                  })();
++
++                                  let colorClasses = "bg-green-500/10 border-green-500/30 text-green-700 dark:text-green-400";
++                                  let statusText = "Available ≡ƒƒó";
++
++                                  if (isPast) {
++                                    colorClasses = "bg-gray-100 dark:bg-gray-800/40 text-gray-400 dark:text-gray-500 opacity-60 border-gray-200 dark:border-gray-800";
++                                    statusText = "Timed Out ΓÜ¬";
++                                  } else if (status === "BOOKED") {
++                                    colorClasses = "bg-red-500/10 border-red-500/30 text-red-700 dark:text-red-400";
++                                    statusText = "Booked ≡ƒö┤";
++                                  } else if (status === "PENDING") {
++                                    colorClasses = "bg-amber-500/10 border-amber-500/30 text-amber-700 dark:text-amber-400";
++                                    statusText = "Pending ≡ƒƒí";
++                                  }
++
++                                  const content = (
++                                    <div className={`p-2 border rounded-lg text-center ${colorClasses} ${(!isPast) ? "cursor-pointer hover:scale-[1.02] active:scale-[0.98] transition-all duration-150" : ""}`}>
++                                      <p className="text-xs font-semibold">{displayStart} - {displayEnd}</p>
++                                      <p className="text-[9px] uppercase font-bold mt-0.5 tracking-wider">{statusText}</p>
++                                    </div>
++                                  );
++
++                                  if (isPast) {
++                                    return (
++                                      <div key={hour}>
++                                        {content}
++                                      </div>
++                                    );
++                                  }
++
++                                  if (status === "AVAILABLE") {
++                                    return (
++                                      <div 
++                                        key={hour} 
++                                        onClick={() => handleSlotClick(hour)}
++                                      >
++                                        {content}
++                                      </div>
++                                    );
++                                  }
++
++                                  const overlapping = availabilityData.filter(item => {
++                                    const [startH, startM] = item.start_time.split(':').map(Number);
++                                    const [endH, endM] = item.end_time.split(':').map(Number);
++                                    const itemStartMin = startH * 60 + startM;
++                                    const itemEndMin = endH * 60 + endM;
++                                    const startHourMin = hour * 60;
++                                    const endHourMin = (hour + 1) * 60;
++                                    return startHourMin < itemEndMin && itemStartMin < endHourMin;
++                                  });
++
++                                  return (
++                                    <Popover key={hour}>
++                                      <PopoverTrigger asChild>
++                                        {content}
++                                      </PopoverTrigger>
++                                      <PopoverContent className="w-52 p-2.5 text-xs">
++                                        <h5 className="font-bold border-b pb-1 mb-1 uppercase text-[9px] tracking-wider text-muted-foreground">Slot Occupancy</h5>
++                                        <div className="space-y-1">
++                                          {overlapping.map((item, idx) => {
++                                            const overlap = getOverlappedInterval(hour, item);
++                                            const isBooked = item.status === "BOOKED";
++                                            return (
++                                              <div key={idx} className="flex justify-between items-center bg-muted/40 p-1 px-1.5 rounded border text-[11px]">
++                                                <span className="font-semibold">{overlap.start} - {overlap.end}</span>
++                                                <Badge 
++                                                  variant={isBooked ? "destructive" : "outline"} 
++                                                  className={`text-[8px] h-3.5 px-1 leading-none uppercase font-bold ${
++                                                    isBooked 
++                                                      ? "bg-red-100 text-red-800 border-red-200 dark:bg-red-950/40 dark:text-red-300 dark:border-red-900/30" 
++                                                      : "bg-amber-100 text-amber-800 border-amber-200 dark:bg-amber-950/40 dark:text-amber-300 dark:border-amber-900/30"
++                                                  }`}
++                                                >
++                                                  {isBooked ? "Booked" : "Pending"}
++                                                </Badge>
++                                              </div>
++                                            );
++                                          })}
++                                        </div>
++                                      </PopoverContent>
++                                    </Popover>
++                                  );
++                                })}
++                              </div>
++                            )}
++                          </CardContent>
++                        </Card>
++                      )}
++
++                      {/* Stacked Meeting Lists */}
++                      <div className="space-y-6">
++                        {/* Upcoming Meetings */}
++                        <Card className="shadow-sm">
++                          <CardHeader className="py-3 border-b">
++                            <CardTitle className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Upcoming Meetings</CardTitle>
++                          </CardHeader>
++                          <CardContent className="space-y-3 p-4">
++                            {corpMeetings.filter(m => m.status === 'APPROVED' && new Date(m.meeting_date + "T00:00:00") >= new Date(new Date().setHours(0,0,0,0))).length === 0 ? (
++                              <p className="text-xs text-muted-foreground italic pl-1">No upcoming approved meetings.</p>
++                            ) : (
++                              corpMeetings.filter(m => m.status === 'APPROVED' && new Date(m.meeting_date + "T00:00:00") >= new Date(new Date().setHours(0,0,0,0))).map(m => (
++                                <Card key={m.id} className="border-l-4 border-l-green-500 shadow-sm">
++                                  <CardContent className="p-3 flex justify-between items-start text-xs">
++                                    <div className="space-y-0.5">
++                                      <p className="font-bold text-sm">{m.meeting_title}</p>
++                                      <p className="text-muted-foreground">Date: {m.meeting_date} | Time: {m.start_time.substring(0,5)} - {m.end_time.substring(0,5)}</p>
++                                      {m.decision_notes && <p className="italic text-muted-foreground mt-1">Note: "{m.decision_notes}"</p>}
++                                    </div>
++                                    <Button variant="outline" size="sm" className="text-red-600 hover:text-red-700 text-[10px] h-6 px-2" onClick={() => {
++                                      setSelectedMeetingToCancel(m);
++                                      setCancelReason("");
++                                      setCancelMeetingModalOpen(true);
++                                    }}>Cancel</Button>
++                                  </CardContent>
++                                </Card>
++                              ))
++                            )}
++                          </CardContent>
++                        </Card>
++
++                        {/* Pending Requests */}
++                        <Card className="shadow-sm">
++                          <CardHeader className="py-3 border-b">
++                            <CardTitle className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Pending Requests</CardTitle>
++                          </CardHeader>
++                          <CardContent className="space-y-3 p-4">
++                            {corpMeetings.filter(m => m.status === 'PENDING').length === 0 ? (
++                              <p className="text-xs text-muted-foreground italic pl-1">No pending requests.</p>
++                            ) : (
++                              corpMeetings.filter(m => m.status === 'PENDING').map(m => {
++                                const isExpired = isMeetingExpired(m);
++                                return (
++                                  <Card key={m.id} className={`border-l-4 ${isExpired ? 'border-l-gray-400' : 'border-l-amber-500'} shadow-sm`}>
++                                    <CardContent className="p-3 flex justify-between items-start text-xs">
++                                      <div className="space-y-0.5">
++                                        <div className="flex items-center gap-1.5">
++                                          <p className="font-bold text-sm">{m.meeting_title}</p>
++                                          {isExpired && (
++                                            <Badge variant="outline" className="bg-gray-100 text-gray-800 border-gray-200 text-[9px] py-0 px-1 h-4 leading-none">
++                                              Timed Out
++                                            </Badge>
++                                          )}
++                                        </div>
++                                        <p className="text-muted-foreground">Date: {m.meeting_date} | Time: {m.start_time.substring(0,5)} - {m.end_time.substring(0,5)}</p>
++                                      </div>
++                                      <Button variant="outline" size="sm" className="text-red-600 hover:text-red-700 text-[10px] h-6 px-2" onClick={() => {
++                                        setSelectedMeetingToCancel(m);
++                                        setCancelReason("");
++                                        setCancelMeetingModalOpen(true);
++                                      }}>Cancel</Button>
++                                    </CardContent>
++                                  </Card>
++                                );
++                              })
++                            )}
++                          </CardContent>
++                        </Card>
++
++                        {/* Completed Meetings */}
++                        <Card className="shadow-sm">
++                          <CardHeader className="py-3 border-b">
++                            <CardTitle className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Completed Meetings</CardTitle>
++                          </CardHeader>
++                          <CardContent className="space-y-3 p-4">
++                            {corpMeetings.filter(m => m.status === 'APPROVED' && new Date(m.meeting_date + "T00:00:00") < new Date(new Date().setHours(0,0,0,0))).length === 0 ? (
++                              <p className="text-xs text-muted-foreground italic pl-1">No completed meetings.</p>
++                            ) : (
++                              <div className="space-y-2 opacity-75">
++                                {corpMeetings.filter(m => m.status === 'APPROVED' && new Date(m.meeting_date + "T00:00:00") < new Date(new Date().setHours(0,0,0,0))).map(m => (
++                                  <Card key={m.id} className="shadow-sm">
++                                    <CardContent className="p-3 text-xs">
++                                      <p className="font-bold text-sm">{m.meeting_title}</p>
++                                      <p className="text-muted-foreground">Date: {m.meeting_date} | Time: {m.start_time.substring(0,5)} - {m.end_time.substring(0,5)}</p>
++                                    </CardContent>
++                                  </Card>
++                                ))}
++                              </div>
++                            )}
++                          </CardContent>
++                        </Card>
++
++                        {/* Rejected Requests */}
++                        <Card className="shadow-sm">
++                          <CardHeader className="py-3 border-b">
++                            <CardTitle className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Rejected Requests</CardTitle>
++                          </CardHeader>
++                          <CardContent className="space-y-3 p-4">
++                            {corpMeetings.filter(m => m.status === 'REJECTED').length === 0 ? (
++                              <p className="text-xs text-muted-foreground italic pl-1">No rejected requests.</p>
++                            ) : (
++                              corpMeetings.filter(m => m.status === 'REJECTED').map(m => (
++                                <Card key={m.id} className="border-l-4 border-l-red-500 shadow-sm">
++                                  <CardContent className="p-3 text-xs">
++                                    <p className="font-bold text-sm">{m.meeting_title}</p>
++                                    <p className="text-muted-foreground">Date: {m.meeting_date}</p>
++                                    {m.decision_notes && <p className="italic text-red-600 mt-1">Reason: "{m.decision_notes}"</p>}
++                                  </CardContent>
++                                </Card>
++                              ))
++                            )}
++                          </CardContent>
++                        </Card>
++
++                        {/* Cancelled Meetings */}
++                        <Card className="shadow-sm">
++                          <CardHeader className="py-3 border-b">
++                            <CardTitle className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Cancelled Meetings</CardTitle>
++                          </CardHeader>
++                          <CardContent className="space-y-3 p-4">
++                            {corpMeetings.filter(m => m.status === 'CANCELLED').length === 0 ? (
++                              <p className="text-xs text-muted-foreground italic pl-1">No cancelled meetings.</p>
++                            ) : (
++                              corpMeetings.filter(m => m.status === 'CANCELLED').map(m => (
++                                <Card key={m.id} className="border-l-4 border-l-gray-400 shadow-sm">
++                                  <CardContent className="p-3 text-xs">
++                                    <p className="font-bold text-sm text-muted-foreground">{m.meeting_title}</p>
++                                    <p className="text-muted-foreground">Date: {m.meeting_date} | Time: {m.start_time.substring(0,5)} - {m.end_time.substring(0,5)}</p>
++                                    {m.cancel_reason && <p className="italic text-muted-foreground mt-1">Reason: "{m.cancel_reason}"</p>}
++                                  </CardContent>
++                                </Card>
++                              ))
++                            )}
++                          </CardContent>
++                        </Card>
++                      </div>
++                    </div>
++                  </div>
++                </TabsContent>
++              </Tabs>
+             </TabsContent>
+             
+             <TabsContent value="company-info">
+@@ -610,16 +1481,22 @@ export default function CorporateDashboard() {
+                        <div>
+                          <h3 className="font-semibold text-lg border-b pb-2 mb-4">Capacity & Status</h3>
+                          <div className="space-y-3">
+-                           <div><span className="text-muted-foreground text-sm">Seats Requested:</span> <p className="font-medium">{companyInfo.seats_requested || 0}</p></div>
+-                           <div><span className="text-muted-foreground text-sm">Employees Added:</span> <p className="font-medium">{companyInfo.employees_added || 0}</p></div>
+-                           <div><span className="text-muted-foreground text-sm block mb-1">Seats Remaining:</span> <p className={`font-bold ${getSeatRemainingColor()}`}>{Math.max(0, (companyInfo.seats_requested || 0) - (companyInfo.employees_added || 0))}</p></div>
++                           <div><span className="text-muted-foreground text-sm">Current Seats:</span> <p className="font-medium">{companyInfo.max_employee_capacity || 0}</p></div>
++                           <div><span className="text-muted-foreground text-sm">Employees Registered:</span> <p className="font-medium">{companyInfo.employees_added || 0}</p></div>
++                           <div><span className="text-muted-foreground text-sm block mb-1">Seats Available:</span> <p className={`font-bold ${getSeatRemainingColor()}`}>{Math.max(0, (companyInfo.max_employee_capacity || 0) - (companyInfo.employees_added || 0))}</p></div>
++                           {companyInfo.seats_requested !== companyInfo.max_employee_capacity && (
++                             <div>
++                               <span className="text-muted-foreground text-sm text-amber-600 block mb-1">Pending Seat Request:</span> 
++                               <p className="font-semibold text-amber-600">{companyInfo.seats_requested || 0}</p>
++                             </div>
++                           )}
+                            <div>
+                              <span className="text-muted-foreground text-sm block mb-1">Approval Status:</span>
+                              <Badge variant={companyInfo.status === 'approved' ? 'default' : companyInfo.status === 'rejected' ? 'destructive' : 'secondary'}>
+                                 {companyInfo.status.toUpperCase()}
+                              </Badge>
+                            </div>
+-                           <div><span className="text-muted-foreground text-sm block mb-1">Approved By:</span> <p className="font-medium">{companyInfo.approved_by || 'Pending'}</p></div>
++                           <div><span className="text-muted-foreground text-sm block mb-1">Approved By:</span> <p className="font-medium">{companyInfo.approved_by_name || companyInfo.approved_by_email || 'Pending'}</p></div>
+                            <div><span className="text-muted-foreground text-sm block mb-1">Approved Date:</span> <p className="font-medium">{companyInfo.status === 'approved' ? new Date(companyInfo.updated_at).toLocaleDateString() : 'Pending'}</p></div>
+                          </div>
+                        </div>
+@@ -691,12 +1568,12 @@ export default function CorporateDashboard() {
+                 <Input value={editData.gst_number} onChange={e => setEditData({...editData, gst_number: e.target.value})} />
+               </div>
+               <div className="space-y-2">
+-                <Label>Maximum Seats Required</Label>
+-                <Input type="number" value={editData.max_employee_capacity} onChange={e => setEditData({...editData, max_employee_capacity: parseInt(e.target.value) || 0})} />
++                <Label>Current Seats Capacity</Label>
++                <Input type="number" value={editData.max_employee_capacity} disabled className="bg-muted" />
+               </div>
+               <div className="space-y-2">
+                 <Label>Seats Requested</Label>
+-                <Input type="number" value={editData.seats_requested} onChange={e => setEditData({...editData, seats_requested: parseInt(e.target.value) || 0})} />
++                <Input type="number" value={editData.seats_requested} disabled className="bg-muted" />
+               </div>
+               <div className="space-y-2">
+                 <Label>Biometric Required</Label>
+@@ -748,31 +1625,188 @@ export default function CorporateDashboard() {
+         <Dialog open={requestSeatsModalOpen} onOpenChange={setRequestSeatsModalOpen}>
+           <DialogContent className="max-w-md">
+             <DialogHeader>
+-              <DialogTitle>Request More Seats</DialogTitle>
++              <DialogTitle>
++                {seatsActionType === "increase" ? "Increase Seats Capacity" : "Reduce Seats Capacity"}
++              </DialogTitle>
+               <DialogDescription>
+-                Request an upgrade to your organization's seat capacity.
++                {seatsActionType === "increase" 
++                  ? "Request an increase to your organization's seat allocation." 
++                  : "Request a reduction in your organization's seat allocation."}
+               </DialogDescription>
+             </DialogHeader>
+             <div className="space-y-4 py-4">
+               <div className="space-y-2">
+                 <Label>Current Seats Capacity</Label>
+-                <Input value={companyInfo?.seats_requested || 0} disabled className="bg-muted" />
++                <Input value={companyInfo?.max_employee_capacity || 0} disabled className="bg-muted" />
+               </div>
+               <div className="space-y-2">
+-                <Label>New Total Seats Requested</Label>
++                <Label>
++                  {seatsActionType === "increase" ? "New Total Seats (Increase)" : "New Total Seats (Reduction)"}
++                </Label>
+                 <Input 
+                   type="number" 
+                   value={requestedSeatsInput || ""} 
+                   onChange={e => setRequestedSeatsInput(parseInt(e.target.value) || 0)} 
+-                  placeholder="e.g. 60"
+-                  min={(companyInfo?.seats_requested || 0) + 1}
++                  placeholder={seatsActionType === "increase" ? "e.g. 60" : "e.g. 30"}
++                  min={1}
+                 />
+               </div>
++              
++              {/* Warnings/Validation */}
++              {seatsActionType === "reduce" && requestedSeatsInput < (stats?.total_employees || 0) && (
++                <p className="text-xs font-semibold text-destructive mt-1 bg-destructive/10 p-2 rounded border border-destructive/20">
++                  Seat allocation cannot be reduced below the current number of registered employees ({stats?.total_employees || 0}).
++                </p>
++              )}
++              {seatsActionType === "reduce" && requestedSeatsInput >= (companyInfo?.max_employee_capacity || 0) && (
++                <p className="text-xs font-semibold text-destructive mt-1 bg-destructive/10 p-2 rounded border border-destructive/20">
++                  Reduced seats must be less than current seats.
++                </p>
++              )}
++              {seatsActionType === "increase" && requestedSeatsInput > 0 && requestedSeatsInput <= (companyInfo?.max_employee_capacity || 0) && (
++                <p className="text-xs font-semibold text-destructive mt-1 bg-destructive/10 p-2 rounded border border-destructive/20">
++                  Increased seats must be greater than current seats.
++                </p>
++              )}
+             </div>
+             <DialogFooter>
+               <Button variant="outline" onClick={() => setRequestSeatsModalOpen(false)}>Cancel</Button>
+-              <Button onClick={submitSeatsRequest} disabled={loading}>
+-                {loading ? "Submitting..." : "Submit Upgrade Request"}
++              <Button 
++                onClick={submitSeatsRequest} 
++                disabled={
++                  loading || 
++                  requestedSeatsInput <= 0 ||
++                  (seatsActionType === "reduce" && requestedSeatsInput < (stats?.total_employees || 0)) ||
++                  (seatsActionType === "reduce" && requestedSeatsInput >= (companyInfo?.max_employee_capacity || 0)) ||
++                  (seatsActionType === "increase" && requestedSeatsInput <= (companyInfo?.max_employee_capacity || 0))
++                }
++              >
++                {loading ? "Submitting..." : "Submit Request"}
++              </Button>
++            </DialogFooter>
++          </DialogContent>
++        </Dialog>
++        <Dialog open={requestMeetingModalOpen} onOpenChange={setRequestMeetingModalOpen}>
++          <DialogContent className="max-w-md">
++            <DialogHeader>
++              <DialogTitle>Request Meeting Room</DialogTitle>
++              <DialogDescription>
++                Submit details to request a meeting room booking.
++              </DialogDescription>
++            </DialogHeader>
++            
++            <div className="space-y-3 py-2 max-h-[65vh] overflow-y-auto pr-1">
++              {/* Read-only slot summary */}
++              <div className="p-3 bg-muted/40 rounded-lg border border-dashed text-xs space-y-1.5 mb-2">
++                <p><span className="font-semibold text-muted-foreground">Selected Room:</span> <span className="font-bold text-foreground">{rooms.find(r => r.id === bookingForm.room_id)?.room_name || "Meeting Room"}</span></p>
++                <p><span className="font-semibold text-muted-foreground">Selected Date:</span> <span className="font-bold text-foreground">{formatLocalDate(bookingForm.meeting_date)}</span></p>
++                <p><span className="font-semibold text-muted-foreground">Time Slot:</span> <span className="font-bold text-primary text-sm">{bookingForm.start_time} - {bookingForm.end_time}</span></p>
++              </div>
++
++              <div className="space-y-1">
++                <Label htmlFor="meeting_title">Meeting Title *</Label>
++                <Input 
++                  id="meeting_title" 
++                  value={bookingForm.meeting_title} 
++                  onChange={e => setBookingForm({...bookingForm, meeting_title: e.target.value})} 
++                  placeholder="e.g. Q3 Business Review" 
++                />
++              </div>
++              <div className="space-y-1">
++                <Label htmlFor="purpose">Purpose *</Label>
++                <Input 
++                  id="purpose" 
++                  value={bookingForm.purpose} 
++                  onChange={e => setBookingForm({...bookingForm, purpose: e.target.value})} 
++                  placeholder="e.g. Planning and strategy" 
++                />
++              </div>
++              
++              <div className="grid grid-cols-2 gap-3">
++                <div className="space-y-1">
++                  <Label htmlFor="participants">Participants *</Label>
++                  <Input 
++                    id="participants" 
++                    type="number"
++                    min={1}
++                    value={bookingForm.participants} 
++                    onChange={e => {
++                      const val = e.target.value;
++                      setBookingForm({
++                        ...bookingForm,
++                        participants: val === "" ? "" : (parseInt(val) || 0)
++                      });
++                    }}
++                    onBlur={() => {
++                      const num = Number(bookingForm.participants);
++                      if (isNaN(num) || num < 1) {
++                        toast({ title: "Validation Error", description: "Participants must be 1 or more", variant: "destructive" });
++                      }
++                    }}
++                  />
++                </div>
++                <div className="space-y-1">
++                  <Label htmlFor="department">Department *</Label>
++                  <Input 
++                    id="department" 
++                    value={bookingForm.department} 
++                    onChange={e => setBookingForm({...bookingForm, department: e.target.value})} 
++                    placeholder="e.g. Engineering" 
++                  />
++                </div>
++              </div>
++
++              {dialogAvailabilityError && (
++                <p className="text-xs font-semibold text-destructive mt-1 bg-destructive/10 p-2 rounded border border-destructive/20">
++                  {dialogAvailabilityError}
++                </p>
++              )}
++
++              <div className="space-y-1">
++                <Label htmlFor="notes">Notes (Optional)</Label>
++                <Input 
++                  id="notes" 
++                  value={bookingForm.notes} 
++                  onChange={e => setBookingForm({...bookingForm, notes: e.target.value})} 
++                  placeholder="e.g. Projector required" 
++                />
++              </div>
++              <DialogFooter className="pt-4">
++                <Button variant="outline" onClick={() => setRequestMeetingModalOpen(false)}>Cancel</Button>
++                <Button 
++                  onClick={() => handleBookingSubmit()} 
++                  disabled={loading || !bookingForm.room_id || !bookingForm.meeting_date || !bookingForm.start_time || !bookingForm.end_time || !!dialogAvailabilityError}
++                >
++                  {loading ? "Submitting..." : "Request Meeting"}
++                </Button>
++              </DialogFooter>
++            </div>
++          </DialogContent>
++        </Dialog>
++
++        <Dialog open={cancelMeetingModalOpen} onOpenChange={setCancelMeetingModalOpen}>
++          <DialogContent className="max-w-md">
++            <DialogHeader>
++              <DialogTitle>Cancel Meeting Request</DialogTitle>
++              <DialogDescription>
++                Are you sure you want to cancel the meeting "{selectedMeetingToCancel?.meeting_title}"? This action cannot be undone.
++              </DialogDescription>
++            </DialogHeader>
++            <div className="space-y-4 py-4">
++              <div className="space-y-2">
++                <Label htmlFor="cancel_reason">Reason for Cancellation</Label>
++                <Input 
++                  id="cancel_reason" 
++                  value={cancelReason} 
++                  onChange={e => setCancelReason(e.target.value)} 
++                  placeholder="e.g. Rescheduled / Booking error" 
++                />
++              </div>
++            </div>
++            <DialogFooter>
++              <Button variant="outline" onClick={() => setCancelMeetingModalOpen(false)}>Close</Button>
++              <Button variant="destructive" onClick={() => handleCancelSubmit()} disabled={loading}>
++                {loading ? "Cancelling..." : "Confirm Cancellation"}
+               </Button>
+             </DialogFooter>
+           </DialogContent>
+

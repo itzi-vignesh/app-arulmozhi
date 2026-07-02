@@ -1,0 +1,60 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: app_postgres
+    restart: always
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-app_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-password123}
+      POSTGRES_DB: ${POSTGRES_DB:-app_db}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5435:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-app_user} -d ${POSTGRES_DB:-app_db}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: app_backend
+    restart: always
+    environment:
+      - DATABASE_URL=postgresql://${POSTGRES_USER:-app_user}:${POSTGRES_PASSWORD:-password123}@db:5432/${POSTGRES_DB:-app_db}
+      - SECRET_KEY=${SECRET_KEY:-your-super-secret-jwt-key}
+      - SMTP_SERVER=${SMTP_SERVER:-smtp.example.com}
+      - SMTP_PORT=${SMTP_PORT:-587}
+      - SMTP_USER=${SMTP_USER:-user}
+      - SMTP_PASSWORD=${SMTP_PASSWORD:-password}
+      - BIOMETRIC_API_URL=${BIOMETRIC_API_URL:-http://209.38.124.237/api/ext/v1}
+      - BIOMETRIC_API_KEY=${BIOMETRIC_API_KEY:-default-key}
+      - BIOMETRIC_TIMEOUT=${BIOMETRIC_TIMEOUT:-10.0}
+      - BIOMETRIC_ORGANISATION=${BIOMETRIC_ORGANISATION:-NerdShive Workspace Private Limited}
+      - PYTHONUNBUFFERED=1
+    volumes:
+      - ./backend/storage:/app/storage
+    ports:
+      - "8001:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: app_frontend
+    restart: always
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+
+volumes:
+  postgres_data:

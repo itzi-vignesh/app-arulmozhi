@@ -1,0 +1,7 @@
+project_id = "mwqehuxqldnxadnmopfn"
+
+[functions.send-admin-credentials]
+verify_jwt = false
+
+[functions.bulk-enroll-users]
+verify_jwt = false

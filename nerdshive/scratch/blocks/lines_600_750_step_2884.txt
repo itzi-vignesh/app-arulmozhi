@@ -1,0 +1,45 @@
+               <Card>
+                 <CardHeader>
+                   <CardTitle>Company Queries</CardTitle>
+                   <CardDescription>Submit queries to the Nerdshive administration team</CardDescription>
+                 </CardHeader>
+                 <CardContent>
+                   <div className="space-y-6">
+                     <div className="flex flex-col space-y-2">
+                       <Label>New Query</Label>
+                       <div className="flex space-x-2">
+                         <Input 
+                           value={newQueryMessage} 
+                           onChange={(e) => setNewQueryMessage(e.target.value)} 
+                           placeholder="Type your question or issue here..." 
+                           className="flex-1"
+                         />
+                         <Button onClick={submitQuery} disabled={isSubmittingQuery}>
+                           {isSubmittingQuery ? "Submitting..." : "Submit Query"}
+                         </Button>
+                       </div>
+                     </div>
+                     
+                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                       <div>
+                         <h3 className="font-semibold text-lg border-b pb-2 mb-4">Query History</h3>
+                         {queries.length === 0 ? (
+                           <div className="text-center py-8 text-muted-foreground">
+                              <MessageSquare
+                           <div><span className="text-muted-foreground text-sm block mb-1">Seats Remaining:</span> <p className={`font-bold ${getSeatRemainingColor()}`}>{Math.max(0, (companyInfo.max_employee_capacity || 0) - (companyInfo.employees_added || 0))}</p></div>
+                           <div>
+                             <span className="text-muted-foreground text-sm block mb-1">Approval Status:</span>
+                             <Badge variant={companyInfo.status === 'approved' ? 'default' : companyInfo.status === 'rejected' ? 'destructive' : 'secondary'}>
+                                {companyInfo.status.toUpperCase()}
+                             </Badge>
+                           </div>
+                           <div><span className="text-muted-foreground text-sm block mb-1">Approved By:</span> <p className="font-medium">{companyInfo.approved_by_name || companyInfo.approved_by_email || (companyInfo.approved_by ? 'Approved' : 'Pending')}</p></div>
+                           <div><span className="text-muted-foreground text-sm block mb-1">Approved Date:</span> <p className="font-medium">{companyInfo.status === 'approved' ? new Date(companyInfo.updated_at).toLocaleDateString() : 'Pending'}</p></div>
+                         </div>
+                       </div>
+                     </div>
+                     </>
+                   ) : (
+                     <div className="text-center py-12 bg-muted/30 rounded-lg border border-dashed">
+                       <Building className="w-12 h-12 text-muted-foreground mx-auto mb-4 opacity-50" />
+                       <h3 className="text-lg font-medium">No company information found.</h3>

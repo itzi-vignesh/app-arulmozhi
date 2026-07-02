@@ -1,0 +1,46 @@
+                <Label>Pincode</Label>
+                <Input value={editData.pincode} onChange={e => setEditData({...editData, pincode: e.target.value})} />
+              </div>
+              <div className="space-y-2">
+                <Label>GST Number</Label>
+                <Input value={editData.gst_number} onChange={e => setEditData({...editData, gst_number: e.target.value})} />
+              </div>
+              <div className="space-y-2">
+                <Label>Maximum Seats Required</Label>
+                <Input type="number" value={editData.max_employee_capacity} onChange={e => setEditData({...editData, max_employee_capacity: parseInt(e.target.value) || 0})} />
+              </div>
+              <div className="space-y-2">
+                <Label>Seats Requested</Label>
+                <Input type="number" value={editData.seats_requested} onChange={e => setEditData({...editData, seats_requested: parseInt(e.target.value) || 0})} />
+              </div>
+              <div className="space-y-2">
+                <Label>Biometric Required</Label>
+                <div className="flex items-center space-x-4 mt-2">
+                  <label className="flex items-center space-x-2 cursor-pointer">
+                    <input
+                      type="radio"
+                      name="biometric_required"
+                      checked={editData.biometric_required === true}
+                      onChange={() => setEditData({...editData, biometric_required: true})}
+                      className="w-4 h-4 text-primary"
+                    />
+                    <span>Yes</span>
+                  </label>
+                  <label className="flex items-center space-x-2 cursor-pointer">
+                    <input
+                      type="radio"
+                      name="biometric_required"
+                      checked={editData.biometric_required === false}
+                      onChange={() => setEditData({...editData, biometric_required: false})}
+                      className="w-4 h-4 text-primary"
+                    />
+                    <span>No</span>
+                  </label>
+                </div>
+              </div>
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setEditInfoModalOpen(false)}>Cancel</Button>
+              <Button onClick={saveCompanyInfo} disabled={loading}>
+                {loading ? "Saving..." : "Save Changes"}
+              </Button>

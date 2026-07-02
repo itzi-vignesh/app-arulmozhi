@@ -1,0 +1,163 @@
+﻿e:\1\backend\alembic\versions\04c4e905f840_add_mfa_and_settings.py
+  e:\1\backend\alembic\versions\04c4e905f840_add_mfa_and_settings.py:49:40 - error: Argument of type "TextClause" cannot be assigned to parameter "existing_server_default" of type "str | bool | Identity | Computed | None" in function "alter_column"
+  ┬á┬áType "TextClause" is not assignable to type "str | bool | Identity | Computed | None"
+  ┬á┬á┬á┬á"TextClause" is not assignable to "str"
+  ┬á┬á┬á┬á"TextClause" is not assignable to "bool"
+  ┬á┬á┬á┬á"TextClause" is not assignable to "Identity"
+  ┬á┬á┬á┬á"TextClause" is not assignable to "Computed"
+  ┬á┬á┬á┬á"TextClause" is not assignable to "None" (reportArgumentType)
+  e:\1\backend\alembic\versions\04c4e905f840_add_mfa_and_settings.py:54:40 - error: Argument of type "TextClause" cannot be assigned to parameter "existing_server_default" of type "str | bool | Identity | Computed | None" in function "alter_column"
+  ┬á┬áType "TextClause" is not assignable to type "str | bool | Identity | Computed | None"
+  ┬á┬á┬á┬á"TextClause" is not assignable to "str"
+  ┬á┬á┬á┬á"TextClause" is not assignable to "bool"
+  ┬á┬á┬á┬á"TextClause" is not assignable to "Identity"
+  ┬á┬á┬á┬á"TextClause" is not assignable to "Computed"
+  ┬á┬á┬á┬á"TextClause" is not assignable to "None" (reportArgumentType)
+  e:\1\backend\alembic\versions\04c4e905f840_add_mfa_and_settings.py:58:40 - error: Argument of type "TextClause" cannot be assigned to parameter "existing_server_default" of type "str | bool | Identity | Computed | None" in function "alter_column"
+  ┬á┬áType "TextClause" is not assignable to type "str | bool | Identity | Computed | None"
+  ┬á┬á┬á┬á"TextClause" is not assignable to "str"
+  ┬á┬á┬á┬á"TextClause" is not assignable to "bool"
+  ┬á┬á┬á┬á"TextClause" is not assignable to "Identity"
+  ┬á┬á┬á┬á"TextClause" is not assignable to "Computed"
+  ┬á┬á┬á┬á"TextClause" is not assignable to "None" (reportArgumentType)
+  e:\1\backend\alembic\versions\04c4e905f840_add_mfa_and_settings.py:65:40 - error: Argument of type "TextClause" cannot be assigned to parameter "existing_server_default" of type "str | bool | Identity | Computed | None" in function "alter_column"
+  ┬á┬áType "TextClause" is not assignable to type "str | bool | Identity | Computed | None"
+  ┬á┬á┬á┬á"TextClause" is not assignable to "str"
+  ┬á┬á┬á┬á"TextClause" is not assignable to "bool"
+  ┬á┬á┬á┬á"TextClause" is not assignable to "Identity"
+  ┬á┬á┬á┬á"TextClause" is not assignable to "Computed"
+  ┬á┬á┬á┬á"TextClause" is not assignable to "None" (reportArgumentType)
+  e:\1\backend\alembic\versions\04c4e905f840_add_mfa_and_settings.py:69:40 - error: Argument of type "TextClause" cannot be assigned to parameter "existing_server_default" of type "str | bool | Identity | Computed | None" in function "alter_column"
+  ┬á┬áType "TextClause" is not assignable to type "str | bool | Identity | Computed | None"
+  ┬á┬á┬á┬á"TextClause" is not assignable to "str"
+  ┬á┬á┬á┬á"TextClause" is not assignable to "bool"
+  ┬á┬á┬á┬á"TextClause" is not assignable to "Identity"
+  ┬á┬á┬á┬á"TextClause" is not assignable to "Computed"
+  ┬á┬á┬á┬á"TextClause" is not assignable to "None" (reportArgumentType)
+  e:\1\backend\alembic\versions\04c4e905f840_add_mfa_and_settings.py:78:40 - error: Argument of type "TextClause" cannot be assigned to parameter "existing_server_default" of type "str | bool | Identity | Computed | None" in function "alter_column"
+  ┬á┬áType "TextClause" is not assignable to type "str | bool | Identity | Computed | None"
+  ┬á┬á┬á┬á"TextClause" is not assignable to "str"
+  ┬á┬á┬á┬á"TextClause" is not assignable to "bool"
+  ┬á┬á┬á┬á"TextClause" is not assignable to "Identity"
+  ┬á┬á┬á┬á"TextClause" is not assignable to "Computed"
+  ┬á┬á┬á┬á"TextClause" is not assignable to "None" (reportArgumentType)
+  e:\1\backend\alembic\versions\04c4e905f840_add_mfa_and_settings.py:82:40 - error: Argument of type "TextClause" cannot be assigned to parameter "existing_server_default" of type "str | bool | Identity | Computed | None" in function "alter_column"
+  ┬á┬áType "TextClause" is not assignable to type "str | bool | Identity | Computed | None"
+  ┬á┬á┬á┬á"TextClause" is not assignable to "str"
+  ┬á┬á┬á┬á"TextClause" is not assignable to "bool"
+  ┬á┬á┬á┬á"TextClause" is not assignable to "Identity"
+  ┬á┬á┬á┬á"TextClause" is not assignable to "Computed"
+  ┬á┬á┬á┬á"TextClause" is not assignable to "None" (reportArgumentType)
+  e:\1\backend\alembic\versions\04c4e905f840_add_mfa_and_settings.py:89:40 - error: Argument of type "TextClause" cannot be assigned to parameter "existing_server_default" of type "str | bool | Identity | Computed | None" in function "alter_column"
+  ┬á┬áType "TextClause" is not assignable to type "str | bool | Identity | Computed | None"
+  ┬á┬á┬á┬á"TextClause" is not assignable to "str"
+  ┬á┬á┬á┬á"TextClause" is not assignable to "bool"
+  ┬á┬á┬á┬á"TextClause" is not assignable to "Identity"
+  ┬á┬á┬á┬á"TextClause" is not assignable to "Computed"
+  ┬á┬á┬á┬á"TextClause" is not assignable to "None" (reportArgumentType)
+  e:\1\backend\alembic\versions\04c4e905f840_add_mfa_and_settings.py:94:40 - error: Argument of type "TextClause" cannot be assigned to parameter "existing_server_default" of type "str | bool | Identity | Computed | None" in function "alter_column"
+  ┬á┬áType "TextClause" is not assignable to type "str | bool | Identity | Computed | None"
+  ┬á┬á┬á┬á"TextClause" is not assignable to "str"
+  ┬á┬á┬á┬á"TextClause" is not assignable to "bool"
+  ┬á┬á┬á┬á"TextClause" is not assignable to "Identity"
+  ┬á┬á┬á┬á"TextClause" is not assignable to "Computed"
+  ┬á┬á┬á┬á"TextClause" is not assignable to "None" (reportArgumentType)
+  e:\1\backend\alembic\versions\04c4e905f840_add_mfa_and_settings.py:98:40 - error: Argument of type "TextClause" cannot be assigned to parameter "existing_server_default" of type "str | bool | Identity | Computed | None" in function "alter_column"
+  ┬á┬áType "TextClause" is not assignable to type "str | bool | Identity | Computed | None"
+  ┬á┬á┬á┬á"TextClause" is not assignable to "str"
+  ┬á┬á┬á┬á"TextClause" is not assignable to "bool"
+  ┬á┬á┬á┬á"TextClause" is not assignable to "Identity"
+  ┬á┬á┬á┬á"TextClause" is not assignable to "Computed"
+  ┬á┬á┬á┬á"TextClause" is not assignable to "None" (reportArgumentType)
+e:\1\backend\alembic\versions\beccdc756dc4_add_company_and_company_admins.py
+  e:\1\backend\alembic\versions\beccdc756dc4_add_company_and_company_admins.py:81:24 - error: Argument of type "None" cannot be assigned to parameter "constraint_name" of type "str" in function "drop_constraint"
+  ┬á┬á"None" is not assignable to "str" (reportArgumentType)
+  e:\1\backend\alembic\versions\beccdc756dc4_add_company_and_company_admins.py:83:24 - error: Argument of type "None" cannot be assigned to parameter "constraint_name" of type "str" in function "drop_constraint"
+  ┬á┬á"None" is not assignable to "str" (reportArgumentType)
+  e:\1\backend\alembic\versions\beccdc756dc4_add_company_and_company_admins.py:85:24 - error: Argument of type "None" cannot be assigned to parameter "constraint_name" of type "str" in function "drop_constraint"
+  ┬á┬á"None" is not assignable to "str" (reportArgumentType)
+  e:\1\backend\alembic\versions\beccdc756dc4_add_company_and_company_admins.py:87:24 - error: Argument of type "None" cannot be assigned to parameter "constraint_name" of type "str" in function "drop_constraint"
+  ┬á┬á"None" is not assignable to "str" (reportArgumentType)
+  e:\1\backend\alembic\versions\beccdc756dc4_add_company_and_company_admins.py:89:24 - error: Argument of type "None" cannot be assigned to parameter "constraint_name" of type "str" in function "drop_constraint"
+  ┬á┬á"None" is not assignable to "str" (reportArgumentType)
+  e:\1\backend\alembic\versions\beccdc756dc4_add_company_and_company_admins.py:91:24 - error: Argument of type "None" cannot be assigned to parameter "constraint_name" of type "str" in function "drop_constraint"
+  ┬á┬á"None" is not assignable to "str" (reportArgumentType)
+  e:\1\backend\alembic\versions\beccdc756dc4_add_company_and_company_admins.py:92:24 - error: Argument of type "None" cannot be assigned to parameter "constraint_name" of type "str" in function "drop_constraint"
+  ┬á┬á"None" is not assignable to "str" (reportArgumentType)
+e:\1\backend\alembic\versions\e7bcd702d284_add_subscription_columns_to_company.py
+  e:\1\backend\alembic\versions\e7bcd702d284_add_subscription_columns_to_company.py:54:24 - error: Argument of type "None" cannot be assigned to parameter "constraint_name" of type "str" in function "drop_constraint"
+  ┬á┬á"None" is not assignable to "str" (reportArgumentType)
+  e:\1\backend\alembic\versions\e7bcd702d284_add_subscription_columns_to_company.py:56:24 - error: Argument of type "None" cannot be assigned to parameter "constraint_name" of type "str" in function "drop_constraint"
+  ┬á┬á"None" is not assignable to "str" (reportArgumentType)
+  e:\1\backend\alembic\versions\e7bcd702d284_add_subscription_columns_to_company.py:58:24 - error: Argument of type "None" cannot be assigned to parameter "constraint_name" of type "str" in function "drop_constraint"
+  ┬á┬á"None" is not assignable to "str" (reportArgumentType)
+  e:\1\backend\alembic\versions\e7bcd702d284_add_subscription_columns_to_company.py:60:24 - error: Argument of type "None" cannot be assigned to parameter "constraint_name" of type "str" in function "drop_constraint"
+  ┬á┬á"None" is not assignable to "str" (reportArgumentType)
+  e:\1\backend\alembic\versions\e7bcd702d284_add_subscription_columns_to_company.py:62:24 - error: Argument of type "None" cannot be assigned to parameter "constraint_name" of type "str" in function "drop_constraint"
+  ┬á┬á"None" is not assignable to "str" (reportArgumentType)
+  e:\1\backend\alembic\versions\e7bcd702d284_add_subscription_columns_to_company.py:72:24 - error: Argument of type "None" cannot be assigned to parameter "constraint_name" of type "str" in function "drop_constraint"
+  ┬á┬á"None" is not assignable to "str" (reportArgumentType)
+  e:\1\backend\alembic\versions\e7bcd702d284_add_subscription_columns_to_company.py:76:24 - error: Argument of type "None" cannot be assigned to parameter "constraint_name" of type "str" in function "drop_constraint"
+  ┬á┬á"None" is not assignable to "str" (reportArgumentType)
+  e:\1\backend\alembic\versions\e7bcd702d284_add_subscription_columns_to_company.py:77:24 - error: Argument of type "None" cannot be assigned to parameter "constraint_name" of type "str" in function "drop_constraint"
+  ┬á┬á"None" is not assignable to "str" (reportArgumentType)
+e:\1\backend\app\api\deps.py
+  e:\1\backend\app\api\deps.py:18:9 - error: "db" is possibly unbound (reportPossiblyUnboundVariable)
+  e:\1\backend\app\api\deps.py:133:20 - error: Invalid conditional operand of type "ColumnElement[bool]"
+  ┬á┬áMethod __bool__ for type "ColumnElement[bool]" returns type "NoReturn" rather than "bool" (reportGeneralTypeIssues)
+e:\1\backend\app\api\v1\endpoints\audit.py
+  e:\1\backend\app\api\v1\endpoints\audit.py:65:48 - error: Invalid conditional operand of type "User | Column[str] | None"
+  ┬á┬áMethod __bool__ for type "Column[str]" returns type "NoReturn" rather than "bool" (reportGeneralTypeIssues)
+  e:\1\backend\app\api\v1\endpoints\audit.py:98:12 - error: Invalid conditional operand of type "Column[UUID]"
+  ┬á┬áMethod __bool__ for type "Column[UUID]" returns type "NoReturn" rather than "bool" (reportGeneralTypeIssues)
+  e:\1\backend\app\api\v1\endpoints\audit.py:102:56 - error: Invalid conditional operand of type "User | Column[str] | None"
+  ┬á┬áMethod __bool__ for type "Column[str]" returns type "NoReturn" rather than "bool" (reportGeneralTypeIssues)
+  e:\1\backend\app\api\v1\endpoints\audit.py:134:48 - error: Invalid conditional operand of type "User | Column[str] | None"
+  ┬á┬áMethod __bool__ for type "Column[str]" returns type "NoReturn" rather than "bool" (reportGeneralTypeIssues)
+  e:\1\backend\app\api\v1\endpoints\audit.py:169:12 - error: Invalid conditional operand of type "Column[UUID] | Literal[False]"
+  ┬á┬áMethod __bool__ for type "Column[UUID]" returns type "NoReturn" rather than "bool" (reportGeneralTypeIssues)
+  e:\1\backend\app\api\v1\endpoints\audit.py:180:8 - error: Invalid conditional operand of type "QueryLog | Column[UUID] | None"
+  ┬á┬áMethod __bool__ for type "Column[UUID]" returns type "NoReturn" rather than "bool" (reportGeneralTypeIssues)
+  e:\1\backend\app\api\v1\endpoints\audit.py:184:52 - error: Invalid conditional operand of type "User | Column[str] | None"
+  ┬á┬áMethod __bool__ for type "Column[str]" returns type "NoReturn" rather than "bool" (reportGeneralTypeIssues)
+e:\1\backend\app\api\v1\endpoints\checkins.py
+  e:\1\backend\app\api\v1\endpoints\checkins.py:26:8 - error: Invalid conditional operand of type "ColumnElement[bool]"
+  ┬á┬áMethod __bool__ for type "ColumnElement[bool]" returns type "NoReturn" rather than "bool" (reportGeneralTypeIssues)
+e:\1\backend\app\api\v1\endpoints\meetings.py
+  e:\1\backend\app\api\v1\endpoints\meetings.py:36:8 - error: Invalid conditional operand of type "ColumnElement[bool]"
+  ┬á┬áMethod __bool__ for type "ColumnElement[bool]" returns type "NoReturn" rather than "bool" (reportGeneralTypeIssues)
+  e:\1\backend\app\api\v1\endpoints\meetings.py:242:20 - error: Invalid conditional operand of type "Company | ColumnElement[bool] | None"
+  ┬á┬áMethod __bool__ for type "ColumnElement[bool]" returns type "NoReturn" rather than "bool" (reportGeneralTypeIssues)
+  e:\1\backend\app\api\v1\endpoints\meetings.py:252:74 - error: Invalid conditional operand of type "Column[str]"
+  ┬á┬áMethod __bool__ for type "Column[str]" returns type "NoReturn" rather than "bool" (reportGeneralTypeIssues)
+e:\1\backend\app\api\v1\endpoints\storage.py
+  e:\1\backend\app\api\v1\endpoints\storage.py:103:20 - error: Invalid conditional operand of type "Column[str] | bool"
+  ┬á┬áMethod __bool__ for type "Column[str]" returns type "NoReturn" rather than "bool" (reportGeneralTypeIssues)
+  e:\1\backend\app\api\v1\endpoints\storage.py:105:20 - error: Invalid conditional operand of type "Column[str] | bool"
+  ┬á┬áMethod __bool__ for type "Column[str]" returns type "NoReturn" rather than "bool" (reportGeneralTypeIssues)
+  e:\1\backend\app\api\v1\endpoints\storage.py:107:20 - error: Invalid conditional operand of type "Column[str] | bool"
+  ┬á┬áMethod __bool__ for type "Column[str]" returns type "NoReturn" rather than "bool" (reportGeneralTypeIssues)
+  e:\1\backend\app\api\v1\endpoints\storage.py:110:20 - error: Invalid conditional operand of type "Column[Any]"
+  ┬á┬áMethod __bool__ for type "Column[Any]" returns type "NoReturn" rather than "bool" (reportGeneralTypeIssues)
+e:\1\backend\app\models\business.py
+  e:\1\backend\app\models\business.py:122:16 - error: Type "Column[str] | None" is not assignable to return type "str | None"
+  ┬á┬áType "Column[str] | None" is not assignable to type "str | None"
+  ┬á┬á┬á┬áType "Column[str]" is not assignable to type "str | None"
+  ┬á┬á┬á┬á┬á┬á"Column[str]" is not assignable to "str"
+  ┬á┬á┬á┬á┬á┬á"Column[str]" is not assignable to "None" (reportReturnType)
+e:\1\backend\generate_audit.py
+  e:\1\backend\generate_audit.py:68:47 - error: Invalid conditional operand of type "ColumnElement[bool]"
+  ┬á┬áMethod __bool__ for type "ColumnElement[bool]" returns type "NoReturn" rather than "bool" (reportGeneralTypeIssues)
+  e:\1\backend\generate_audit.py:78:51 - error: Invalid conditional operand of type "ColumnElement[bool]"
+  ┬á┬áMethod __bool__ for type "ColumnElement[bool]" returns type "NoReturn" rather than "bool" (reportGeneralTypeIssues)
+  e:\1\backend\generate_audit.py:82:16 - error: Invalid conditional operand of type "Column[str] | Literal[False]"
+  ┬á┬áMethod __bool__ for type "Column[str]" returns type "NoReturn" rather than "bool" (reportGeneralTypeIssues)
+  e:\1\backend\generate_audit.py:87:53 - error: Invalid conditional operand of type "ColumnElement[bool]"
+  ┬á┬áMethod __bool__ for type "ColumnElement[bool]" returns type "NoReturn" rather than "bool" (reportGeneralTypeIssues)
+  e:\1\backend\generate_audit.py:91:16 - error: Invalid conditional operand of type "Column[str] | Literal[False]"
+  ┬á┬áMethod __bool__ for type "Column[str]" returns type "NoReturn" rather than "bool" (reportGeneralTypeIssues)
+  e:\1\backend\generate_audit.py:96:56 - error: Invalid conditional operand of type "ColumnElement[bool]"
+  ┬á┬áMethod __bool__ for type "ColumnElement[bool]" returns type "NoReturn" rather than "bool" (reportGeneralTypeIssues)
+  e:\1\backend\generate_audit.py:100:16 - error: Invalid conditional operand of type "Column[str] | Literal[False]"
+  ┬á┬áMethod __bool__ for type "Column[str]" returns type "NoReturn" rather than "bool" (reportGeneralTypeIssues)
+50 errors, 0 warnings, 0 informations

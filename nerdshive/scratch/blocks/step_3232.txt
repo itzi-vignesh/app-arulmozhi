@@ -1,0 +1,58 @@
+                     <div>
+                       <h2 className="text-lg font-bold">Workspace Meetings</h2>
+                       <p className="text-sm text-muted-foreground">Request meeting rooms and manage your scheduled sessions</p>
+                     </div>
+                     <Button onClick={() => {
+                       setBookingForm({
+                         meeting_title: "",
+                         purpose: "",
+                         meeting_date: "",
+                         start_time: "",
+                         end_time: "",
+                         participants: 1,
+                         room_id: "",
+                         department: "",
+                         notes: ""
+                       });
+                       setRequestMeetingModalOpen(true);
+                     }} className="flex items-center gap-2">
+                       <Plus className="w-4 h-4" /> Request Meeting
+                     </Button>
+                   </div>
+
+                   {/* Render Sections */}
+                   <div className="space-y-8">
+                     {/* Upcoming Meetings */}
+                     <div className="space-y-3">
+                       <h3 className="font-bold text-sm text-muted-foreground uppercase tracking-wider">Upcoming Meetings</h3>
+                       {corpMeetings.filter(m => m.status === 'APPROVED' && new Date(m.meeting_date) >= new Date()).length === 0 ? (
+                         <p className="text
+                               </CardContent>
+                             </Card>
+                           ))}
+                         </div>
+                       )}
+                     </div>
+
+                     {/* Completed Meetings */}
+                     <div className="space-y-3">
+                       <h3 className="font-bold text-sm text-muted-foreground uppercase tracking-wider">Completed Meetings</h3>
+                       {corpMeetings.filter(m => m.status === 'APPROVED' && new Date(m.meeting_date) < new Date()).length === 0 ? (
+                         <p className="text-sm text-muted-foreground italic pl-2">No completed meetings.</p>
+                       ) : (
+                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 opacity-75">
+                           {corpMeetings.filter(m => m.status === 'APPROVED' && new Date(m.meeting_date) < new Date()).map(m => (
+                             <Card key={m.id}>
+                               <CardContent className="p-4">
+                                 <p className="font-bold text-base">{m.meeting_title}</p>
+                                 <p className="text-xs text-muted-foreground">Room: {m.room?.room_name}</p>
+                                 <p className="text-xs text-muted-foreground">Date: {m.meeting_date} | Time: {m.start_time.substring(0,5)} - {m.end_time.substring(0,5)}</p>
+                               </CardContent>
+                             </Card>
+                           ))}
+                         </div>
+                       )}
+                     </div>
+
+                     {/* Rejected Meetings */}
+                     <div className="space-y-3">

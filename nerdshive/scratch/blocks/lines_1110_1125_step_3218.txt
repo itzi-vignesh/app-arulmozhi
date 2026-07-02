@@ -1,0 +1,15 @@
+                />
+              </div>
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setRequestSeatsModalOpen(false)}>Cancel</Button>
+              <Button onClick={submitSeatsRequest} disabled={loading}>
+                {loading ? "Submitting..." : "Submit Upgrade Request"}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      </div>
+    </AuthGuard>
+  );
+}

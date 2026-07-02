@@ -1,0 +1,88 @@
+  const [enrollModalOpen, setEnrollModalOpen] = useState(false);
+  const [editData, setEditData] = useState<any>({});
+  const [requestSeatsModalOpen, setRequestSeatsModalOpen] = useState(false);
+  const [requestedSeatsInput, setRequestedSeatsInput] = useState(0);
+  const [corporatePlans, setCorporatePlans] = useState<any[]>([]);
+  
+  // Queries State
+  const [queries, setQueries] = useState<any[]>([]);
+  const [newQueryMessage, setNewQueryMessage] = useState("");
+  const [isSubmittingQuery, setIsSubmittingQuery] = useState(false);
+  const [notifications, setNotifications] = useState<any[]>([]);
+  
+  const { toast } = useToast();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    fetchDashboardData();
+  }, []);
+
+  const fetchDashboardData = async () => {
+    try {
+      const [statsResult, empsResult, attResult, infoResult, plansResult] = await Promise.allSettled([
+        corporateService.getDashboardStats(),
+        corporateService.getEmployees(),
+        corporateService.getAttendance(),
+        corporateService.getCompanyInfo(),
+        businessService.getCorporatePlans()
+      ]);
+
+      if (statsResult.status === 'fulfilled') setStats(statsResult.value);
+      if (empsResult.status === 'fulfilled') setEmployees(empsResult.value);
+      if (attResult.status === 'fulfilled') setAttendance(attResult.value);
+      if (infoResult.status === 'fulfilled') setCompanyInfo(infoResult.value);
+      if (plansResult.status === 'fulfilled') setCorporatePlans(
+      const res = await apiClient.get('/queries/my');
+      setQueries(res.data);
+      
+      const notifRes = await apiClient.get('/notifications');
+      setNotifications(notifRes.data);
+    } catch (error) {
+      console.error("Error fetching queries:", error);
+    }
+  };
+
+  const submitQuery = async () => {
+    if (!newQueryMessage.trim()) return;
+    setIsSubmittingQuery(true);
+    try {
+      const { apiClient } = await import('@/lib/apiClient');
+      await apiClient.post('/queries', { message: newQueryMessage });
+      setNewQueryMessage("");
+      toast({ title: "Query Submitted Successfully" });
+      fetchQueries();
+    } catch (error) {
+      toast({ title: "Failed to submit query", variant: "destructive" });
+    } finally {
+      setIsSubmittingQuery(false);
+    }
+  };
+
+  const handleLogout = async () => {
+    try {
+      await authService.logout();
+      navigate("/login");
+    } catch (error) {
+      console.error("Error logging out:", error);
+      navigate("/login");
+    }
+  };
+
+  const handleToggleStatus = async (id: string, currentStatus: boolean) => {
+    setLoading(true);
+    try {
+      await corporateService.toggleEmployeeStatus(id, !currentStatus);
+      toast({ title: "Status Updated" });
+      fetchDashboardData();
+    } catch (error) {
+      toast({ title: "Update Failed", variant: "destructive" });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const requestBiometricAccess = async () => {
+    if (!companyInfo?.id) return;
+    setLoading(true);
+    try {
+      const { apiClient } = await import('@/lib/apiClient');

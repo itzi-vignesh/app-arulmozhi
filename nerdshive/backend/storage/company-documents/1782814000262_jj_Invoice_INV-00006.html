@@ -1,0 +1,89 @@
+
+      <html>
+        <head>
+          <title>Invoice - INV-00006</title>
+          <style>
+            body { font-family: Arial, sans-serif; padding: 40px; color: #333; line-height: 1.5; }
+            .header { display: flex; justify-content: space-between; border-bottom: 2px solid #eee; padding-bottom: 20px; }
+            .title { font-size: 24px; font-weight: bold; color: #1e293b; }
+            .subtitle { font-size: 14px; color: #64748b; margin-top: 4px; }
+            .details { margin-top: 30px; display: flex; justify-content: space-between; }
+            .invoice-info { text-align: right; }
+            .invoice-info p { margin: 4px 0; }
+            .table-container { margin-top: 40px; }
+            table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+            th, td { padding: 12px; border: 1px solid #e2e8f0; text-align: left; }
+            th { background-color: #f8fafc; color: #475569; font-weight: 600; }
+            .totals { margin-top: 30px; text-align: right; font-size: 16px; width: 100%; display: flex; flex-direction: column; align-items: flex-end; }
+            .total-item { display: flex; justify-content: space-between; width: 250px; padding: 6px 0; }
+            .total-row { font-size: 18px; font-weight: bold; border-top: 2px solid #cbd5e1; padding-top: 10px; margin-top: 6px; color: #0f172a; }
+            .status-badge { display: inline-block; padding: 4px 8px; border-radius: 4px; font-weight: bold; text-transform: uppercase; font-size: 12px; }
+            .paid { background-color: #dcfce7; color: #166534; }
+            .unpaid { background-color: #fef9c3; color: #854d0e; }
+            .cancelled { background-color: #fee2e2; color: #991b1b; }
+          </style>
+        </head>
+        <body>
+          <div class="header">
+            <div>
+              <div class="title">NERDSHIVE COWORKING</div>
+              <div class="subtitle">Collaborate locally, impact globally</div>
+            </div>
+            <div class="invoice-info">
+              <div class="title">INVOICE</div>
+              <p><strong>Invoice #:</strong> INV-00006</p>
+              <p><strong>Status:</strong> <span class="status-badge paid">paid</span></p>
+            </div>
+          </div>
+          
+          <div class="details">
+            <div>
+              <h3 style="margin-bottom: 8px; color: #1e293b;">Billed To:</h3>
+              <p style="margin: 4px 0;"><strong>Company Name:</strong> company1</p>
+              <p style="margin: 4px 0;"><strong>Company ID:</strong> 6b858369-c4c9-4b86-ba59-73cff1743091</p>
+            </div>
+            <div class="invoice-info">
+              <p><strong>Invoice Date:</strong> 27/6/2026</p>
+              <p><strong>Due Date:</strong> 1/7/2026</p>
+              <p><strong>Payment Date:</strong> 29/6/2026, 5:47:03 am</p>
+            </div>
+          </div>
+          
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th>Description</th>
+                  <th style="text-align: center;">Seats</th>
+                  <th style="text-align: right;">Rate per Seat</th>
+                  <th style="text-align: right;">Subtotal</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>MONTHLY TEAM PLAN - Seat Upgrade (seat)</td>
+                  <td style="text-align: center;">2</td>
+                  <td style="text-align: right;">₹51,970.00</td>
+                  <td style="text-align: right;">₹1,03,940.00</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          
+          <div class="totals">
+            <div class="total-item">
+              <span>Subtotal:</span>
+              <span>₹1,03,940.00</span>
+            </div>
+            <div class="total-item">
+              <span>GST (18%):</span>
+              <span>₹18,709.20</span>
+            </div>
+            <div class="total-item total-row">
+              <span>Total Amount:</span>
+              <span>₹1,22,649.20</span>
+            </div>
+          </div>
+        </body>
+      </html>
+    

@@ -1,0 +1,85 @@
+      navigate("/login");
+    } catch (error) {
+      console.error("Error logging out:", error);
+      navigate("/login");
+    }
+  };
+
+  const handleToggleStatus = async (id: string, currentStatus: boolean) => {
+    setLoading(true);
+    try {
+      await corporateService.toggleEmployeeStatus(id, !currentStatus);
+      toast({ title: "Status Updated" });
+      fetchDashboardData();
+    } catch (error) {
+      toast({ title: "Update Failed", variant: "destructive" });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const requestBiometricAccess = async () => {
+    if (!companyInfo?.id) return;
+    setLoading(true);
+    try {
+      const { apiClient } = await import('@/lib/apiClient');
+      await apiClient.post(`/companies/${companyInfo.id}/biometric-request`);
+      toast({ title: "Biometric request submitted successfully." });
+      fetchDashboardData();
+    } catch (error) {
+      toast({ title: "Failed to submit biometric request", variant: "destructive" });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const getSeatRemainingColor = () => {
+    if (!stats) return "text-foreground";
+    const capacity = stats.max_employee_capacity || 0;
+    const remaining = Math.max(0, capacity - stats.total_employees);
+    if (remaining === 0) return "text-red-500";
+    const percentage = capacity > 0 ? remaining / capacity : 0;
+    if (percentage <= 0.2) return "text-orange-500";
+      gst_number: companyInfo?.gst_number || '',
+      max_employee_capacity: companyInfo?.max_employee_capacity || 0,
+      seats_requested: companyInfo?.seats_requested || 0,
+      biometric_required: companyInfo?.biometric_required || false,
+    });
+    setEditInfoModalOpen(true);
+  };
+
+  const saveCompanyInfo = async () => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(editData.company_email)) {
+      toast({ title: "Invalid email format.", variant: "destructive" });
+      return;
+    }
+    if (!editData.admin_mobile || editData.admin_mobile.length < 10) {
+      toast({ title: "Mobile number must be at least 10 characters.", variant: "destructive" });
+      return;
+    }
+    if (!editData.company_name || !editData.admin_full_name || !editData.company_email) {
+      toast({ title: "Required fields are missing.", variant: "destructive" });
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const { max_employee_capacity, seats_requested, biometric_required, ...payload } = editData;
+      await corporateService.updateCompanyInfo(payload);
+      toast({ title: "Company information updated successfully." });
+      setEditInfoModalOpen(false);
+      fetchDashboardData();
+    } catch (error) {
+      toast({ title: "Update Failed", variant: "destructive" });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDownloadCSV = async () => {
+    try {
+      const { apiClient } = await import('@/lib/apiClient');
+      const response = await apiClient.get('/users/download-template?filename=employee_enrollment_template.csv', {
+        responseType: 'blob'
+      });

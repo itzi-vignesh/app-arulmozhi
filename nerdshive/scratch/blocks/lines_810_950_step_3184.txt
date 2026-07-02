@@ -1,0 +1,45 @@
+                               </CardContent>
+                             </Card>
+                           ))}
+                         </div>
+                       )}
+                     </div>
+
+                     {/* Pending Requests */}
+                     <div className="space-y-3">
+                       <h3 className="font-bold text-sm text-muted-foreground uppercase tracking-wider">Pending Requests</h3>
+                       {corpMeetings.filter(m => m.status === 'PENDING').length === 0 ? (
+                         <p className="text-sm text-muted-foreground italic pl-2">No pending requests.</p>
+                       ) : (
+                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                           {corpMeetings.filter(m => m.status === 'PENDING').map(m => (
+                             <Card key={m.id} className="border-l-4 border-l-amber-500">
+                               <CardContent className="p-4 flex justify-between items-start">
+                                 <div className="space-y-1">
+                                   <p className="font-bold text-base">{m.meeting_title}</p>
+                                   <p className="text-xs text-muted-foreground">Room: {m.room?.room_name || 'Auto-assigning'}</p>
+                                   <p className="text-xs text-muted-foreground">Date: {m.meeting_date} | Time: {m.start_time.substring(0,5)} - {m.end_time.substring(0,5)}</p>
+                                 </div>
+    
+                         </div>
+                       </div>
+                       
+                       <div>
+                         <h3 className="font-semibold text-lg border-b pb-2 mb-4">Primary Contact</h3>
+                         <div className="space-y-3">
+                           <div><span className="text-muted-foreground text-sm">Name:</span> <p className="font-medium">{companyInfo.admin_full_name}</p></div>
+                           <div><span className="text-muted-foreground text-sm">Email:</span> <p className="font-medium">{companyInfo.company_email}</p></div>
+                           <div><span className="text-muted-foreground text-sm">Mobile:</span> <p className="font-medium">{companyInfo.admin_mobile}</p></div>
+                         </div>
+                       </div>
+                       
+                       <div>
+                         <h3 className="font-semibold text-lg border-b pb-2 mb-4">Address</h3>
+                         <div className="space-y-3">
+                           <div><span className="text-muted-foreground text-sm">Address:</span> <p className="font-medium">{companyInfo.address || '-'}</p></div>
+                           <div><span className="text-muted-foreground text-sm">City:</span> <p className="font-medium">{companyInfo.city || '-'}</p></div>
+                           <div><span className="text-muted-foreground text-sm">State:</span> <p className="font-medium">{companyInfo.state || '-'}</p></div>
+                           <div><span className="text-muted-foreground text-sm">Pincode:</span> <p className="font-medium">{companyInfo.pincode || '-'}</p></div>
+                         </div>
+                       </div>
+                       

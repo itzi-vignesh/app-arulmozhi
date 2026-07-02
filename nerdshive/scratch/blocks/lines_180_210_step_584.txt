@@ -1,0 +1,31 @@
+      toast({ title: "Company information updated successfully." });
+      setEditInfoModalOpen(false);
+      fetchDashboardData();
+    } catch (error) {
+      toast({ title: "Update Failed", variant: "destructive" });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDownloadCSV = () => {
+    const link = document.createElement('a');
+    link.href = '/employee_enrollment_template.csv';
+    link.download = 'employee_enrollment_template.csv';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  const openRequestSeatsModal = () => {
+    setRequestedSeatsInput(companyInfo?.seats_requested || 0);
+    setRequestSeatsModalOpen(true);
+  };
+
+  const submitSeatsRequest = async () => {
+    if (requestedSeatsInput <= 0) {
+      toast({ 
+        title: "Invalid seat number", 
+        description: "Seats must be greater than zero.", 
+        variant: "destructive" 
+      });

@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-color: rgba(15, 23, 42, 0.95);
+      --card-bg: rgba(30, 41, 59, 0.5);
+      --border-color: rgba(255, 255, 255, 0.08);
+      --accent-color: #00f2fe;
+      --accent-gradient: linear-gradient(135deg, #00f2fe 0%, #4facfe 100%);
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+    }
+
+    body {
+      width: 320px;
+      margin: 0;
+      padding: 16px;
+      background: var(--bg-color);
+      color: var(--text-main);
+      font-family: 'Outfit', sans-serif;
+      box-sizing: border-box;
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--border-color);
+      overflow-x: hidden;
+    }
+
+    .header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 20px;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 12px;
+    }
+
+    .logo {
+      width: 28px;
+      height: 28px;
+      background: var(--accent-gradient);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 12px rgba(0, 242, 254, 0.4);
+    }
+
+    .logo svg {
+      width: 16px;
+      height: 16px;
+      fill: #0f172a;
+    }
+
+    .title {
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      background: var(--accent-gradient);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .field-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 12px;
+      margin-bottom: 14px;
+      transition: all 0.2s ease;
+    }
+
+    .field-card:hover {
+      border-color: rgba(0, 242, 254, 0.2);
+    }
+
+    .field-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+      font-weight: 500;
+    }
+
+    .field-value {
+      font-size: 13px;
+      font-weight: 600;
+      word-break: break-all;
+      color: var(--text-main);
+    }
+
+    .field-value.none {
+      color: var(--text-muted);
+      font-weight: 400;
+      font-style: italic;
+    }
+
+    .input-group {
+      margin-bottom: 20px;
+    }
+
+    .input-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+      display: block;
+    }
+
+    .text-input {
+      width: 100%;
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 10px 12px;
+      color: var(--text-main);
+      font-family: inherit;
+      font-size: 13px;
+      box-sizing: border-box;
+      transition: all 0.2s ease;
+    }
+
+    .text-input:focus {
+      outline: none;
+      border-color: var(--accent-color);
+      box-shadow: 0 0 8px rgba(0, 242, 254, 0.2);
+    }
+
+    .status-container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+      padding: 4px 6px;
+    }
+
+    .status-text {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      background: rgba(16, 185, 129, 0.1);
+      color: #10b981;
+      padding: 4px 8px;
+      border-radius: 20px;
+      border: 1px solid rgba(16, 185, 129, 0.2);
+    }
+
+    .status-badge.waiting {
+      background: rgba(245, 158, 11, 0.1);
+      color: #f59e0b;
+      border-color: rgba(245, 158, 11, 0.2);
+    }
+
+    .pulse-dot {
+      width: 6px;
+      height: 6px;
+      background-color: currentColor;
+      border-radius: 50%;
+      animation: pulse 1.5s infinite alternate;
+    }
+
+    @keyframes pulse {
+      0% { opacity: 0.4; }
+      100% { opacity: 1; transform: scale(1.2); }
+    }
+
+    .btn-container {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .btn {
+      width: 100%;
+      border: none;
+      border-radius: 8px;
+      padding: 11px;
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .btn-primary {
+      background: var(--accent-gradient);
+      color: #0f172a;
+      box-shadow: 0 4px 12px rgba(0, 242, 254, 0.2);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 16px rgba(0, 242, 254, 0.35);
+    }
+
+    .btn-primary:active {
+      transform: translateY(0);
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--text-main);
+      border: 1px solid var(--border-color);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none !important;
+      box-shadow: none !important;
+    }
+
+    .error-msg {
+      font-size: 11px;
+      color: #ef4444;
+      margin-top: 6px;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="logo">
+      <svg viewBox="0 0 24 24">
+        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H7c0-2.76 2.24-5 5-5s5 2.24 5 5c0 1.04-.42 1.99-1.07 2.75z"/>
+      </svg>
+    </div>
+    <div class="title">DOM Monitor</div>
+  </div>
+
+  <div class="field-card">
+    <div class="field-label">Selected Element</div>
+    <div id="selected-selector" class="field-value none">None</div>
+  </div>
+
+  <div class="field-card">
+    <div class="field-label">Current Value</div>
+    <div id="selected-value" class="field-value none">None</div>
+  </div>
+
+  <div class="field-card">
+    <div class="field-label">Monitor Type</div>
+    <div id="selected-type" class="field-value">TEXT</div>
+  </div>
+
+  <div class="input-group">
+    <label class="input-label" for="monitor-name">Monitor Name</label>
+    <input type="text" id="monitor-name" class="text-input" placeholder="e.g. Amazon Price Widget" disabled>
+    <div id="error-message" class="error-msg">Please enter a valid monitor name.</div>
+  </div>
+
+  <div class="input-group">
+    <label class="input-label" for="monitor-interval">Check Interval (seconds)</label>
+    <input type="number" id="monitor-interval" class="text-input" placeholder="e.g. 60" value="60" min="10" max="86400" disabled>
+    <div id="interval-error-message" class="error-msg">Minimum allowed: 10 seconds</div>
+  </div>
+
+  <div class="status-container">
+    <div class="status-text">Status</div>
+    <div id="status-badge" class="status-badge waiting">
+      <div class="pulse-dot"></div>
+      <span id="status-text-val">Ready</span>
+    </div>
+  </div>
+
+  <div class="btn-container">
+    <button id="btn-select" class="btn btn-secondary">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 4px;">
+        <circle cx="12" cy="12" r="10"></circle>
+        <path d="m16.2 8.6-8.2 8.2"></path>
+        <path d="M12 8v8"></path>
+        <path d="M8 12h8"></path>
+      </svg>
+      Select Element
+    </button>
+    <button id="btn-create" class="btn btn-primary" disabled>
+      Create Monitor
+    </button>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

@@ -1,0 +1,41 @@
+        title: "Download Failed",
+        description: "Could not download the standardized CSV template.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const openRequestSeatsModal = () => {
+    setRequestedSeatsInput(companyInfo?.seats_requested || 0);
+    setRequestSeatsModalOpen(true);
+  };
+
+  const submitSeatsRequest = async () => {
+    if (requestedSeatsInput <= 0) {
+      toast({ 
+        title: "Invalid seat number", 
+        description: "Seats must be greater than zero.", 
+        variant: "destructive" 
+      });
+      return;
+    }
+    setLoading(true);
+    try {
+      await corporateService.updateCompanyInfo({
+        ...companyInfo,
+        seats_requested: requestedSeatsInput
+      });
+      toast({ title: "Seats upgrade request submitted successfully." });
+      setRequestSeatsModalOpen(false);
+      fetchDashboardData();
+    } catch (error: any) {
+      const errorMsg = error.response?.data?.detail || "Request Failed";
+      toast({ title: "Request Failed", description: errorMsg, variant: "destructive" });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <AuthGuard requiredRole="company_admin" requireApproval={true}>
+      <div className="min-h-screen bg-gradient-to-br from-background to-secondary">

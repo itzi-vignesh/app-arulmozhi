@@ -1,0 +1,4 @@
+Frontend Home: 200 OK
+Frontend Login: 200 OK
+Backend Health: 200 OK
+Backend Swagger: 200 OK

@@ -1,0 +1,51 @@
+                <Label>Contact Person (Admin) *</Label>
+                <Input value={editData.admin_full_name} onChange={e => setEditData({...editData, admin_full_name: e.target.value})} />
+              </div>
+              <div className="space-y-2">
+                <Label>Mobile *</Label>
+                <Input value={editData.admin_mobile} onChange={e => setEditData({...editData, admin_mobile: e.target.value})} maxLength={15} />
+              </div>
+              <div className="space-y-2 md:col-span-2">
+                <Label>Address</Label>
+                <Input value={editData.address} onChange={e => setEditData({...editData, address: e.target.value})} />
+              </div>
+              <div className="space-y-2">
+                <Label>City</Label>
+                <Input value={editData.city} onChange={e => setEditData({...editData, city: e.target.value})} />
+              </div>
+              <div className="space-y-2">
+                <Label>State</Label>
+                <Input value={editData.state} onChange={e => setEditData({...editData, state: e.target.value})} />
+              </div>
+              <div className="space-y-2">
+                <Label>Pincode</Label>
+                <Input value={editData.pincode} onChange={e => setEditData({...editData, pincode: e.target.value})} />
+              </div>
+              <div className="space-y-2">
+                <Label>GST Number</Label>
+                <Input value={editData.gst_number} onChange={e => setEditData({...editData, gst_number: e.target.value})} />
+              </div>
+              <div className="space-y-2">
+                <Label>Maximum Seats Required</Label>
+                <Input type="number" value={editData.max_employee_capacity} onChange={e => setEditData({...editData, max_employee_capacity: parseInt(e.target.value) || 0})} />
+              </div>
+              <div className="space-y-2">
+                <Label>Seats Requested</Label>
+                <Input type="number" value={editData.seats_requested} onChange={e => setEditData({...editData, seats_requested: parseInt(e.target.value) || 0})} />
+              </div>
+              <div className="space-y-2">
+                <Label>Biometric Required</Label>
+                <div className="flex items-center space-x-4 mt-2">
+                  <label className="flex items-center space-x-2 cursor-pointer">
+                    <input
+                      type="radio"
+                      name="biometric_required"
+                      checked={editData.biometric_required === true}
+                      onChange={() => setEditData({...editData, biometric_required: true})}
+                      className="w-4 h-4 text-primary"
+                    />
+                    <span>Yes</span>
+                  </label>
+                  <label className="flex items-center space-x-2 cursor-pointer">
+                    <input
+                      type="radio"

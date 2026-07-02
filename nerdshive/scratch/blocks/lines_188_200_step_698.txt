@@ -1,0 +1,13 @@
+  };
+
+  const handleDownloadCSV = () => {
+    const link = document.createElement('a');
+    link.href = '/employee_enrollment_template.csv';
+    link.download = 'employee_enrollment_template.csv';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  const openRequestSeatsModal = () => {
+    setRequestedSeatsInput(companyInfo?.seats_requested || 0);

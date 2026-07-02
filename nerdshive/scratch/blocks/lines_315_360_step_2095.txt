@@ -1,0 +1,46 @@
+                    <p className="text-xs text-muted-foreground">
+                      Employees currently in workspace
+                    </p>
+                  </CardContent>
+                </Card>
+                <Card>
+                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-medium">Seats Available</CardTitle>
+                    <Shield className="h-4 w-4 text-muted-foreground" />
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-2xl font-bold">{stats?.seats_available || 0}</div>
+                    <p className="text-xs text-muted-foreground">
+                      Out of {stats?.seats_requested || 0} total requested
+                    </p>
+                  </CardContent>
+                </Card>
+              </div>
+            </TabsContent>
+
+            <TabsContent value="employees">
+              <Card className="mb-6">
+                <CardHeader>
+                  <CardTitle>Seat Usage Summary</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-3 gap-4 text-center divide-x">
+                    <div>
+                      <p className="text-sm text-muted-foreground">Seats Requested</p>
+                      <p className="text-2xl font-bold">{stats?.seats_requested || 0}</p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-muted-foreground">Employees Added</p>
+                      <p className="text-2xl font-bold">{stats?.total_employees || 0}</p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-muted-foreground">Seats Remaining</p>
+                      <p className={`text-2xl font-bold ${getSeatRemainingColor()}`}>
+                        {stats ? Math.max(0, stats.seats_requested - stats.total_employees) : 0}
+                      </p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card>

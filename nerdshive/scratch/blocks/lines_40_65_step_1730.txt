@@ -1,0 +1,26 @@
+
+  useEffect(() => {
+    fetchDashboardData();
+  }, []);
+
+  const fetchDashboardData = async () => {
+    try {
+      const [statsResult, empsResult, attResult, infoResult] = await Promise.allSettled([
+        corporateService.getDashboardStats(),
+        corporateService.getEmployees(),
+        corporateService.getAttendance(),
+        corporateService.getCompanyInfo()
+      ]);
+
+      if (statsResult.status === 'fulfilled') setStats(statsResult.value);
+      if (empsResult.status === 'fulfilled') setEmployees(empsResult.value);
+      if (attResult.status === 'fulfilled') setAttendance(attResult.value);
+      if (infoResult.status === 'fulfilled') setCompanyInfo(infoResult.value);
+      
+      fetchQueries();
+    } catch (error) {
+      console.error("Error fetching dashboard data:", error);
+    }
+  };
+
+  const fetchQueries = async () => {

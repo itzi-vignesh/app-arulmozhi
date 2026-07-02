@@ -1,0 +1,46 @@
+                     <div className="space-y-3">
+                       <h3 className="font-bold text-sm text-muted-foreground uppercase tracking-wider">Rejected Requests</h3>
+                       {corpMeetings.filter(m => m.status === 'REJECTED').length === 0 ? (
+                         <p className="text-sm text-muted-foreground italic pl-2">No rejected requests.</p>
+                       ) : (
+                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                           {corpMeetings.filter(m => m.status === 'REJECTED').map(m => (
+                             <Card key={m.id} className="border-l-4 border-l-red-500">
+                               <CardContent className="p-4">
+                                 <p className="font-bold text-base">{m.meeting_title}</p>
+                                 <p className="text-xs text-muted-foreground">Date: {m.meeting_date} | Room: {m.room?.room_name || 'Requested'}</p>
+                                 {m.decision_notes && <p className="text-xs italic text-red-600 mt-2">Reason: "{m.decision_notes}"</p>}
+                               </CardContent>
+                             </Card>
+                           ))}
+                         </div>
+                       )}
+                     </div>
+
+                     {/* Cancelled Meetings */}
+                     <div className="space-y-3">
+                       <h3 className="font-bold text-sm text-muted-foreground uppercase tracking-wider">Cancelled Meetings</h3>
+                       {corpMeetings.filter(m => m.status === 'CANCELLED').length === 0 ? (
+                         <p className="text-sm text-muted-foreground italic pl-2">No cancelled meetings.</p>
+                       ) : (
+                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                           {corpMeetings.filter(m => m.status === 'CANCELLED').map(m => (
+                             <Card key={m.id} className="border-l-4 border-l-gray-400">
+                               <CardContent className="p-4">
+                                 <p className="font-bold text-base text-muted-foreground">{m.meeting_title}</p>
+                                 <p className="text-xs text-muted-foreground">Date: {m.meeting_date} | Time: {m.start_time.substring(0,5)} - {m.end_time.substring(0,5)}</p>
+                                 {m.cancel_reason && <p className="text-xs italic text-muted-foreground mt-2">Reason: "{m.cancel_reason}"</p>}
+                               </CardContent>
+                             </Card>
+                           ))}
+                         </div>
+                       )}
+                     </div>
+                   </div>
+                 </TabsContent>
+               </Tabs>
+             </TabsContent>
+            
+            <TabsContent value="company-info">
+               <Card>
+                 <CardHeader className="flex flex-row items-center justify-between">

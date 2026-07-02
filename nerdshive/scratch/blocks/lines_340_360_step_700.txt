@@ -1,0 +1,21 @@
+                    <Button variant="outline" className="flex items-center" asChild>
+                      <a
+                        href="/employee_enrollment_template.csv"
+                        download="employee_enrollment_template.csv"
+                        onClick={() => {
+                          toast({
+                            title: "Template Downloaded",
+                            description: "Fill in the template and upload it to enroll employees.",
+                          });
+                        }}
+                      >
+                        <Download className="w-4 h-4 mr-2" />
+                        Download CSV Format
+                      </a>
+                    </Button>
+                    <Button onClick={() => setEnrollModalOpen(true)} className="flex items-center">
+                      <UploadCloud className="w-4 h-4 mr-2" />
+                      Enroll Employees
+                    </Button>
+                  </div>
+                </CardHeader>

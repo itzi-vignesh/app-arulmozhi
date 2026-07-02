@@ -1,0 +1,41 @@
+      const res = await apiClient.get('/meetings/');
+      setCorpMeetings(res.data);
+    } catch (error) {
+      console.error("Error fetching corporate meetings:", error);
+    }
+  };
+
+  const handleBookingSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!bookingForm.meeting_title.trim() || !bookingForm.purpose.trim() || !bookingForm.meeting_date || !bookingForm.start_time || !bookingForm.end_time) {
+      toast({ title: "Please fill in all required fields", variant: "destructive" });
+      return;
+    }
+    
+    try {
+      const { apiClient } = await import('@/lib/apiClient');
+      const payload = {
+        ...bookingForm,
+        start_time: bookingForm.start_time + ":00",
+        end_time: bookingForm.end_time + ":00"
+      };
+      await apiClient.post('/meetings/request', payload);
+      toast({ title: "Meeting request submitted successfully" });
+      setRequestMeetingModalOpen(false);
+      fetchCorpMeetings();
+    } catch (error: any) {
+      const errMsg = error.response?.data?.detail || "Failed to submit request";
+      toast({ title: "Submission failed", description: errMsg, variant: "destructive" });
+    }
+  };
+
+  const handleCancelSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedMeetingToCancel) return;
+    try {
+      const { apiClient } = await import('@/lib/apiClient');
+      await apiClient.put(`/meetings/${selectedMeetingToCancel.id}/cancel`, {
+        cancel_reason: cancelReason
+      });
+      toast({ title: "Meeting cancelled successfully" });
+      setCancelMeetingModalOpen(false);

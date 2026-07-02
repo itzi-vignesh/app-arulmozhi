@@ -1,0 +1,25 @@
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { BulkEnrollmentTab } from "@/components/BulkEnrollmentTab";
+
+export default function CorporateDashboard() {
+  const [stats, setStats] = useState<DashboardStats | null>(null);
+  const [employees, setEmployees] = useState<any[]>([]);
+  const [attendance, setAttendance] = useState<any[]>([]);
+  const [companyInfo, setCompanyInfo] = useState<any>(null);
+  const [loading, setLoading] = useState(false);
+  const [editInfoModalOpen, setEditInfoModalOpen] = useState(false);
+  const [enrollModalOpen, setEnrollModalOpen] = useState(false);
+  const [editData, setEditData] = useState<any>({});
+  
+  // Queries State
+  const [queries, setQueries] = useState<any[]>([]);
+  const [newQueryMessage, setNewQueryMessage] = useState("");
+  const [isSubmittingQuery, setIsSubmittingQuery] = useState(false);
+  const [notifications, setNotifications] = useState<any[]>([]);
+  
+  const { toast } = useToast();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    fetchDashboardData();
+  }, []);

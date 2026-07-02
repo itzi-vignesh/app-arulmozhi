@@ -1,0 +1,30 @@
+  const saveCompanyInfo = async () => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(editData.company_email)) {
+      toast({ title: "Invalid email format.", variant: "destructive" });
+      return;
+    }
+    if (!editData.admin_mobile || editData.admin_mobile.length < 10) {
+      toast({ title: "Mobile number must be at least 10 characters.", variant: "destructive" });
+      return;
+    }
+    if (!editData.company_name || !editData.admin_full_name || !editData.company_email) {
+      toast({ title: "Required fields are missing.", variant: "destructive" });
+      return;
+    }
+
+    setLoading(true);
+    try {
+      await corporateService.updateCompanyInfo(editData);
+      toast({ title: "Company information updated successfully." });
+      setEditInfoModalOpen(false);
+      fetchDashboardData();
+    } catch (error) {
+      toast({ title: "Update Failed", variant: "destructive" });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDownloadCSV = async () => {
+    try {

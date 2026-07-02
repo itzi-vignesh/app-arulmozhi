@@ -1,0 +1,41 @@
+      fetchDashboardData();
+    } catch (error) {
+      toast({ title: "Update Failed", variant: "destructive" });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDownloadCSV = () => {
+    const headers = [
+      "S.No", "Name", "Gender", "Date Of Birth", "Mobile No", "Email ID",
+      "Emergency Contact Person", "Emergency Contact No", "Company Name",
+      "Department/Team", "Designation/Role", "Employee ID", "Joining Date in NH",
+      "Duration", "ID Proof Type", "ID Proof No", "Do you require Parking?",
+      "Vehicle Type", "Vehicle Brand & Model", "Vehicle Color", "Vehicle Registration Number"
+    ];
+
+    const sampleRow = [
+      "1", "John Doe", "Male", "15-05-1990", "9876543210", "john.doe@example.com",
+      "Jane Doe", "9876543211", "ABC Technologies", "Engineering", "Software Developer",
+      "EMP001", "01-01-2025", "Permanent", "PAN", "ABCDE1234F", "Yes", "Car",
+      "Honda City", "White", "TN01AB1234"
+    ];
+
+    const csvContent = [headers, sampleRow]
+      .map(row => row.map(cell => `"${cell}"`).join(","))
+      .join("\n");
+      
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'employee_enrollment_template.csv';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  return (
+    <AuthGuard requiredRole="company_admin" requireApproval={true}>
+      <div className="min-h-screen bg-gradient-to-br from-background to-secondary">

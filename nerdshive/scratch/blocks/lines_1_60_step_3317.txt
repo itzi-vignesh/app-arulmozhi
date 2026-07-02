@@ -1,0 +1,60 @@
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { corporateService, DashboardStats } from "@/services/corporateService";
+import { authService } from "@/services/authService";
+import { AuthGuard } from "@/components/ui/auth-guard";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Button } from "@/components/ui/button";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Badge } from "@/components/ui/badge";
+import { useToast } from "@/hooks/use-toast";
+import { Bell, LogOut, Users, Clock, CreditCard, MessageSquare, Building, Shield, Activity, Download, UploadCloud, Edit2, Settings } from "lucide-react";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog";
+import { EmployeeCsvUploader } from "@/components/EmployeeCsvUploader";
+
+export default function CorporateDashboard() {
+  const [stats, setStats] = useState<DashboardStats | null>(null);
+  const [employees, setEmployees] = useState<any[]>([]);
+  const [attendance, setAttendance] = useState<any[]>([]);
+  const [companyInfo, setCompanyInfo] = useState<any>(null);
+  const [loading, setLoading] = useState(false);
+  const [editInfoModalOpen, setEditInfoModalOpen] = useState(false);
+  const [enrollModalOpen, setEnrollModalOpen] = useState(false);
+  const [editData, setEditData] = useState<any>({});
+  const [requestSeatsModalOpen, setRequestSeatsModalOpen] = useState(false);
+  const [requestedSeatsInput, setRequestedSeatsInput] = useState(0);
+  
+  // Queries State
+  const [queries, setQueries] = useState<any[]>([]);
+  const [newQueryMessage, setNewQueryMessage] = useState("");
+  const [isSubmittingQuery, setIsSubmittingQuery] = useState(false);
+  const [notifications, setNotifications] = useState<any[]>([]);
+  
+  const { toast } = useToast();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    fetchDashboardData();
+  }, []);
+
+  const fetchDashboardData = async () => {
+    try {
+      const [statsResult, empsResult, attResult, infoResult] = await Promise.allSettled([
+        corporateService.getDashboardStats(),
+        corporateService.getEmployees(),
+        corporateService.getAttendance(),
+        corporateService.getCompanyInfo()
+      ]);
+
+      if (statsResult.status === 'fulfilled') setStats(statsResult.value);
+      if (empsResult.status === 'fulfilled') setEmployees(empsResult.value);
+      if (attResult.status === 'fulfilled') setAttendance(attResult.value);
+      if (infoResult.status === 'fulfilled') setCompanyInfo(infoResult.value);
+      
+      fetchQueries();
+    } catch (error) {
+      console.error("Error fetching dashboard data:", error);
+    }

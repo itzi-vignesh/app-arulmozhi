@@ -1,0 +1,15 @@
+# Tasks - Capacity Upgrade Workflow & Document Download Fix
+
+- `[x]` Update `DashboardStatsResponse` schema in `backend/app/schemas/company.py` to include `max_employee_capacity`
+- `[x]` Update `/company-admin/dashboard` in `backend/app/api/v1/endpoints/company_admin.py` to calculate available seats based strictly on `max_employee_capacity` and return `max_employee_capacity`
+- `[x]` Enforce `seats_requested` validation inside `update_my_company` in `backend/app/api/v1/endpoints/company_admin.py`
+- `[x]` Add notification triggers (Superuser and Admin notifications) in `update_my_company` when upgrade requested
+- `[x]` Update `approve_seats_upgrade` in `backend/app/api/v1/endpoints/companies.py` to set `max_employee_capacity = seats_requested` and notify the company
+- `[x]` Update `reject_seats_upgrade` in `backend/app/api/v1/endpoints/companies.py` to reset `seats_requested = max_employee_capacity` and notify the company
+- `[x]` Implement backend permission checks for `company-documents` bucket in `backend/app/api/v1/endpoints/storage.py`
+- `[x]` Update `DashboardStats` interface in `src/services/corporateService.ts`
+- `[x]` Update Overview / Employees / Plans tabs in `src/pages/CorporateDashboard.tsx` to display stats and banners correctly
+- `[x]` Implement Capacity Upgrade Requests subsection in `src/components/OrganizationApprovalTab.tsx`
+- `[x]` Implement authenticated document download/view mechanism in `src/components/OrganizationApprovalTab.tsx`
+- `[x]` Rebuild and restart backend and frontend Docker containers
+- `[x]` Run and verify verification tests

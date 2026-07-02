@@ -1,0 +1,162 @@
+e:\1\backend\app\api\v1\endpoints\finance.py
+  e:\1\backend\app\api\v1\endpoints\finance.py:113:17 - error: Cannot assign to attribute "full_name" for class "Finance"
+  ┬á┬áExpression of type "str" cannot be assigned to attribute "full_name" of class "Finance"
+  ┬á┬á┬á┬á"str" is not assignable to "Column[str]" (reportAttributeAccessIssue)
+  e:\1\backend\app\api\v1\endpoints\finance.py:115:17 - error: Cannot assign to attribute "mobile" for class "Finance"
+  ┬á┬áExpression of type "str" cannot be assigned to attribute "mobile" of class "Finance"
+  ┬á┬á┬á┬á"str" is not assignable to "Column[str]" (reportAttributeAccessIssue)
+  e:\1\backend\app\api\v1\endpoints\finance.py:117:17 - error: Cannot assign to attribute "city" for class "Finance"
+  ┬á┬áExpression of type "str" cannot be assigned to attribute "city" of class "Finance"
+  ┬á┬á┬á┬á"str" is not assignable to "Column[str]" (reportAttributeAccessIssue)
+  e:\1\backend\app\api\v1\endpoints\finance.py:119:17 - error: Cannot assign to attribute "location" for class "Finance"
+  ┬á┬áExpression of type "str" cannot be assigned to attribute "location" of class "Finance"
+  ┬á┬á┬á┬á"str" is not assignable to "Column[str]" (reportAttributeAccessIssue)
+  e:\1\backend\app\api\v1\endpoints\finance.py:121:17 - error: Cannot assign to attribute "occupation" for class "Finance"
+  ┬á┬áExpression of type "str" cannot be assigned to attribute "occupation" of class "Finance"
+  ┬á┬á┬á┬á"str" is not assignable to "Column[str]" (reportAttributeAccessIssue)
+  e:\1\backend\app\api\v1\endpoints\finance.py:123:17 - error: Cannot assign to attribute "status" for class "Finance"
+  ┬á┬áExpression of type "str" cannot be assigned to attribute "status" of class "Finance"
+  ┬á┬á┬á┬á"str" is not assignable to "Column[str]" (reportAttributeAccessIssue)
+  e:\1\backend\app\api\v1\endpoints\finance.py:126:23 - error: Cannot assign to attribute "is_active" for class "AuthUser"
+  ┬á┬áExpression of type "bool" cannot be assigned to attribute "is_active" of class "AuthUser"
+  ┬á┬á┬á┬á"bool" is not assignable to "Column[bool]" (reportAttributeAccessIssue)
+  e:\1\backend\app\api\v1\endpoints\finance.py:129:17 - error: Cannot assign to attribute "permissions" for class "Finance"
+  ┬á┬áExpression of type "List[str]" cannot be assigned to attribute "permissions" of class "Finance"
+  ┬á┬á┬á┬á"List[str]" is not assignable to "Column[Any]" (reportAttributeAccessIssue)
+  e:\1\backend\app\api\v1\endpoints\finance.py:151:15 - error: Cannot assign to attribute "hashed_password" for class "AuthUser"
+  ┬á┬áExpression of type "str" cannot be assigned to attribute "hashed_password" of class "AuthUser"
+  ┬á┬á┬á┬á"str" is not assignable to "Column[str]" (reportAttributeAccessIssue)
+  e:\1\backend\app\api\v1\endpoints\finance.py:199:17 - error: Cannot assign to attribute "full_name" for class "Finance"
+  ┬á┬áExpression of type "str" cannot be assigned to attribute "full_name" of class "Finance"
+  ┬á┬á┬á┬á"str" is not assignable to "Column[str]" (reportAttributeAccessIssue)
+  e:\1\backend\app\api\v1\endpoints\finance.py:201:17 - error: Cannot assign to attribute "mobile" for class "Finance"
+  ┬á┬áExpression of type "str" cannot be assigned to attribute "mobile" of class "Finance"
+  ┬á┬á┬á┬á"str" is not assignable to "Column[str]" (reportAttributeAccessIssue)
+  e:\1\backend\app\api\v1\endpoints\finance.py:203:17 - error: Cannot assign to attribute "city" for class "Finance"
+  ┬á┬áExpression of type "str" cannot be assigned to attribute "city" of class "Finance"
+  ┬á┬á┬á┬á"str" is not assignable to "Column[str]" (reportAttributeAccessIssue)
+  e:\1\backend\app\api\v1\endpoints\finance.py:205:17 - error: Cannot assign to attribute "location" for class "Finance"
+  ┬á┬áExpression of type "str" cannot be assigned to attribute "location" of class "Finance"
+  ┬á┬á┬á┬á"str" is not assignable to "Column[str]" (reportAttributeAccessIssue)
+  e:\1\backend\app\api\v1\endpoints\finance.py:207:17 - error: Cannot assign to attribute "occupation" for class "Finance"
+  ┬á┬áExpression of type "str" cannot be assigned to attribute "occupation" of class "Finance"
+  ┬á┬á┬á┬á"str" is not assignable to "Column[str]" (reportAttributeAccessIssue)
+  e:\1\backend\app\api\v1\endpoints\finance.py:226:41 - error: "Date" is not defined (reportUndefinedVariable)
+  e:\1\backend\app\api\v1\endpoints\finance.py:232:36 - error: "Date" is not defined (reportUndefinedVariable)
+  e:\1\backend\app\api\v1\endpoints\finance.py:240:41 - error: "Date" is not defined (reportUndefinedVariable)
+  e:\1\backend\app\api\v1\endpoints\finance.py:245:36 - error: "Date" is not defined (reportUndefinedVariable)
+  e:\1\backend\app\api\v1\endpoints\finance.py:263:39 - error: "Date" is not defined (reportUndefinedVariable)
+  e:\1\backend\app\api\v1\endpoints\finance.py:267:49 - error: Argument of type "bool" cannot be assigned to parameter "criterion" of type "_ColumnExpressionArgument[bool]" in function "filter"
+  ┬á┬áType "bool" is not assignable to type "_ColumnExpressionArgument[bool]"
+  ┬á┬á┬á┬á"bool" is not assignable to "ColumnElement[bool]"
+  ┬á┬á┬á┬á"bool" is incompatible with protocol "_HasClauseElement"
+  ┬á┬á┬á┬á┬á┬á"__clause_element__" is not present
+  ┬á┬á┬á┬á"bool" is not assignable to "SQLCoreOperations[bool]"
+  ┬á┬á┬á┬á"bool" is not assignable to "ExpressionElementRole[bool]"
+  ┬á┬á┬á┬áType "bool" is not assignable to type "() -> ColumnElement[bool]"
+  ┬á┬á┬á┬á"bool" is not assignable to "LambdaElement" (reportArgumentType)
+  e:\1\backend\app\api\v1\endpoints\finance.py:318:29 - error: Argument of type "Column[Unknown]" cannot be assigned to parameter "x" of type "ConvertibleToFloat" in function "__new__"
+  ┬á┬áType "Column[Unknown]" is not assignable to type "ConvertibleToFloat"
+  ┬á┬á┬á┬á"Column[Unknown]" is not assignable to "str"
+  ┬á┬á┬á┬á"Column[Unknown]" is incompatible with protocol "Buffer"
+  ┬á┬á┬á┬á┬á┬á"__buffer__" is not present
+  ┬á┬á┬á┬á"Column[Unknown]" is incompatible with protocol "SupportsFloat"
+  ┬á┬á┬á┬á┬á┬á"__float__" is not present
+  ┬á┬á┬á┬á"Column[Unknown]" is incompatible with protocol "SupportsIndex"
+  ┬á┬á┬á┬á┬á┬á"__index__" is not present (reportArgumentType)
+  e:\1\backend\app\api\v1\endpoints\finance.py:370:43 - error: Invalid conditional operand of type "Plan | ColumnElement[bool] | None"
+  ┬á┬áMethod __bool__ for type "ColumnElement[bool]" returns type "NoReturn" rather than "bool" (reportGeneralTypeIssues)
+  e:\1\backend\app\api\v1\endpoints\finance.py:370:109 - error: Invalid conditional operand of type "Plan | ColumnElement[bool] | None"
+  ┬á┬áMethod __bool__ for type "ColumnElement[bool]" returns type "NoReturn" rather than "bool" (reportGeneralTypeIssues)
+  e:\1\backend\app\api\v1\endpoints\finance.py:371:29 - error: Argument of type "Column[Unknown]" cannot be assigned to parameter "x" of type "ConvertibleToFloat" in function "__new__"
+  ┬á┬áType "Column[Unknown]" is not assignable to type "ConvertibleToFloat"
+  ┬á┬á┬á┬á"Column[Unknown]" is not assignable to "str"
+  ┬á┬á┬á┬á"Column[Unknown]" is incompatible with protocol "Buffer"
+  ┬á┬á┬á┬á┬á┬á"__buffer__" is not present
+  ┬á┬á┬á┬á"Column[Unknown]" is incompatible with protocol "SupportsFloat"
+  ┬á┬á┬á┬á┬á┬á"__float__" is not present
+  ┬á┬á┬á┬á"Column[Unknown]" is incompatible with protocol "SupportsIndex"
+  ┬á┬á┬á┬á┬á┬á"__index__" is not present (reportArgumentType)
+  e:\1\backend\app\api\v1\endpoints\finance.py:373:41 - error: Invalid conditional operand of type "Plan | Column[bool] | None"
+  ┬á┬áMethod __bool__ for type "Column[bool]" returns type "NoReturn" rather than "bool" (reportGeneralTypeIssues)
+  e:\1\backend\app\api\v1\endpoints\finance.py:507:29 - error: Argument of type "Column[Unknown]" cannot be assigned to parameter "x" of type "ConvertibleToFloat" in function "__new__"
+  ┬á┬áType "Column[Unknown]" is not assignable to type "ConvertibleToFloat"
+  ┬á┬á┬á┬á"Column[Unknown]" is not assignable to "str"
+  ┬á┬á┬á┬á"Column[Unknown]" is incompatible with protocol "Buffer"
+  ┬á┬á┬á┬á┬á┬á"__buffer__" is not present
+  ┬á┬á┬á┬á"Column[Unknown]" is incompatible with protocol "SupportsFloat"
+  ┬á┬á┬á┬á┬á┬á"__float__" is not present
+  ┬á┬á┬á┬á"Column[Unknown]" is incompatible with protocol "SupportsIndex"
+  ┬á┬á┬á┬á┬á┬á"__index__" is not present (reportArgumentType)
+  e:\1\backend\app\api\v1\endpoints\finance.py:525:42 - error: Argument of type "bool" cannot be assigned to parameter "criterion" of type "_ColumnExpressionArgument[bool]" in function "filter"
+  ┬á┬áType "bool" is not assignable to type "_ColumnExpressionArgument[bool]"
+  ┬á┬á┬á┬á"bool" is not assignable to "ColumnElement[bool]"
+  ┬á┬á┬á┬á"bool" is incompatible with protocol "_HasClauseElement"
+  ┬á┬á┬á┬á┬á┬á"__clause_element__" is not present
+  ┬á┬á┬á┬á"bool" is not assignable to "SQLCoreOperations[bool]"
+  ┬á┬á┬á┬á"bool" is not assignable to "ExpressionElementRole[bool]"
+  ┬á┬á┬á┬áType "bool" is not assignable to type "() -> ColumnElement[bool]"
+  ┬á┬á┬á┬á"bool" is not assignable to "LambdaElement" (reportArgumentType)
+  e:\1\backend\app\api\v1\endpoints\finance.py:548:35 - error: Invalid conditional operand of type "Column[bool]"
+  ┬á┬áMethod __bool__ for type "Column[bool]" returns type "NoReturn" rather than "bool" (reportGeneralTypeIssues)
+  e:\1\backend\app\api\v1\endpoints\finance.py:564:11 - error: Cannot assign to attribute "is_active" for class "Plan"
+  ┬á┬áExpression of type "Literal[False]" cannot be assigned to attribute "is_active" of class "Plan"
+  ┬á┬á┬á┬á"Literal[False]" is not assignable to "Column[bool]" (reportAttributeAccessIssue)
+  e:\1\backend\app\api\v1\endpoints\finance.py:602:17 - error: Cannot assign to attribute "is_active" for class "Plan"
+  ┬á┬áExpression of type "Literal[False]" cannot be assigned to attribute "is_active" of class "Plan"
+  ┬á┬á┬á┬á"Literal[False]" is not assignable to "Column[bool]" (reportAttributeAccessIssue)
+  e:\1\backend\app\api\v1\endpoints\finance.py:625:19 - error: Cannot assign to attribute "is_active" for class "Plan"
+  ┬á┬áExpression of type "Literal[True]" cannot be assigned to attribute "is_active" of class "Plan"
+  ┬á┬á┬á┬á"Literal[True]" is not assignable to "Column[bool]" (reportAttributeAccessIssue)
+  e:\1\backend\app\api\v1\endpoints\finance.py:626:19 - error: Cannot assign to attribute "start_date" for class "Plan"
+  ┬á┬áExpression of type "date" cannot be assigned to attribute "start_date" of class "Plan"
+  ┬á┬á┬á┬á"date" is not assignable to "Column[date]" (reportAttributeAccessIssue)
+  e:\1\backend\app\api\v1\endpoints\finance.py:627:19 - error: Cannot assign to attribute "end_date" for class "Plan"
+  ┬á┬áExpression of type "date" cannot be assigned to attribute "end_date" of class "Plan"
+  ┬á┬á┬á┬á"date" is not assignable to "Column[date]" (reportAttributeAccessIssue)
+  e:\1\backend\app\api\v1\endpoints\finance.py:649:42 - error: Argument of type "bool" cannot be assigned to parameter "criterion" of type "_ColumnExpressionArgument[bool]" in function "filter"
+  ┬á┬áType "bool" is not assignable to type "_ColumnExpressionArgument[bool]"
+  ┬á┬á┬á┬á"bool" is not assignable to "ColumnElement[bool]"
+  ┬á┬á┬á┬á"bool" is incompatible with protocol "_HasClauseElement"
+  ┬á┬á┬á┬á┬á┬á"__clause_element__" is not present
+  ┬á┬á┬á┬á"bool" is not assignable to "SQLCoreOperations[bool]"
+  ┬á┬á┬á┬á"bool" is not assignable to "ExpressionElementRole[bool]"
+  ┬á┬á┬á┬áType "bool" is not assignable to type "() -> ColumnElement[bool]"
+  ┬á┬á┬á┬á"bool" is not assignable to "LambdaElement" (reportArgumentType)
+  e:\1\backend\app\api\v1\endpoints\finance.py:649:75 - error: Argument of type "bool" cannot be assigned to parameter "criterion" of type "_ColumnExpressionArgument[bool]" in function "filter"
+  ┬á┬áType "bool" is not assignable to type "_ColumnExpressionArgument[bool]"
+  ┬á┬á┬á┬á"bool" is not assignable to "ColumnElement[bool]"
+  ┬á┬á┬á┬á"bool" is incompatible with protocol "_HasClauseElement"
+  ┬á┬á┬á┬á┬á┬á"__clause_element__" is not present
+  ┬á┬á┬á┬á"bool" is not assignable to "SQLCoreOperations[bool]"
+  ┬á┬á┬á┬á"bool" is not assignable to "ExpressionElementRole[bool]"
+  ┬á┬á┬á┬áType "bool" is not assignable to type "() -> ColumnElement[bool]"
+  ┬á┬á┬á┬á"bool" is not assignable to "LambdaElement" (reportArgumentType)
+  e:\1\backend\app\api\v1\endpoints\finance.py:870:29 - error: Argument of type "Column[Unknown]" cannot be assigned to parameter "x" of type "ConvertibleToFloat" in function "__new__"
+  ┬á┬áType "Column[Unknown]" is not assignable to type "ConvertibleToFloat"
+  ┬á┬á┬á┬á"Column[Unknown]" is not assignable to "str"
+  ┬á┬á┬á┬á"Column[Unknown]" is incompatible with protocol "Buffer"
+  ┬á┬á┬á┬á┬á┬á"__buffer__" is not present
+  ┬á┬á┬á┬á"Column[Unknown]" is incompatible with protocol "SupportsFloat"
+  ┬á┬á┬á┬á┬á┬á"__float__" is not present
+  ┬á┬á┬á┬á"Column[Unknown]" is incompatible with protocol "SupportsIndex"
+  ┬á┬á┬á┬á┬á┬á"__index__" is not present (reportArgumentType)
+  e:\1\backend\app\api\v1\endpoints\finance.py:874:50 - error: Invalid conditional operand of type "Column[UUID]"
+  ┬á┬áMethod __bool__ for type "Column[UUID]" returns type "NoReturn" rather than "bool" (reportGeneralTypeIssues)
+  e:\1\backend\app\api\v1\endpoints\finance.py:921:12 - error: Cannot assign to attribute "status" for class "Refund"
+  ┬á┬áExpression of type "Literal['approved']" cannot be assigned to attribute "status" of class "Refund"
+  ┬á┬á┬á┬á"Literal['approved']" is not assignable to "Column[str]" (reportAttributeAccessIssue)
+  e:\1\backend\app\api\v1\endpoints\finance.py:951:12 - error: Cannot assign to attribute "status" for class "Refund"
+  ┬á┬áExpression of type "Literal['rejected']" cannot be assigned to attribute "status" of class "Refund"
+  ┬á┬á┬á┬á"Literal['rejected']" is not assignable to "Column[str]" (reportAttributeAccessIssue)
+  e:\1\backend\app\api\v1\endpoints\finance.py:980:41 - error: "Date" is not defined (reportUndefinedVariable)
+  e:\1\backend\app\api\v1\endpoints\finance.py:984:36 - error: "Date" is not defined (reportUndefinedVariable)
+  e:\1\backend\app\api\v1\endpoints\finance.py:1054:50 - error: Invalid conditional operand of type "Column[Any]"
+  ┬á┬áMethod __bool__ for type "Column[Any]" returns type "NoReturn" rather than "bool" (reportGeneralTypeIssues)
+  e:\1\backend\app\api\v1\endpoints\finance.py:1055:50 - error: Invalid conditional operand of type "Column[Any]"
+  ┬á┬áMethod __bool__ for type "Column[Any]" returns type "NoReturn" rather than "bool" (reportGeneralTypeIssues)
+  e:\1\backend\app\api\v1\endpoints\finance.py:1056:66 - error: Invalid conditional operand of type "Column[Any]"
+  ┬á┬áMethod __bool__ for type "Column[Any]" returns type "NoReturn" rather than "bool" (reportGeneralTypeIssues)
+  e:\1\backend\app\api\v1\endpoints\finance.py:1057:56 - error: Invalid conditional operand of type "Column[Any]"
+  ┬á┬áMethod __bool__ for type "Column[Any]" returns type "NoReturn" rather than "bool" (reportGeneralTypeIssues)
+45 errors, 0 warnings, 0 informations

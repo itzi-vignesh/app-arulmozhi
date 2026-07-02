@@ -1,0 +1,10 @@
+python-interpreter-path = "E:\\1\\backend\\.venv\\Scripts\\python.exe"
+python_interpreter = "E:\\1\\backend\\.venv\\Scripts\\python.exe"
+search-path = ["backend"]
+search_path = ["backend"]
+
+[pyrefly]
+python-interpreter-path = "E:\\1\\backend\\.venv\\Scripts\\python.exe"
+python_interpreter = "E:\\1\\backend\\.venv\\Scripts\\python.exe"
+search-path = ["backend"]
+search_path = ["backend"]
